@@ -4,7 +4,7 @@ import {StatusBar} from 'react-native';
 import {AppProviders} from '@app/providers';
 import {RootNavigator} from '@navigation/RootNavigator';
 
-function App(): React.JSX.Element {
+const App = () => {
   return (
     <AppProviders>
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />

@@ -1,14 +1,18 @@
 import {LinkingOptions} from '@react-navigation/native';
 
-import {RootStackParamList} from './types';
+import {RootTabParamList} from './types';
 
-export const linking: LinkingOptions<RootStackParamList> = {
-  prefixes: ['teacherobservations://'],
+export const linking: LinkingOptions<RootTabParamList> = {
+  prefixes: ['teacherobs://'],
   config: {
     screens: {
-      Classes: 'classes',
-      Observations: 'observations',
-      Settings: 'settings',
+      ClassesTab: {
+        screens: {
+          ClassesList:       'classes',
+        },
+      },
+      FavoritesTab: 'favorites',
+      SettingsTab:  'settings',
     },
   },
 };

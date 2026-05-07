@@ -5,9 +5,13 @@ import {ClassesScreen} from '@shared/components/ClassesScreen';
 
 const Stack = createStackNavigator();
 
-export function ClassesStack(): React.JSX.Element {
+export const ClassesStack = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator 
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
       <Stack.Screen
         name="ClassesHome"
         component={ClassesScreen}

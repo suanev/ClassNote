@@ -5,9 +5,13 @@ import {ObservationsScreen} from '@shared/components/ObservationsScreen';
 
 const Stack = createStackNavigator();
 
-export function ObservationsStack(): React.JSX.Element {
+export const ObservationsStack = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
       <Stack.Screen
         name="ObservationsHome"
         component={ObservationsScreen}

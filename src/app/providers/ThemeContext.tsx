@@ -9,20 +9,21 @@ import React, {
 import {useColorScheme} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import {colors} from '@theme/colors';
+import {colors}     from '@theme/colors';
 import {darkColors} from '@theme/darkColors';
-import {shadows} from '@theme/shadows';
-import {spacing} from '@theme/spacing';
+import {shadows}    from '@theme/shadows';
+import {spacing}    from '@theme/spacing';
 import {typography} from '@theme/typography';
 import {animations} from '@theme/animations';
+import {paperLightTheme, paperDarkTheme, AppPaperTheme} from '@theme/paperTheme';
 
 export type ThemePreference = 'light' | 'dark' | 'system';
-export type ResolvedTheme = 'light' | 'dark';
+export type ResolvedTheme   = 'light' | 'dark';
 
 const STORAGE_KEY = '@TeacherApp:themePreference';
 
 const buildTheme = (resolved: ResolvedTheme) => ({
-  colors: resolved === 'dark' ? darkColors : colors,
+  colors:    resolved === 'dark' ? darkColors : colors,
   typography,
   spacing,
   shadows,
@@ -30,15 +31,16 @@ const buildTheme = (resolved: ResolvedTheme) => ({
 });
 
 interface ThemeContextValue {
-  preference: ThemePreference;
-  resolved: ResolvedTheme;
+  preference:    ThemePreference;
+  resolved:      ResolvedTheme;
   setPreference: (pref: ThemePreference) => void;
-  theme: ReturnType<typeof buildTheme>;
+  theme:         ReturnType<typeof buildTheme>;
+  paperTheme:    AppPaperTheme;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-export function ThemeContextProvider({children}: {children: React.ReactNode}) {
+export const ThemeContextProvider = ({children}: {children: React.ReactNode}) => {
   const systemScheme = useColorScheme();
   const [preference, setPreferenceState] = useState<ThemePreference>('system');
 
@@ -56,22 +58,26 @@ export function ThemeContextProvider({children}: {children: React.ReactNode}) {
   }, []);
 
   const resolved: ResolvedTheme =
-    preference === 'system' ? (systemScheme === 'dark' ? 'dark' : 'light') : preference;
+    preference === 'system'
+      ? systemScheme === 'dark' ? 'dark' : 'light'
+      : preference;
 
-  const theme = useMemo(() => buildTheme(resolved), [resolved]);
+  const theme      = useMemo(() => buildTheme(resolved), [resolved]);
+  const paperTheme = resolved === 'dark' ? paperDarkTheme : paperLightTheme;
 
   const value = useMemo(
-    () => ({preference, resolved, setPreference, theme}),
-    [preference, resolved, setPreference, theme],
+    () => ({preference, resolved, setPreference, theme, paperTheme}),
+    [preference, resolved, setPreference, theme, paperTheme],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
-export function useThemeContext() {
-  const ctx = useContext(ThemeContext);
-  if (!ctx) {
+export const useThemeContext = () => {
+  const context = useContext(ThemeContext);
+
+  if (!context) {
     throw new Error('useThemeContext must be used inside ThemeContextProvider');
   }
-  return ctx;
+  return context;
 }

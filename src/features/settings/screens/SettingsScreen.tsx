@@ -1,5 +1,14 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, ScrollView, TouchableOpacity} from 'react-native';
+import {ScrollView} from 'react-native';
+import {
+  Button,
+  Dialog,
+  Divider,
+  List,
+  Portal,
+  SegmentedButtons,
+  Text,
+} from 'react-native-paper';
 import styled from 'styled-components/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -7,7 +16,7 @@ import {useThemeContext, ThemePreference} from '@app/providers/ThemeContext';
 import {version} from '../../../../package.json';
 
 // ---------------------------------------------------------------------------
-// Styled components
+// Layout (styled-components) — sem nenhum componente interativo aqui
 // ---------------------------------------------------------------------------
 
 const Container = styled.View`
@@ -20,13 +29,11 @@ const Section = styled.View`
   margin-horizontal: ${({theme}) => theme.spacing.md}px;
 `;
 
-const SectionTitle = styled.Text`
-  font-size: ${({theme}) => theme.typography.fontSizes.sm}px;
-  font-weight: ${({theme}) => theme.typography.fontWeights.semibold};
-  color: ${({theme}) => theme.colors.mutedText};
+const SectionLabel = styled(Text)`
   text-transform: uppercase;
   letter-spacing: 0.8px;
   margin-bottom: ${({theme}) => theme.spacing.sm}px;
+  opacity: 0.55;
 `;
 
 const Card = styled.View`
@@ -37,92 +44,25 @@ const Card = styled.View`
   border-color: ${({theme}) => theme.colors.border};
 `;
 
-const Row = styled.View`
-  flex-direction: row;
-  align-items: center;
-  padding: ${({theme}) => theme.spacing.md}px;
-`;
-
-const RowDivider = styled.View`
-  height: 1px;
-  background-color: ${({theme}) => theme.colors.border};
-  margin-left: ${({theme}) => theme.spacing.md}px;
-`;
-
-const RowLabel = styled.Text`
-  font-size: ${({theme}) => theme.typography.fontSizes.md}px;
-  color: ${({theme}) => theme.colors.text};
-  flex: 1;
-`;
-
-const RowValue = styled.Text`
-  font-size: ${({theme}) => theme.typography.fontSizes.md}px;
-  color: ${({theme}) => theme.colors.mutedText};
-`;
-
-const ChipRow = styled.View`
-  flex-direction: row;
-  gap: 8px;
-  padding: ${({theme}) => theme.spacing.md}px;
-`;
-
-const Chip = styled(TouchableOpacity)<{selected: boolean}>`
-  flex: 1;
-  padding-vertical: 8px;
-  border-radius: 8px;
-  align-items: center;
-  border-width: 1.5px;
-  border-color: ${({theme, selected}) =>
-    selected ? theme.colors.primary : theme.colors.border};
-  background-color: ${({theme, selected}) =>
-    selected ? `${theme.colors.primary}18` : theme.colors.surface};
-`;
-
-const ChipText = styled.Text<{selected: boolean}>`
-  font-size: ${({theme}) => theme.typography.fontSizes.sm}px;
-  font-weight: ${({theme}) => theme.typography.fontWeights.semibold};
-  color: ${({theme, selected}) =>
-    selected ? theme.colors.primary : theme.colors.mutedText};
-`;
-
-const DangerButton = styled(TouchableOpacity)`
-  margin-top: ${({theme}) => theme.spacing.md}px;
-  padding: ${({theme}) => theme.spacing.md}px;
-  border-radius: 12px;
-  align-items: center;
-  background-color: #FEE2E2;
-  border-width: 1px;
-  border-color: #FECACA;
-`;
-
-const DangerText = styled.Text`
-  font-size: ${({theme}) => theme.typography.fontSizes.md}px;
-  font-weight: ${({theme}) => theme.typography.fontWeights.semibold};
-  color: #DC2626;
-`;
-
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
 const LAST_SYNC_KEY = '@TeacherApp:lastSync';
 
-const PREFERENCE_LABELS: Record<ThemePreference, string> = {
-  light: 'Claro',
-  dark: 'Escuro',
-  system: 'Sistema',
-};
+const SEGMENT_BUTTONS: {value: ThemePreference; label: string; icon: string}[] = [
+  {value: 'light',  label: 'Claro',   icon: 'weather-sunny'},
+  {value: 'dark',   label: 'Escuro',  icon: 'weather-night'},
+  {value: 'system', label: 'Sistema', icon: 'theme-light-dark'},
+];
 
 function formatLastSync(iso: string | null): string {
-  if (!iso) {
-    return 'Nunca sincronizado';
-  }
-  const date = new Date(iso);
-  return date.toLocaleString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
+  if (!iso) {return 'Nunca sincronizado';}
+  return new Date(iso).toLocaleString('pt-BR', {
+    day:    '2-digit',
+    month:  '2-digit',
+    year:   'numeric',
+    hour:   '2-digit',
     minute: '2-digit',
   });
 }
@@ -133,87 +73,96 @@ function formatLastSync(iso: string | null): string {
 
 export function SettingsScreen(): React.JSX.Element {
   const {preference, setPreference} = useThemeContext();
-  const [lastSync, setLastSync] = useState<string | null>(null);
+  const [lastSync,       setLastSync]       = useState<string | null>(null);
+  const [clearVisible,   setClearVisible]   = useState(false);
 
   useEffect(() => {
     AsyncStorage.getItem(LAST_SYNC_KEY).then(val => setLastSync(val));
   }, []);
 
-  const handleClearCache = useCallback(() => {
-    Alert.alert(
-      'Limpar cache',
-      'Os dados locais serão removidos. Você precisará de conexão para recarregá-los.',
-      [
-        {text: 'Cancelar', style: 'cancel'},
-        {
-          text: 'Limpar',
-          style: 'destructive',
-          onPress: async () => {
-            const allKeys = await AsyncStorage.getAllKeys();
-            const appKeys = allKeys.filter(k => k.startsWith('@TeacherApp:'));
-            await AsyncStorage.multiRemove(appKeys);
-            setLastSync(null);
-          },
-        },
-      ],
-    );
+  const handleClearConfirm = useCallback(async () => {
+    const allKeys = await AsyncStorage.getAllKeys();
+    const appKeys = allKeys.filter(k => k.startsWith('@TeacherApp:'));
+    await Promise.all(appKeys.map(k => AsyncStorage.removeItem(k)));
+    setLastSync(null);
+    setClearVisible(false);
   }, []);
 
   return (
     <Container>
       <ScrollView contentContainerStyle={{paddingBottom: 40}}>
 
-        {/* Aparência */}
+        {/* ── Aparência ────────────────────────────────────────────────── */}
         <Section>
-          <SectionTitle>Aparência</SectionTitle>
-          <Card>
-            <ChipRow>
-              {(['light', 'dark', 'system'] as ThemePreference[]).map(pref => (
-                <Chip
-                  key={pref}
-                  selected={preference === pref}
-                  onPress={() => setPreference(pref)}
-                  activeOpacity={0.7}>
-                  <ChipText selected={preference === pref}>
-                    {PREFERENCE_LABELS[pref]}
-                  </ChipText>
-                </Chip>
-              ))}
-            </ChipRow>
-          </Card>
+          <SectionLabel variant="labelSmall">Aparência</SectionLabel>
+          {/* SegmentedButtons do Paper: seleção exclusiva com ícone + label */}
+          <SegmentedButtons
+            value={preference}
+            onValueChange={v => setPreference(v as ThemePreference)}
+            buttons={SEGMENT_BUTTONS}
+          />
         </Section>
 
-        {/* Dados */}
+        {/* ── Dados ────────────────────────────────────────────────────── */}
         <Section>
-          <SectionTitle>Dados</SectionTitle>
+          <SectionLabel variant="labelSmall">Dados</SectionLabel>
           <Card>
-            <Row>
-              <RowLabel>Última sincronização</RowLabel>
-              <RowValue>{formatLastSync(lastSync)}</RowValue>
-            </Row>
+            {/* List.Item do Paper: layout padronizado com suporte a right/left */}
+            <List.Item
+              title="Última sincronização"
+              description={formatLastSync(lastSync)}
+              left={props => <List.Icon {...props} icon="sync" />}
+            />
           </Card>
-          <DangerButton onPress={handleClearCache} activeOpacity={0.8}>
-            <DangerText>Limpar cache local</DangerText>
-          </DangerButton>
+          {/* Button outlined com cor de erro — sem styled para botão interativo */}
+          <Button
+            mode="outlined"
+            textColor="#DC2626"
+            style={{marginTop: 12, borderColor: '#FECACA'}}
+            onPress={() => setClearVisible(true)}>
+            Limpar cache local
+          </Button>
         </Section>
 
-        {/* Versão */}
+        {/* ── Versão ───────────────────────────────────────────────────── */}
         <Section>
-          <SectionTitle>Versão</SectionTitle>
+          <SectionLabel variant="labelSmall">Versão</SectionLabel>
           <Card>
-            <Row>
-              <RowLabel>Teacher Observations</RowLabel>
-              <RowValue>v{version}</RowValue>
-            </Row>
-            <RowDivider />
-            <Row>
-              <RowLabel>Ambiente</RowLabel>
-              <RowValue>{__DEV__ ? 'Desenvolvimento' : 'Produção'}</RowValue>
-            </Row>
+            <List.Item
+              title="Teacher Observations"
+              description={`v${version}`}
+              left={props => <List.Icon {...props} icon="information-outline" />}
+            />
+            <Divider />
+            <List.Item
+              title="Ambiente"
+              description={__DEV__ ? 'Desenvolvimento' : 'Produção'}
+              left={props => (
+                <List.Icon {...props} icon={__DEV__ ? 'bug-outline' : 'rocket-launch-outline'} />
+              )}
+            />
           </Card>
         </Section>
 
       </ScrollView>
+
+      {/* Portal garante z-index correto acima de qualquer navigator */}
+      <Portal>
+        <Dialog visible={clearVisible} onDismiss={() => setClearVisible(false)}>
+          <Dialog.Title>Limpar cache</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">
+              Os dados locais serão removidos. Você precisará de conexão para recarregá-los.
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setClearVisible(false)}>Cancelar</Button>
+            <Button onPress={handleClearConfirm} textColor="#DC2626">
+              Limpar
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </Container>
   );
 }
