@@ -1,25 +1,20 @@
 import {NavigatorScreenParams} from '@react-navigation/native';
 
-// ─── Classes stack (inclui todo o fluxo classes → observações) ───────────────
-
 export type ClassesStackParamList = {
-  ClassesList: undefined;
-  ClassDetail: {classId: string; className: string};
-  ObservationsList: {classId: string; className: string};
-  ObservationDetail: {observationId: string};
-  ObservationForm: {classId: string; observationId?: string}; // opcional = edição
+  ClassesHome: undefined;
 };
 
-// ─── Root tabs ────────────────────────────────────────────────────────────────
+export type ObservationsStackParamList = {
+  ObservationsHome: undefined;
+};
 
 export type RootTabParamList = {
-  ClassesTab:  NavigatorScreenParams<ClassesStackParamList>;
-  FavoritesTab: undefined;
-  SettingsTab:  undefined;
+  Classes: NavigatorScreenParams<ClassesStackParamList>;
+  Observations: NavigatorScreenParams<ObservationsStackParamList>;
+  Settings: undefined;
 };
 
-// ─── Tipagem global do useNavigation ─────────────────────────────────────────
-
+/* eslint-disable @typescript-eslint/no-namespace, @typescript-eslint/no-empty-object-type */
 declare global {
   namespace ReactNavigation {
     interface RootParamList extends RootTabParamList {}

@@ -6,13 +6,17 @@ export const linking: LinkingOptions<RootTabParamList> = {
   prefixes: ['teacherobs://'],
   config: {
     screens: {
-      ClassesTab: {
+      Classes: {
         screens: {
-          ClassesList:       'classes',
+          ClassesHome: 'classes',
         },
       },
-      FavoritesTab: 'favorites',
-      SettingsTab:  'settings',
+      Observations: {
+        screens: {
+          ObservationsHome: 'observations',
+        },
+      },
+      Settings: 'settings',
     },
   },
 };

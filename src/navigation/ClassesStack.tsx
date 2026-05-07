@@ -1,9 +1,10 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import {ClassesScreen} from '@shared/components/ClassesScreen';
+import {ClassesScreen} from '@scenes/ClassesScreen';
+import {ClassesStackParamList} from './types';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<ClassesStackParamList>();
 
 export const ClassesStack = () => {
   return (

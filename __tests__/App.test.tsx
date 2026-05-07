@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 
-jest.mock('../src/app/providers', () => ({
-  AppProviders: ({children}: {children: React.ReactNode}) => children,
+jest.mock('../src/providers', () => ({
+  __esModule: true,
+  default: ({children}: {children: React.ReactNode}) => children,
 }));
 
 jest.mock('../src/navigation/RootNavigator', () => ({

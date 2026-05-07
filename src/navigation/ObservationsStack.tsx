@@ -1,9 +1,10 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import {ObservationsScreen} from '@shared/components/ObservationsScreen';
+import {ObservationsScreen} from '@scenes/ObservationsScreen';
+import {ObservationsStackParamList} from './types';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<ObservationsStackParamList>();
 
 export const ObservationsStack = () => {
   return (

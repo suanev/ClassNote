@@ -6,6 +6,7 @@ const reactHooksPlugin = require('eslint-plugin-react-hooks');
 module.exports = [
   {
     ignores: [
+      '.claude/**',
       'node_modules/**',
       'android/**',
       'ios/**',

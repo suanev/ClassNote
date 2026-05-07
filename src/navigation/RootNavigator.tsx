@@ -4,13 +4,13 @@ import Icon from 'react-native-vector-icons/Feather';
 
 import {ClassesStack} from './ClassesStack';
 import {ObservationsStack} from './ObservationsStack';
-import {SettingsScreen} from '@features/settings/screens/SettingsScreen/SettingsScreen';
-import {RootStackParamList} from './types';
-import {useThemeContext} from '@app/providers/ThemeContext';
+import SettingsScreen from '@scenes/SettingsScreen';
+import {RootTabParamList} from './types';
+import {useThemeContext} from '@providers/ThemeContext';
 
-const Tab = createBottomTabNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator<RootTabParamList>();
 
-const TAB_ICONS: Record<keyof RootStackParamList, string> = {
+const TAB_ICONS: Record<keyof RootTabParamList, string> = {
   Classes: 'users',
   Observations: 'file-text',
   Settings: 'settings',
