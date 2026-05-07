@@ -10,7 +10,7 @@ import {store}   from '@app/store';
 import {ThemeContextProvider, useThemeContext} from './ThemeContext';
 
 
-function UIProvidersBridge({children}: PropsWithChildren) {
+const UIProvidersBridge = ({children}: PropsWithChildren) => {
   const {theme, paperTheme} = useThemeContext();
   return (
     <PaperProvider theme={paperTheme}>
@@ -21,7 +21,7 @@ function UIProvidersBridge({children}: PropsWithChildren) {
   );
 }
 
-export function AppProviders({children}: PropsWithChildren): React.JSX.Element {
+const AppProviders = ({children}: PropsWithChildren) => {
   return (
     <ReduxProvider store={store}>
       <SafeAreaProvider>
@@ -36,3 +36,5 @@ export function AppProviders({children}: PropsWithChildren): React.JSX.Element {
     </ReduxProvider>
   );
 }
+
+export default AppProviders;

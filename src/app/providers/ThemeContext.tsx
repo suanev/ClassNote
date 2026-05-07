@@ -20,7 +20,7 @@ import {paperLightTheme, paperDarkTheme, AppPaperTheme} from '@theme/paperTheme'
 export type ThemePreference = 'light' | 'dark' | 'system';
 export type ResolvedTheme   = 'light' | 'dark';
 
-const STORAGE_KEY = '@TeacherApp:themePreference';
+const STORAGE_KEY = '@teacherobs:themePreference';
 
 const buildTheme = (resolved: ResolvedTheme) => ({
   colors:    resolved === 'dark' ? darkColors : colors,
