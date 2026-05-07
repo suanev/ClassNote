@@ -28,17 +28,25 @@ export const RootNavigator = () => {
         tabBarStyle: {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.border,
+          height: 84,
+          paddingTop: 8,
+          paddingBottom: 12,
+        },
+        tabBarLabelStyle: {
+          fontSize: theme.typography.fontSizes.sm,
+          fontFamily: theme.typography.fontFamily.ui,
+          fontWeight: '600',
         },
         tabBarIcon: ({color, size}) => (
           <Icon name={TAB_ICONS[route.name]} size={size} color={color} />
         ),
       })}>
-      <Tab.Screen name="Classes" component={ClassesStack} options={{title: 'Turmas'}} />
       <Tab.Screen
         name="Observations"
         component={ObservationsStack}
         options={{title: 'Observações'}}
       />
+      <Tab.Screen name="Classes" component={ClassesStack} options={{title: 'Turmas'}} />
       <Tab.Screen name="Settings" component={SettingsScreen} options={{title: 'Ajustes', headerShown: true, headerTitle: 'Ajustes', headerStyle: {backgroundColor: theme.colors.surface}, headerTintColor: theme.colors.text}} />
     </Tab.Navigator>
   );

@@ -6,6 +6,7 @@ export type ClassesStackParamList = {
 
 export type ObservationsStackParamList = {
   ObservationsHome: undefined;
+  ObservationForm: undefined;
 };
 
 export type RootTabParamList = {

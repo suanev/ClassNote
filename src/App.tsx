@@ -1,16 +1,31 @@
 import React from 'react';
 import {StatusBar} from 'react-native';
 
-import AppProviders from '@providers/index';
 import {RootNavigator} from '@navigation/RootNavigator';
+import {useThemeContext} from '@providers/ThemeContext';
+import AppProviders from './providers';
+
+const AppShell = () => {
+  const {resolved} = useThemeContext();
+
+  return (
+    <>
+      <StatusBar
+        barStyle={resolved === 'dark' ? 'light-content' : 'dark-content'}
+        backgroundColor="transparent"
+        translucent
+      />
+      <RootNavigator />
+    </>
+  );
+};
 
 const App = () => {
   return (
     <AppProviders>
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-      <RootNavigator />
+      <AppShell />
     </AppProviders>
   );
-}
+};
 
 export default App;

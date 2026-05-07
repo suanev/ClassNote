@@ -6,6 +6,12 @@ jest.mock('../src/providers', () => ({
   default: ({children}: {children: React.ReactNode}) => children,
 }));
 
+jest.mock('../src/providers/ThemeContext', () => ({
+  useThemeContext: () => ({
+    resolved: 'light',
+  }),
+}));
+
 jest.mock('../src/navigation/RootNavigator', () => ({
   RootNavigator: () => null,
 }));

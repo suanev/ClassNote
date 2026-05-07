@@ -9,30 +9,17 @@ import React, {
 import {useColorScheme} from 'react-native';
 import {getItem, setItem, storageKeys} from '@storage/index';
 
-import {colors}     from '@theme/colors';
-import {darkColors} from '@theme/darkColors';
-import {shadows}    from '@theme/shadows';
-import {spacing}    from '@theme/spacing';
-import {typography} from '@theme/typography';
-import {animations} from '@theme/animations';
+import {darkTheme, theme, AppTheme, DarkAppTheme} from '@theme/index';
 import {paperLightTheme, paperDarkTheme, AppPaperTheme} from '@theme/paperTheme';
 
 export type ThemePreference = 'light' | 'dark' | 'system';
 export type ResolvedTheme   = 'light' | 'dark';
 
-const buildTheme = (resolved: ResolvedTheme) => ({
-  colors:    resolved === 'dark' ? darkColors : colors,
-  typography,
-  spacing,
-  shadows,
-  animations,
-});
-
 interface ThemeContextValue {
   preference:    ThemePreference;
   resolved:      ResolvedTheme;
   setPreference: (pref: ThemePreference) => void;
-  theme:         ReturnType<typeof buildTheme>;
+  theme:         AppTheme | DarkAppTheme;
   paperTheme:    AppPaperTheme;
 }
 
@@ -60,12 +47,15 @@ export const ThemeContextProvider = ({children}: {children: React.ReactNode}) =>
       ? systemScheme === 'dark' ? 'dark' : 'light'
       : preference;
 
-  const theme      = useMemo(() => buildTheme(resolved), [resolved]);
+  const activeTheme = useMemo(
+    () => (resolved === 'dark' ? darkTheme : theme),
+    [resolved],
+  );
   const paperTheme = resolved === 'dark' ? paperDarkTheme : paperLightTheme;
 
   const value = useMemo(
-    () => ({preference, resolved, setPreference, theme, paperTheme}),
-    [preference, resolved, setPreference, theme, paperTheme],
+    () => ({preference, resolved, setPreference, theme: activeTheme, paperTheme}),
+    [preference, resolved, setPreference, activeTheme, paperTheme],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

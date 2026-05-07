@@ -6,8 +6,8 @@ import {PaperProvider} from 'react-native-paper';
 import {ThemeProvider} from 'styled-components/native';
 
 import {linking} from '@navigation/linking';
-import {store} from '@store/index';
 import {ThemeContextProvider, useThemeContext} from './ThemeContext';
+import {store} from '../store';
 
 
 const UIProvidersBridge = ({children}: PropsWithChildren) => {
