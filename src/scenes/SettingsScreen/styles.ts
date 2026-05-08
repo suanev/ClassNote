@@ -20,15 +20,15 @@ export const SectionLabel = styled(Text)`
 
 export const Card = styled.View`
   background-color: ${({theme}) => theme.colors.surface};
-  border-radius: 12px;
+  border-radius: ${({theme}) => theme.radii.lg}px;
   overflow: hidden;
   border-width: 1px;
   border-color: ${({theme}) => theme.colors.border};
 `;
 
 export const ClearButton = styled(Button)`
-  margin-top: 12px;
-  border-color: #fecaca;
+  margin-top: ${({theme}) => theme.spacing[3]}px;
+  border-color: ${({theme}) => theme.colors.dangerSubtle};
 `;
 
 export const SectionsList = styled.ScrollView.attrs({

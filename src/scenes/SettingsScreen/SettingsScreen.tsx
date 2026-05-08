@@ -9,8 +9,9 @@ import {
   Text,
 } from 'react-native-paper';
 import Config from 'react-native-config';
+import {useTheme} from 'styled-components/native';
 
-import {ThemePreference} from '@providers/ThemeContext';
+import {ThemePreference} from '@theme/ThemeContext';
 import {formatLastSync} from '@utils/date';
 
 import {Card, ClearButton, Container, Section, SectionLabel, SectionsList} from './styles';
@@ -29,6 +30,7 @@ interface SettingsScreenProps {
   onClearPress: () => void;
   onClearConfirm: () => void;
   onClearDismiss: () => void;
+  onOpenDesignSystem?: () => void;
 }
 
 const SettingsScreen = ({
@@ -39,7 +41,10 @@ const SettingsScreen = ({
   onClearPress,
   onClearConfirm,
   onClearDismiss,
+  onOpenDesignSystem,
 }: SettingsScreenProps) => {
+  const theme = useTheme();
+
   return (
     <Container>
       <SectionsList>
@@ -61,10 +66,27 @@ const SettingsScreen = ({
               left={props => <List.Icon {...props} icon="sync" />}
             />
           </Card>
-          <ClearButton mode="outlined" textColor="#DC2626" onPress={onClearPress}>
+          <ClearButton mode="outlined" textColor={theme.colors.danger} onPress={onClearPress}>
             Limpar cache local
           </ClearButton>
         </Section>
+
+        {__DEV__ && onOpenDesignSystem ? (
+          <Section>
+            <SectionLabel variant="labelSmall">Desenvolvedor</SectionLabel>
+            <Card>
+              <List.Item
+                title="Design System"
+                description="Componentes e stories do Storybook"
+                left={props => <List.Icon {...props} icon="palette-outline" />}
+                right={props => <List.Icon {...props} icon="chevron-right" />}
+                onPress={onOpenDesignSystem}
+                accessibilityRole="button"
+                accessibilityLabel="Abrir Design System"
+              />
+            </Card>
+          </Section>
+        ) : null}
 
         <Section>
           <SectionLabel variant="labelSmall">Versão</SectionLabel>
@@ -96,7 +118,7 @@ const SettingsScreen = ({
           </Dialog.Content>
           <Dialog.Actions>
             <Button onPress={onClearDismiss}>Cancelar</Button>
-            <Button onPress={onClearConfirm} textColor="#DC2626">
+            <Button onPress={onClearConfirm} textColor={theme.colors.danger}>
               Limpar
             </Button>
           </Dialog.Actions>
