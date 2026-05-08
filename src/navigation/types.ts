@@ -1,21 +1,26 @@
-import {NavigatorScreenParams} from '@react-navigation/native';
+import { NavigatorScreenParams } from '@react-navigation/native';
 
 export type ClassesStackParamList = {
   ClassesHome: undefined;
+  ClassDetail: { classId: string; className: string };
 };
 
 export type ObservationsStackParamList = {
   ObservationsHome: undefined;
-  ObservationForm: undefined;
+  ObservationForm: { mode: 'create' } | { mode: 'edit'; observationId: string };
+};
+
+export type SettingsStackParamList = {
+  SettingsHome: undefined;
+  DesignSystem: undefined;
 };
 
 export type RootTabParamList = {
   Classes: NavigatorScreenParams<ClassesStackParamList>;
   Observations: NavigatorScreenParams<ObservationsStackParamList>;
-  Settings: undefined;
+  Settings: NavigatorScreenParams<SettingsStackParamList>;
 };
 
-/* eslint-disable @typescript-eslint/no-namespace, @typescript-eslint/no-empty-object-type */
 declare global {
   namespace ReactNavigation {
     interface RootParamList extends RootTabParamList {}

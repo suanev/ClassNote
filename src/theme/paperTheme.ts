@@ -18,7 +18,7 @@ export const paperLightTheme: MD3Theme = {
     onSurface: colors.text,
     onSurfaceVariant: colors.textMuted,
     outline: colors.border,
-    outlineVariant: colors.borderStrong,
+    outlineVariant: colors.border,
     error: colors.danger,
     errorContainer: colors.dangerSubtle,
     secondary: colors.info,

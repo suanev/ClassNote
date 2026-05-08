@@ -1,26 +1,48 @@
-import React from 'react';
+import React, {useCallback, useRef} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {NavigationState} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 
+import {SyncStatusIcon} from '@components/SyncStatusIcon';
+import {monitoring} from '@services/monitoring';
+import {useThemeContext} from '@theme/ThemeContext';
 import {ClassesStack} from './ClassesStack';
 import {ObservationsStack} from './ObservationsStack';
-import SettingsScreen from '@scenes/SettingsScreen';
+import {SettingsStack} from './SettingsStack';
 import {RootTabParamList} from './types';
-import {useThemeContext} from '@providers/ThemeContext';
+
+function getActiveRouteName(state: NavigationState | undefined): string {
+  if (!state) return '';
+  const route = state.routes[state.index];
+  if (route.state) return getActiveRouteName(route.state as NavigationState);
+  return route.name;
+}
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 const TAB_ICONS: Record<keyof RootTabParamList, string> = {
   Classes: 'users',
-  Observations: 'file-text',
+  Observations: 'edit-3',
   Settings: 'settings',
 };
 
 export const RootNavigator = () => {
   const {theme} = useThemeContext();
+  const routeNameRef = useRef<string>('');
+
+  const onStateChange = useCallback((state: NavigationState | undefined) => {
+    const currentRoute = getActiveRouteName(state);
+    if (currentRoute !== routeNameRef.current) {
+      monitoring.logScreen(currentRoute);
+      routeNameRef.current = currentRoute;
+    }
+  }, []);
 
   return (
     <Tab.Navigator
+      screenListeners={{
+        state: e => onStateChange((e.data as {state: NavigationState}).state),
+      }}
       screenOptions={({route}) => ({
         headerShown: false,
         tabBarActiveTintColor: theme.colors.primary,
@@ -47,7 +69,19 @@ export const RootNavigator = () => {
         options={{title: 'Observações'}}
       />
       <Tab.Screen name="Classes" component={ClassesStack} options={{title: 'Turmas'}} />
-      <Tab.Screen name="Settings" component={SettingsScreen} options={{title: 'Ajustes', headerShown: true, headerTitle: 'Ajustes', headerStyle: {backgroundColor: theme.colors.surface}, headerTintColor: theme.colors.text}} />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsStack}
+        options={{
+          title: 'Ajustes',
+          headerShown: true,
+          headerTitle: 'Ajustes',
+          headerStyle: {backgroundColor: theme.colors.surface},
+          headerTintColor: theme.colors.text,
+          headerRight: () => <SyncStatusIcon />,
+          headerRightContainerStyle: {paddingRight: 16},
+        }}
+      />
     </Tab.Navigator>
   );
 }

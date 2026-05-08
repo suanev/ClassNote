@@ -7,10 +7,12 @@ export const storage = createMMKV({
 });
 
 export const storageKeys = {
-  syncQueue:    `${APP_PREFIX}/sync-queue`,
-  favorites:    `${APP_PREFIX}/favorites`,
-  lastSync:     `${APP_PREFIX}/last-sync`,
-  theme:        `${APP_PREFIX}/theme-preference`,
+  syncQueue:          `${APP_PREFIX}/sync-queue`,
+  favorites:          `${APP_PREFIX}/favorites`,
+  lastSync:           `${APP_PREFIX}/last-sync`,
+  theme:              `${APP_PREFIX}/theme-preference`,
+  filterPreferences:  `${APP_PREFIX}/filter-preferences`,
+  pendingUndo:        `${APP_PREFIX}/pending-undo`,
 } as const;
 
 export const getItem = async (key: string): Promise<string | null> =>

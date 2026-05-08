@@ -12,14 +12,14 @@ const sage = {
 } as const;
 
 const neutralLight = {
-  bg: '#fafaf7',
+  bg: '#e8ece7',
   surface: '#ffffff',
-  surfaceAlt: '#f5f6f2',
+  surfaceAlt: '#f3f5f2',
   text: '#1f2922',
-  textMuted: '#5b665e',
-  textSubtle: '#8a948c',
-  border: '#e3e5e0',
-  borderStrong: '#cfd3cb',
+  textMuted: '#4d5e51',
+  textSubtle: '#7a8a7c',
+  border: '#cdd5cb',
+  borderStrong: '#b4bfb2',
   overlay: 'rgba(34, 42, 35, 0.5)',
 } as const;
 
@@ -37,11 +37,11 @@ const status = {
 export const colors = {
   sage,
 
-  primary: sage[500],
-  primaryHover: sage[600],
-  primaryActive: sage[700],
-  primarySubtle: sage[50],
-  primaryBorder: sage[200],
+  primary: sage[600],
+  primaryHover: sage[700],
+  primaryActive: sage[800],
+  primarySubtle: sage[100],
+  primaryBorder: sage[300],
   onPrimary: '#ffffff',
 
   bg: neutralLight.bg,
