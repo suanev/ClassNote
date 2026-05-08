@@ -6,7 +6,7 @@ export const Row = styled.View`
   justify-content: space-between;
 `;
 
-export const FavoriteButton = styled.View`
+export const FavoriteButton = styled.Pressable`
   margin-left: ${({theme}) => theme.spacing[2]}px;
 `;
 

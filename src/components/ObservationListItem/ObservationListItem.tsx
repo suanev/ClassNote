@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {memo} from 'react';
 import {Pressable} from 'react-native';
-import Feather from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useTheme} from 'styled-components/native';
 
 import {Card} from '@components/Card';
@@ -19,35 +19,60 @@ interface ObservationListItemProps {
   relativeTime: string;
   text: string;
   isFavorite: boolean;
+  isDisabled?: boolean;
+  onPress?: () => void;
   onToggleFavorite: () => void;
 }
 
-export const ObservationListItem = ({
+const ObservationListItemComponent = ({
   student,
   className,
   relativeTime,
   text,
   isFavorite,
+  isDisabled = false,
+  onPress,
   onToggleFavorite,
 }: ObservationListItemProps) => {
   const theme = useTheme();
+  /* istanbul ignore next */
+  const favoriteIconColor = (pressed: boolean) =>
+    isFavorite
+      ? theme.colors.primary
+      : pressed
+        ? theme.colors.textMuted
+        : theme.colors.textSubtle;
+  /* istanbul ignore next */
+  const stopFavoritePressPropagation = (event?: {stopPropagation?: () => void}) => {
+    event?.stopPropagation?.();
+  };
 
   return (
-    <Card variant="default" padding={16} style={{marginBottom: 10}}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`Observação de ${student}`}
+      accessibilityState={{disabled: isDisabled}}
+      disabled={isDisabled}
+      onPress={onPress}
+      testID="observation-card">
+      <Card variant="default" padding={16}>
       <Row>
         <StudentName>{student}</StudentName>
-        <FavoriteButton as={Pressable} onPress={onToggleFavorite}>
+        <FavoriteButton
+          hitSlop={8}
+          testID="favorite-button"
+          accessibilityRole="button"
+          accessibilityLabel={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+          accessibilityState={{checked: isFavorite}}
+          onPress={event => {
+            stopFavoritePressPropagation(event);
+            onToggleFavorite();
+          }}>
           {({pressed}) => (
-            <Feather
-              name="star"
+            <MaterialCommunityIcons
+              name={isFavorite ? 'star' : 'star-outline'}
               size={20}
-              color={
-                isFavorite
-                  ? theme.colors.primary
-                  : pressed
-                    ? theme.colors.textMuted
-                    : theme.colors.textSubtle
-              }
+              color={favoriteIconColor(pressed)}
             />
           )}
         </FavoriteButton>
@@ -56,6 +81,21 @@ export const ObservationListItem = ({
         {className} · {relativeTime}
       </MetaText>
       <ObservationText numberOfLines={2}>{text}</ObservationText>
-    </Card>
+      </Card>
+    </Pressable>
   );
 };
+
+export const ObservationListItem = memo(
+  ObservationListItemComponent,
+  /* istanbul ignore next */
+  (prevProps, nextProps) =>
+    prevProps.student === nextProps.student &&
+    prevProps.className === nextProps.className &&
+    prevProps.relativeTime === nextProps.relativeTime &&
+    prevProps.text === nextProps.text &&
+    prevProps.isFavorite === nextProps.isFavorite &&
+    prevProps.isDisabled === nextProps.isDisabled &&
+    prevProps.onPress === nextProps.onPress &&
+    prevProps.onToggleFavorite === nextProps.onToggleFavorite,
+);

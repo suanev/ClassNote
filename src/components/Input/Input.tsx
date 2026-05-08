@@ -9,7 +9,10 @@ interface InputProps {
   placeholder?: string;
   value?: string;
   onChangeText?: (value: string) => void;
-  mt?: number;
+  marginTop?: number;
+  multiline?: boolean;
+  numberOfLines?: number;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 }
 
 export const Input = ({
@@ -17,14 +20,21 @@ export const Input = ({
   placeholder,
   value,
   onChangeText,
-  mt,
+  marginTop,
+  multiline = false,
+  numberOfLines,
+  autoCapitalize = 'sentences',
 }: InputProps) => {
   const theme = useTheme();
 
   return (
-    <InputWrapper $mt={mt}>
+    <InputWrapper marginTop={marginTop} multiline={multiline}>
       {icon ? <Feather name={icon} size={18} color={theme.colors.textSubtle} /> : null}
       <InputField
+        multiline={multiline}
+        numberOfLines={numberOfLines}
+        textAlignVertical={multiline ? 'top' : 'center'}
+        autoCapitalize={autoCapitalize}
         placeholder={placeholder}
         placeholderTextColor={theme.colors.textSubtle}
         value={value}

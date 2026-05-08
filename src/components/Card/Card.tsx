@@ -1,9 +1,7 @@
 import React, {PropsWithChildren} from 'react';
 import {StyleProp, ViewStyle} from 'react-native';
 
-import {CardContainer} from './styles';
-
-type CardVariant = 'default' | 'dark';
+import {CardContainer, CardVariant} from './styles';
 
 interface CardProps extends PropsWithChildren {
   variant?: CardVariant;
@@ -18,7 +16,7 @@ export const Card = ({
   style,
 }: CardProps) => {
   return (
-    <CardContainer $variant={variant} $padding={padding} style={style}>
+    <CardContainer variant={variant} padding={padding} style={style}>
       {children}
     </CardContainer>
   );
