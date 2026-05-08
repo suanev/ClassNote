@@ -1,32 +1,29 @@
-import React from 'react';
-import {FlatList, RefreshControl, ScrollView} from 'react-native';
-import {FAB, IconButton} from 'react-native-paper';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import Feather from 'react-native-vector-icons/Feather';
+import React, {useCallback, useMemo} from 'react';
+import {ActivityIndicator, FlatList, Platform, RefreshControl, View} from 'react-native';
 import {useTheme} from 'styled-components/native';
 
-import {Badge, ObservationListItem} from '@components/index';
+import {
+  Button,
+  EmptyState,
+  FAB,
+  FilterBottomSheet,
+  ObservationSkeleton,
+  ObservationUndoToast,
+  ScreenContainer,
+  SwipeableObservationItem,
+  SyncStatusIcon,
+} from '@components/index';
+import {ObservationSortOrder} from '@store/observations/slice';
 
 import {
-  BodyText,
-  CaptionText,
-  ChipLabel,
-  ChipPressable,
-  ChipsRow,
+  EmptyStateWrapper,
   ContentContainer,
-  HeaderRow,
-  HeaderRight,
+  SectionHeaderRow,
   Screen,
   SectionLabel,
-  GreetingAccent,
-  GreetingText,
+  TitleRow,
   TitleText,
 } from './styles';
-
-type ClassFilterOption = {
-  label: string;
-  value: 'Todas' | '5º A' | '6º B' | '7º C';
-};
 
 type ObservationItemView = {
   id: string;
@@ -38,38 +35,137 @@ type ObservationItemView = {
 };
 
 interface ObservationsScreenProps {
-  dateLabel: string;
-  greetingName: string;
-  classFilters: ClassFilterOption[];
-  selectedClass: ClassFilterOption['value'];
-  onSelectClass: (value: ClassFilterOption['value']) => void;
+  availableClasses: string[];
+  filterByClass: string | null;
+  filterByFavorites: boolean;
+  hasMore: boolean;
+  isLoadingMore: boolean;
+  isFilterSheetOpen: boolean;
   observations: ObservationItemView[];
+  deletePendingId: string | null | undefined;
+  isLoading: boolean;
+  isError: boolean;
   isRefreshing: boolean;
+  sortOrder: ObservationSortOrder;
+  toastVisible: boolean;
+  toastMessage: string;
+  toastActionLabel: string | null;
+  undoPending: boolean;
+  onCloseFilters: () => void;
+  onDeleteObservation: (id: string) => void;
+  onEditObservation: (id: string) => void;
+  onLoadMore: () => void;
+  onOpenFilters: () => void;
   onRefresh: () => void;
+  onRetry: () => void;
+  onResetFilters: () => void;
+  onSelectClass: (value: string | null) => void;
+  onSelectSortOrder: (value: ObservationSortOrder) => void;
+  onToggleFavoritesFilter: () => void;
   onToggleFavorite: (id: string) => void;
   onCreateObservation: () => void;
+  onUndoDelete: () => void;
 }
 
 export function ObservationsScreen({
-  dateLabel,
-  greetingName,
-  classFilters,
-  selectedClass,
-  onSelectClass,
+  availableClasses,
+  filterByClass,
+  filterByFavorites,
+  hasMore,
+  isLoadingMore,
+  isFilterSheetOpen,
   observations,
+  deletePendingId,
+  isLoading,
+  isError,
   isRefreshing,
+  sortOrder,
+  toastVisible,
+  toastMessage,
+  toastActionLabel,
+  undoPending,
+  onCloseFilters,
+  onDeleteObservation,
+  onEditObservation,
+  onLoadMore,
+  onOpenFilters,
   onRefresh,
+  onRetry,
+  onResetFilters,
+  onSelectClass,
+  onSelectSortOrder,
+  onToggleFavoritesFilter,
   onToggleFavorite,
   onCreateObservation,
+  onUndoDelete,
 }: ObservationsScreenProps): React.JSX.Element {
   const theme = useTheme();
 
+  const emptyStateDescription = useMemo(() => {
+    if (filterByFavorites && filterByClass) {
+      return `Nenhuma observação favorita para ${filterByClass}.`;
+    }
+    if (filterByFavorites) {
+      return 'Quando você marcar observações com estrela, elas vão aparecer aqui para acesso mais rápido.';
+    }
+    if (filterByClass) {
+      return `Ainda não há observações para ${filterByClass}. Você pode criar a primeira e começar o histórico dessa turma.`;
+    }
+    return 'Quando você registrar novas observações, elas vão aparecer aqui com destaque e contexto da turma.';
+  }, [filterByClass, filterByFavorites]);
+
+  const keyExtractor = useCallback((item: ObservationItemView) => item.id, []);
+
+  const renderItem = useCallback(
+    ({item}: {item: ObservationItemView}) => (
+      <SwipeableObservationItem
+        id={item.id}
+        student={item.student}
+        className={item.className}
+        relativeTime={item.relativeTime}
+        text={item.text}
+        isFavorite={item.favorite}
+        isDeleting={deletePendingId === item.id}
+        onPress={() => onEditObservation(item.id)}
+        onDelete={onDeleteObservation}
+        onToggleFavorite={() => onToggleFavorite(item.id)}
+      />
+    ),
+    [deletePendingId, onDeleteObservation, onEditObservation, onToggleFavorite],
+  );
+
+  if (isLoading) {
+    return <ObservationSkeleton />;
+  }
+
+  if (isError) {
+    return (
+      <ScreenContainer>
+        <EmptyStateWrapper>
+          <EmptyState
+            title="Erro ao carregar"
+            description="Não foi possível buscar as observações. Verifique sua conexão e tente novamente."
+            actionLabel="Tentar novamente"
+            onAction={onRetry}
+          />
+        </EmptyStateWrapper>
+      </ScreenContainer>
+    );
+  }
+
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: theme.colors.bg}} edges={['top']}>
+    <ScreenContainer>
       <Screen>
         <FlatList
           data={observations}
-          keyExtractor={item => item.id}
+          keyExtractor={keyExtractor}
+          initialNumToRender={8}
+          maxToRenderPerBatch={8}
+          onEndReached={hasMore ? onLoadMore : undefined}
+          onEndReachedThreshold={0.4}
+          removeClippedSubviews={Platform.OS === 'android'}
+          updateCellsBatchingPeriod={50}
+          windowSize={7}
           contentContainerStyle={{paddingHorizontal: 20, paddingTop: 12, paddingBottom: 140}}
           showsVerticalScrollIndicator={false}
           refreshControl={
@@ -79,81 +175,73 @@ export function ObservationsScreen({
               tintColor={theme.colors.primary}
             />
           }
-          renderItem={({item}) => (
-            <ObservationListItem
-              student={item.student}
-              className={item.className}
-              relativeTime={item.relativeTime}
-              text={item.text}
-              isFavorite={item.favorite}
-              onToggleFavorite={() => onToggleFavorite(item.id)}
-            />
-          )}
+          renderItem={renderItem}
           ListHeaderComponent={
             <ContentContainer>
-              <HeaderRow>
-                <CaptionText>{dateLabel}</CaptionText>
-                <HeaderRight>
-                  <Badge variant="success">Sincronizado</Badge>
-                  <IconButton
-                    icon={({size}) => (
-                      <Feather name="bell" size={size} color={theme.colors.text} />
-                    )}
-                    size={20}
-                    onPress={() => undefined}
-                  />
-                </HeaderRight>
-              </HeaderRow>
-
-              <TitleText>
-                Observações
-              </TitleText>
-              <GreetingText>
-                Olá, <GreetingAccent>{greetingName}</GreetingAccent>
-              </GreetingText>
-
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{paddingRight: 20}}>
-                <ChipsRow>
-                  {classFilters.map(filter => {
-                    const isActive = filter.value === selectedClass;
-
-                    return (
-                      <ChipPressable
-                        key={filter.value}
-                        $active={isActive}
-                        onPress={() => onSelectClass(filter.value)}>
-                        <ChipLabel $active={isActive}>{filter.label}</ChipLabel>
-                      </ChipPressable>
-                    );
-                  })}
-                </ChipsRow>
-              </ScrollView>
-
-              <SectionLabel>OBSERVAÇÕES RECENTES</SectionLabel>
+              <TitleRow>
+                <TitleText>Observações</TitleText>
+                <SyncStatusIcon />
+              </TitleRow>
+              <SectionHeaderRow>
+                <SectionLabel>RECENTES</SectionLabel>
+                <Button
+                  icon="tune"
+                  minWidth={128}
+                  onPress={onOpenFilters}
+                  testID="open-filters-button"
+                  accessibilityLabel="Abrir filtros"
+                  variant="outline">
+                  Filtros
+                </Button>
+              </SectionHeaderRow>
             </ContentContainer>
           }
+          ListFooterComponent={
+            isLoadingMore ? (
+              <View style={{paddingVertical: 24, alignItems: 'center'}}>
+                <ActivityIndicator color={theme.colors.primary} />
+              </View>
+            ) : null
+          }
           ListEmptyComponent={
-            <BodyText>Nenhuma observação encontrada para sua busca.</BodyText>
+            <EmptyStateWrapper>
+              <EmptyState
+                title="Nenhuma observação por aqui"
+                description={emptyStateDescription}
+                actionLabel="Criar observação"
+                onAction={onCreateObservation}
+              />
+            </EmptyStateWrapper>
           }
         />
 
         <FAB
-          icon={({size, color}) => <Feather name="plus" size={size} color={color} />}
           onPress={onCreateObservation}
-          style={{
-            position: 'absolute',
-            right: 24,
-            bottom: 28,
-            backgroundColor: theme.colors.primary,
-            borderRadius: 9999,
-          }}
-          color={theme.colors.onPrimary}
-          customSize={64}
+          testID="create-observation-button"
+          accessibilityLabel="Criar observação"
+        />
+
+        {toastVisible ? (
+          <ObservationUndoToast
+            message={toastMessage}
+            actionLabel={undoPending ? null : toastActionLabel}
+            onAction={onUndoDelete}
+          />
+        ) : null}
+
+        <FilterBottomSheet
+          filterByClass={filterByClass}
+          filterByFavorites={filterByFavorites}
+          availableClasses={availableClasses}
+          isOpen={isFilterSheetOpen}
+          sortOrder={sortOrder}
+          onClose={onCloseFilters}
+          onReset={onResetFilters}
+          onSelectClass={onSelectClass}
+          onToggleFavorites={onToggleFavoritesFilter}
+          onSelectSortOrder={onSelectSortOrder}
         />
       </Screen>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
