@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "386761755625",
+    "project_id": "teacher-observations-f9f9d",
+    "storage_bucket": "teacher-observations-f9f9d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:386761755625:android:7c57059096bd437c299978",
+        "android_client_info": {
+          "package_name": "com.teacherobservations"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsQYo_4quKqk5X2SqiflgbUg8nXJ8jwas"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
