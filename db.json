@@ -1,0 +1,326 @@
+{
+  "classes": [
+    {
+      "id": "class-5a",
+      "name": "5º Ano A",
+      "teacherName": "Profa. Marina",
+      "shift": "Manhã",
+      "students": 28
+    },
+    {
+      "id": "class-6b",
+      "name": "6º Ano B",
+      "teacherName": "Profa. Marina",
+      "shift": "Manhã",
+      "students": 31
+    },
+    {
+      "id": "class-7c",
+      "name": "7º Ano C",
+      "teacherName": "Profa. Marina",
+      "shift": "Tarde",
+      "students": 26
+    }
+  ],
+  "observations": [
+    {
+      "id": "obs-02",
+      "student": "Pedro Lima",
+      "className": "5º Ano A",
+      "text": "Precisou de retomada das instruções em matemática e respondeu melhor quando a tarefa foi dividida em etapas menores.",
+      "createdAt": "2026-05-07T09:35:00.000Z",
+      "updatedAt": "2026-05-07T09:35:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-03",
+      "student": "Júlia Costa",
+      "className": "6º Ano B",
+      "text": "Excelente clareza na apresentação oral, com boa argumentação e postura durante a socialização da pesquisa.",
+      "createdAt": "2026-05-07T08:20:00.000Z",
+      "updatedAt": "2026-05-07T08:20:00.000Z",
+      "favorite": true
+    },
+    {
+      "id": "obs-04",
+      "student": "Lucas Ferreira",
+      "className": "7º Ano C",
+      "text": "Participou mais da discussão em história e conseguiu justificar melhor seu ponto de vista com exemplos do texto.",
+      "createdAt": "2026-05-06T19:40:00.000Z",
+      "updatedAt": "2026-05-06T19:40:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-05",
+      "student": "Caio Martins",
+      "className": "6º Ano B",
+      "text": "Mostrou evolução na leitura em voz alta e participação mais confiante.",
+      "createdAt": "2026-05-06T17:15:00.000Z",
+      "updatedAt": "2026-05-06T17:15:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-06",
+      "student": "Bianca Nunes",
+      "className": "5º Ano A",
+      "text": "Concluiu a produção escrita com autonomia e revisou o texto com bastante atenção aos combinados da turma.",
+      "createdAt": "2026-05-06T15:05:00.000Z",
+      "updatedAt": "2026-05-06T15:05:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-07",
+      "student": "Henrique Rocha",
+      "className": "7º Ano C",
+      "text": "Demonstrou dificuldade para iniciar a atividade, mas se reorganizou depois da intervenção individual.",
+      "createdAt": "2026-05-06T13:25:00.000Z",
+      "updatedAt": "2026-05-06T13:25:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-08",
+      "student": "Clara Mendes",
+      "className": "6º Ano B",
+      "text": "Trouxe referências extras para a aula e enriqueceu a conversa com conexões muito pertinentes.",
+      "createdAt": "2026-05-06T11:55:00.000Z",
+      "updatedAt": "2026-05-06T11:55:00.000Z",
+      "favorite": true
+    },
+    {
+      "id": "obs-09",
+      "student": "Gabriel Teixeira",
+      "className": "5º Ano A",
+      "text": "Perdeu parte da explicação inicial, mas conseguiu acompanhar a turma depois de retomar os combinados no caderno.",
+      "createdAt": "2026-05-06T10:10:00.000Z",
+      "updatedAt": "2026-05-06T10:10:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-10",
+      "student": "Sofia Barros",
+      "className": "7º Ano C",
+      "text": "Apresentou ótima escuta durante a roda de conversa e respeitou bem os turnos de fala dos colegas.",
+      "createdAt": "2026-05-06T08:30:00.000Z",
+      "updatedAt": "2026-05-06T08:30:00.000Z",
+      "favorite": true
+    },
+    {
+      "id": "obs-11",
+      "student": "Mariana Alves",
+      "className": "7º Ano C",
+      "text": "Organizou bem as etapas da tarefa e ajudou a equipe a cumprir o prazo.",
+      "createdAt": "2026-05-05T18:45:00.000Z",
+      "updatedAt": "2026-05-05T18:45:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-12",
+      "student": "Rafael Souza",
+      "className": "7º Ano C",
+      "text": "Teve dificuldade inicial, mas persistiu e concluiu a atividade com autonomia.",
+      "createdAt": "2026-05-05T17:10:00.000Z",
+      "updatedAt": "2026-05-05T17:10:00.000Z",
+      "favorite": true
+    },
+    {
+      "id": "obs-13",
+      "student": "Beatriz Gomes",
+      "className": "6º Ano B",
+      "text": "Leu o enunciado com atenção e ajudou o grupo a interpretar corretamente a proposta.",
+      "createdAt": "2026-05-05T15:50:00.000Z",
+      "updatedAt": "2026-05-05T15:50:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-14",
+      "student": "Miguel Araújo",
+      "className": "5º Ano A",
+      "text": "Mostrou dispersão no início da aula, mas retomou a atividade após reorganizar o material.",
+      "createdAt": "2026-05-05T14:30:00.000Z",
+      "updatedAt": "2026-05-05T14:30:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-15",
+      "student": "Larissa Campos",
+      "className": "6º Ano B",
+      "text": "Fez perguntas muito relevantes durante a correção coletiva e ajudou a turma a revisar conceitos importantes.",
+      "createdAt": "2026-05-05T12:15:00.000Z",
+      "updatedAt": "2026-05-05T12:15:00.000Z",
+      "favorite": true
+    },
+    {
+      "id": "obs-16",
+      "student": "João Victor",
+      "className": "7º Ano C",
+      "text": "Registrou a atividade com capricho, mas ainda precisa reler o que escreve para evitar omissões.",
+      "createdAt": "2026-05-05T10:55:00.000Z",
+      "updatedAt": "2026-05-05T10:55:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-17",
+      "student": "Helena Pires",
+      "className": "5º Ano A",
+      "text": "Participou da leitura compartilhada com entusiasmo e fez inferências interessantes sobre a história.",
+      "createdAt": "2026-05-05T09:10:00.000Z",
+      "updatedAt": "2026-05-05T09:10:00.000Z",
+      "favorite": true
+    },
+    {
+      "id": "obs-18",
+      "student": "Thiago Moreira",
+      "className": "6º Ano B",
+      "text": "Teve dificuldade para trabalhar em dupla no início, mas ajustou a postura após combinarmos a divisão das tarefas.",
+      "createdAt": "2026-05-04T18:25:00.000Z",
+      "updatedAt": "2026-05-04T18:25:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-19",
+      "student": "Manuela Reis",
+      "className": "7º Ano C",
+      "text": "Apresentou excelente síntese na devolutiva oral e conseguiu conectar diferentes pontos do conteúdo.",
+      "createdAt": "2026-05-04T17:05:00.000Z",
+      "updatedAt": "2026-05-04T17:05:00.000Z",
+      "favorite": true
+    },
+    {
+      "id": "obs-20",
+      "student": "Enzo Carvalho",
+      "className": "5º Ano A",
+      "text": "Completou a atividade com rapidez, mas precisou revisar o registro para incluir todas as etapas solicitadas.",
+      "createdAt": "2026-05-04T15:40:00.000Z",
+      "updatedAt": "2026-05-04T15:40:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-21",
+      "student": "Valentina Cardoso",
+      "className": "6º Ano B",
+      "text": "Escutou atentamente os colegas e fez intervenções cuidadosas durante a roda de leitura.",
+      "createdAt": "2026-05-04T13:30:00.000Z",
+      "updatedAt": "2026-05-04T13:30:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-22",
+      "student": "Gustavo Ribeiro",
+      "className": "7º Ano C",
+      "text": "Mostrou boa autonomia no laboratório, seguindo os passos do experimento com segurança.",
+      "createdAt": "2026-05-04T11:20:00.000Z",
+      "updatedAt": "2026-05-04T11:20:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-23",
+      "student": "Laura Farias",
+      "className": "5º Ano A",
+      "text": "Contribuiu com ideias criativas na construção do cartaz e ouviu as sugestões do grupo com abertura.",
+      "createdAt": "2026-05-04T09:45:00.000Z",
+      "updatedAt": "2026-05-04T09:45:00.000Z",
+      "favorite": true
+    },
+    {
+      "id": "obs-24",
+      "student": "Samuel Duarte",
+      "className": "6º Ano B",
+      "text": "Precisou de apoio para organizar o material, mas depois conseguiu acompanhar a atividade com mais tranquilidade.",
+      "createdAt": "2026-05-03T18:00:00.000Z",
+      "updatedAt": "2026-05-03T18:00:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-25",
+      "student": "Yasmin Moraes",
+      "className": "7º Ano C",
+      "text": "Demonstrou sensibilidade na leitura do poema e trouxe uma interpretação muito pessoal e consistente.",
+      "createdAt": "2026-05-03T16:30:00.000Z",
+      "updatedAt": "2026-05-03T16:30:00.000Z",
+      "favorite": true
+    },
+    {
+      "id": "obs-26",
+      "student": "Daniel Pereira",
+      "className": "5º Ano A",
+      "text": "Interrompeu alguns colegas na atividade em grupo, mas conseguiu ajustar a escuta depois da mediação.",
+      "createdAt": "2026-05-03T14:20:00.000Z",
+      "updatedAt": "2026-05-03T14:20:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-27",
+      "student": "Nicole Batista",
+      "className": "6º Ano B",
+      "text": "Levantou hipóteses interessantes durante a experiência e registrou cada etapa com clareza.",
+      "createdAt": "2026-05-03T12:55:00.000Z",
+      "updatedAt": "2026-05-03T12:55:00.000Z",
+      "favorite": true
+    },
+    {
+      "id": "obs-28",
+      "student": "Arthur Cunha",
+      "className": "7º Ano C",
+      "text": "Mostrou dificuldade de concentração no começo da aula, mas melhorou bastante após mudar de estratégia.",
+      "createdAt": "2026-05-03T11:05:00.000Z",
+      "updatedAt": "2026-05-03T11:05:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-29",
+      "student": "Isabela Monteiro",
+      "className": "5º Ano A",
+      "text": "Fez boas conexões entre o texto lido e experiências do cotidiano, enriquecendo a conversa da turma.",
+      "createdAt": "2026-05-03T09:50:00.000Z",
+      "updatedAt": "2026-05-03T09:50:00.000Z",
+      "favorite": true
+    },
+    {
+      "id": "obs-30",
+      "student": "Vinícius Lopes",
+      "className": "6º Ano B",
+      "text": "Cumpriu o combinado da aula e pediu ajuda no momento certo, sem abandonar a tarefa.",
+      "createdAt": "2026-05-02T18:15:00.000Z",
+      "updatedAt": "2026-05-02T18:15:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-31",
+      "student": "Camila Torres",
+      "className": "7º Ano C",
+      "text": "Aproveitou bem o tempo de revisão e entregou uma versão mais completa da atividade escrita.",
+      "createdAt": "2026-05-02T16:40:00.000Z",
+      "updatedAt": "2026-05-02T16:40:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-32",
+      "student": "Otávio Freitas",
+      "className": "5º Ano A",
+      "text": "Participou pouco da socialização, mas registrou tudo com bastante atenção no caderno.",
+      "createdAt": "2026-05-02T14:35:00.000Z",
+      "updatedAt": "2026-05-02T14:35:00.000Z",
+      "favorite": false
+    },
+    {
+      "id": "obs-33",
+      "student": "Lívia Azevedo",
+      "className": "6º Ano B",
+      "text": "Mostrou ótima autonomia na resolução dos exercícios e apoiou colegas sem entregar as respostas.",
+      "createdAt": "2026-05-02T12:05:00.000Z",
+      "updatedAt": "2026-05-02T12:05:00.000Z",
+      "favorite": true
+    },
+    {
+      "id": "obs-34",
+      "student": "Bruno Sales",
+      "className": "7º Ano C",
+      "text": "Conseguiu rever o planejamento da atividade e finalizou o trabalho dentro do tempo previsto.",
+      "createdAt": "2026-05-02T10:25:00.000Z",
+      "updatedAt": "2026-05-02T10:25:00.000Z",
+      "favorite": false
+    }
+  ],
+  "favorites": [],
+  "$schema": "./node_modules/json-server/schema.json"
+}
