@@ -1,54 +1,53 @@
 appId: com.teacherobservations
 ---
-- clearState
-- openLink: teacherobs://observations
+- launchApp
 - tapOn:
-    id: "create-observation-button"
-- assertVisible: "Nova observação"
+    id: 'create-observation-button'
+- assertVisible: 'Nova observação'
 - tapOn:
-    id: "add-class-chip"
+    id: 'add-class-chip'
 - extendedWaitUntil:
     visible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
-- assertVisible: "Nova turma"
+- assertVisible: 'Nova turma'
 - tapOn:
-    id: "new-class-name-input"
+    id: 'new-class-name-input'
 - setClipboard: ${'turma-e2e-' + E2E_RUN_ID}
 - pasteText
 - hideKeyboard
 - tapOn:
-    id: "new-class-shift-tarde"
-- tapOn: "TURNO"
+    id: 'new-class-shift-tarde'
+- tapOn: 'TURNO'
 - tapOn:
-    id: "create-class-confirm-button"
+    id: 'create-class-confirm-button'
 - extendedWaitUntil:
     notVisible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
 - assertVisible: ${'turma-e2e-' + E2E_RUN_ID}
 - tapOn:
-    id: "app-header-back-button"
+    id: 'app-header-back-button'
 - tapOn:
-    id: "filters-trigger-button"
+    id: 'filters-trigger-button'
 - extendedWaitUntil:
     visible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
 - tapOn:
-    id: "shift-filter-tarde"
+    id: 'shift-filter-tarde'
 - tapOn:
     id: ${'class-filter-turma-e2e-' + E2E_RUN_ID}
 - tapOn:
-    id: "bottom-sheet-dismiss"
+    id: 'bottom-sheet-dismiss'
 - extendedWaitUntil:
     notVisible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
-- assertVisible: "Nenhuma observação por aqui"
-- assertVisible: "Ainda não há observações para essa turma. Você pode criar a primeira e começar o histórico."
-- assertVisible: "Criar observação"
-- tapOn: "Criar observação"
-- assertVisible: "Nova observação"
+- assertVisible: 'Nenhuma observação por aqui'
+- assertVisible: 'Ainda não há observações para essa turma. Você pode criar a primeira e começar o histórico.'
+- assertVisible: 'Criar observação'
+- tapOn: 'Criar observação'
+- assertVisible: 'Nova observação'
 - assertVisible:
     id: ${'select-class-turma-e2e-' + E2E_RUN_ID}

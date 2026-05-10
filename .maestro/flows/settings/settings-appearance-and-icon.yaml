@@ -1,23 +1,22 @@
 appId: com.teacherobservations
 ---
 - clearState
-- openLink: teacherobs://settings
+- launchApp
 - tapOn:
-    text: "Wait"
-    optional: true
-- assertVisible: "APARÊNCIA"
-- assertVisible: "Claro"
-- assertVisible: "Escuro"
-- assertVisible: "Sistema"
-- assertVisible: "Ícone do app"
-- assertVisible: "Padrão"
-- assertVisible: "Alternativo"
+    id: 'settings-button'
+- assertVisible: 'APARÊNCIA'
+- assertVisible: 'Claro'
+- assertVisible: 'Escuro'
+- assertVisible: 'Sistema'
+- assertVisible: 'Ícone do app'
+- assertVisible: 'Padrão'
+- assertVisible: 'Alternativo'
 - tapOn:
-    id: "theme-option-dark"
+    id: 'theme-option-dark'
 - tapOn:
-    id: "theme-option-system"
+    id: 'theme-option-system'
 - tapOn:
-    id: "theme-option-light"
+    id: 'theme-option-light'
 - assertVisible:
-    id: "app-icon-hint"
-- assertVisible: "Preferência salva localmente."
+    id: 'app-icon-hint'
+- assertVisible: 'Preferência salva localmente.'

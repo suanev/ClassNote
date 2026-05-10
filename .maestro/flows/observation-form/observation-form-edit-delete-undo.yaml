@@ -1,56 +1,57 @@
 appId: com.teacherobservations
 ---
 - clearState
-- openLink: teacherobs://observations
-- assertVisible: "Observações"
-- openLink: teacherobs://observations/form?mode=create
+- launchApp
+- assertVisible: 'Observações'
+- tapOn:
+    id: 'create-observation-button'
 - extendedWaitUntil:
     visible:
-      id: "student-name-input"
+      id: 'student-name-input'
     timeout: 10000
 - tapOn:
-    id: "student-name-input"
-- setClipboard: ${'Aluno Editar E2E ' + E2E_RUN_ID}
+    id: 'student-name-input'
+- setClipboard: Aluno Editar E2E
 - pasteText
 - hideKeyboard
 - tapOn:
-    id: "select-class-6-ano-b"
+    id: 'select-class-6-ano-b'
 - tapOn:
-    id: "observation-text-input"
-- setClipboard: ${'Texto base da observação E2E ' + E2E_RUN_ID}
+    id: 'observation-text-input'
+- setClipboard: Texto base da observação E2E
 - pasteText
 - hideKeyboard
 - tapOn:
-    id: "save-observation-button"
-- assertVisible: ${'Aluno Editar E2E ' + E2E_RUN_ID}
-- tapOn: ${'Aluno Editar E2E ' + E2E_RUN_ID}
-- assertVisible: "Editar observação"
+    id: 'save-observation-button'
+- assertVisible: 'Aluno Editar E2E'
+- tapOn: 'Aluno Editar E2E'
+- assertVisible: 'Editar observação'
 - tapOn:
-    id: "observation-text-input"
-- inputText: " atualizado"
+    id: 'observation-text-input'
+- inputText: ' atualizado'
 - hideKeyboard
 - tapOn:
-    id: "update-observation-button"
-- assertVisible: "Observações"
-- tapOn: ${'Aluno Editar E2E ' + E2E_RUN_ID}
+    id: 'update-observation-button'
+- assertVisible: 'Observações'
+- tapOn: 'Aluno Editar E2E'
 - extendedWaitUntil:
     visible:
-      text: "Editar observação"
+      text: 'Editar observação'
     timeout: 10000
 - tapOn:
-    id: "delete-observation-button"
+    id: 'delete-observation-button'
 - extendedWaitUntil:
     visible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
-- assertVisible: "Apagar observação?"
+- assertVisible: 'Apagar observação?'
 - assertVisible:
-    id: "cancel-delete-observation-button"
+    id: 'cancel-delete-observation-button'
 - assertVisible:
-    id: "confirm-delete-observation-button"
+    id: 'confirm-delete-observation-button'
 - tapOn:
-    id: "cancel-delete-observation-button"
+    id: 'cancel-delete-observation-button'
 - extendedWaitUntil:
     notVisible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000

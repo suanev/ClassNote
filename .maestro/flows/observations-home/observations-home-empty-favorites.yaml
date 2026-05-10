@@ -1,32 +1,31 @@
 appId: com.teacherobservations
 ---
-- clearState
-- openLink: teacherobs://observations
-- assertVisible: "Observações"
+- launchApp
+- assertVisible: 'Observações'
 - tapOn:
-    id: "filters-trigger-button"
+    id: 'filters-trigger-button'
 - extendedWaitUntil:
     visible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
 - tapOn:
-    id: "favorites-filter-chip"
+    id: 'favorites-filter-chip'
 - tapOn:
-    id: "bottom-sheet-dismiss"
+    id: 'bottom-sheet-dismiss'
 - extendedWaitUntil:
     notVisible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
 - assertVisible:
-    id: "observation-card-obs-03"
+    id: 'observation-card-obs-03'
 - assertVisible:
-    id: "observation-card-obs-10"
+    id: 'observation-card-obs-10'
 - scrollUntilVisible:
     element:
-      id: "observation-card-obs-25"
+      id: 'observation-card-obs-25'
     direction: DOWN
     timeout: 15000
 - assertVisible:
-    id: "observation-card-obs-25"
+    id: 'observation-card-obs-25'
 - assertNotVisible:
-    id: "observation-card-obs-04"
+    id: 'observation-card-obs-04'

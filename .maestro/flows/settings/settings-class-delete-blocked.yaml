@@ -1,36 +1,36 @@
 appId: com.teacherobservations
 ---
 - clearState
-- openLink: teacherobs://settings
+- launchApp
+- assertVisible: 'Observações'
 - tapOn:
-    text: "Wait"
-    optional: true
+    id: 'settings-button'
 - extendedWaitUntil:
     visible:
-      id: "class-row-6-ano-b"
+      id: 'class-row-6-ano-b'
     timeout: 20000
 - scrollUntilVisible:
     element:
-      id: "delete-class-6-ano-b"
+      id: 'delete-class-6-ano-b'
     direction: DOWN
     timeout: 15000
 - tapOn:
-    id: "delete-class-6-ano-b"
+    id: 'delete-class-6-ano-b'
 - extendedWaitUntil:
     visible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
-- assertVisible: "Excluir turma e observações?"
-- assertVisible: "Na turma 6º Ano B existem"
-- assertVisible: "12 observações"
-- assertVisible: "Essa ação é permanente."
+- assertVisible: 'Excluir turma e observações?'
+- assertVisible: 'Na turma 6º Ano B existem'
+- assertVisible: '12 observações'
+- assertVisible: 'Essa ação é permanente.'
 - assertVisible:
-    id: "cancel-delete-class-button"
+    id: 'cancel-delete-class-button'
 - assertVisible:
-    id: "confirm-delete-class-button"
+    id: 'confirm-delete-class-button'
 - tapOn:
-    id: "cancel-delete-class-button"
+    id: 'cancel-delete-class-button'
 - extendedWaitUntil:
     notVisible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000

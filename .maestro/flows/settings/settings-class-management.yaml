@@ -1,42 +1,42 @@
 appId: com.teacherobservations
 ---
 - clearState
-- openLink: teacherobs://settings
+- launchApp
 - tapOn:
-    text: "Wait"
+    text: 'Wait'
     optional: true
 - extendedWaitUntil:
     visible:
-      id: "class-row-6-ano-b"
+      id: 'class-row-6-ano-b'
     timeout: 20000
 - scrollUntilVisible:
     element:
-      id: "class-row-6-ano-b"
+      id: 'class-row-6-ano-b'
     direction: DOWN
     timeout: 15000
 - assertVisible:
-    id: "class-row-6-ano-b"
+    id: 'class-row-6-ano-b'
 - assertVisible:
-    id: "class-row-7-ano-c"
+    id: 'class-row-7-ano-c'
 - tapOn:
-    id: "delete-class-6-ano-b"
+    id: 'delete-class-6-ano-b'
 - extendedWaitUntil:
     visible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
-- assertVisible: "Excluir turma e observações?"
-- assertVisible: "12 observações"
+- assertVisible: 'Excluir turma e observações?'
+- assertVisible: '12 observações'
 - assertVisible:
-    id: "cancel-delete-class-button"
+    id: 'cancel-delete-class-button'
 - assertVisible:
-    id: "confirm-delete-class-button"
+    id: 'confirm-delete-class-button'
 - tapOn:
-    id: "cancel-delete-class-button"
+    id: 'cancel-delete-class-button'
 - extendedWaitUntil:
     notVisible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
 - assertVisible:
-    id: "class-row-6-ano-b"
+    id: 'class-row-6-ano-b'
 - assertVisible:
-    id: "class-row-7-ano-c"
+    id: 'class-row-7-ano-c'

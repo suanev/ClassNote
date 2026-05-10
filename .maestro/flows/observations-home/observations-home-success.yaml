@@ -1,7 +1,6 @@
 appId: com.teacherobservations
 ---
-- clearState
-- openLink: teacherobs://observations
+- launchApp
 - assertVisible: 'Observações'
 - assertVisible:
     id: 'filters-trigger-button'

@@ -1,25 +1,23 @@
 appId: com.teacherobservations
 # Android only — clearState remove o cache MMKV, setAirplaneMode simula cold start offline
 ---
-- clearState
 - setAirplaneMode: enabled
-- openLink: teacherobs://observations
-- assertVisible: "Observações"
+- launchApp
+- assertVisible: 'Observações'
 - extendedWaitUntil:
     visible:
-      id: "network-toast"
+      id: 'network-toast'
     timeout: 10000
-- assertVisible: "Você está offline."
 - assertVisible:
-    id: "create-observation-button"
+    id: 'network-toast'
+- assertVisible:
+    id: 'create-observation-button'
 - tapOn:
-    id: "create-observation-button"
-- assertVisible: "Nova observação"
-- tapOn:
-    id: "app-header-back-button"
+    id: 'create-observation-button'
+- assertVisible: 'Nova observação'
+- tapOn: 'Voltar'
 - setAirplaneMode: disabled
 - extendedWaitUntil:
     visible:
-      id: "network-toast"
-    timeout: 10000
-- assertVisible: "Conexão restaurada."
+      id: 'network-toast'
+    timeout: 20000

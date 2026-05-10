@@ -1,24 +1,27 @@
 appId: com.teacherobservations
 ---
 - clearState
-- openLink: teacherobs://observations/form?mode=create
-- assertVisible: "Nova observação"
+- launchApp
+- assertVisible: 'Observações'
 - tapOn:
-    id: "save-observation-button"
-- assertVisible: "Nova observação"
+    id: 'create-observation-button'
+- assertVisible: 'Nova observação'
 - tapOn:
-    id: "student-name-input"
-- setClipboard: "Aluno incompleto"
+    id: 'save-observation-button'
+- assertVisible: 'Nova observação'
+- tapOn:
+    id: 'student-name-input'
+- setClipboard: 'Aluno incompleto'
 - pasteText
 - hideKeyboard
 - tapOn:
-    id: "save-observation-button"
-- assertVisible: "Nova observação"
+    id: 'save-observation-button'
+- assertVisible: 'Nova observação'
 - tapOn:
-    id: "observation-text-input"
-- setClipboard: "Observacao sem completar tudo"
+    id: 'observation-text-input'
+- setClipboard: 'Observacao sem completar tudo'
 - pasteText
 - hideKeyboard
 - assertVisible:
-    id: "save-observation-button"
-- assertVisible: "Nova observação"
+    id: 'save-observation-button'
+- assertVisible: 'Nova observação'

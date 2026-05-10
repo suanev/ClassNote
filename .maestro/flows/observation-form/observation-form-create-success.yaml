@@ -1,26 +1,27 @@
 appId: com.teacherobservations
 ---
 - clearState
-- openLink: teacherobs://observations
-- assertVisible: "Observações"
-- openLink: teacherobs://observations/form?mode=create
+- launchApp
+- assertVisible: 'Observações'
+- tapOn:
+    id: 'create-observation-button'
 - extendedWaitUntil:
     visible:
-      id: "student-name-input"
+      id: 'student-name-input'
     timeout: 10000
 - tapOn:
-    id: "student-name-input"
-- setClipboard: ${'Aluno E2E ' + E2E_RUN_ID}
+    id: 'student-name-input'
+- setClipboard: Aluno E2E
 - pasteText
 - hideKeyboard
 - tapOn:
-    id: "select-class-6-ano-b"
+    id: 'select-class-6-ano-b'
 - tapOn:
-    id: "observation-text-input"
-- setClipboard: ${'Observação criada automaticamente no Maestro ' + E2E_RUN_ID}
+    id: 'observation-text-input'
+- setClipboard: 'Observação criada automaticamente no Maestro'
 - pasteText
 - hideKeyboard
 - tapOn:
-    id: "save-observation-button"
-- assertVisible: "Observações"
-- assertVisible: ${'Aluno E2E ' + E2E_RUN_ID}
+    id: 'save-observation-button'
+- assertVisible: 'Observações'
+- assertVisible: 'Aluno E2E'

@@ -1,8 +1,7 @@
 appId: com.teacherobservations
 ---
-- clearState
-- openLink: teacherobs://observations
-- assertVisible: "Observações"
+- launchApp
+- assertVisible: 'Observações'
 - swipe:
     direction: UP
 - swipe:
@@ -12,4 +11,4 @@ appId: com.teacherobservations
 - swipe:
     direction: UP
 - assertNotVisible:
-    id: "observation-card-lXlB9eFlkYo"
+    id: 'observation-card-lXlB9eFlkYo'

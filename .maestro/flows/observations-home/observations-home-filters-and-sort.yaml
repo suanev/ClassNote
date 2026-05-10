@@ -1,59 +1,58 @@
 appId: com.teacherobservations
 ---
-- clearState
-- openLink: teacherobs://observations
-- assertVisible: "Observações"
+- launchApp
+- assertVisible: 'Observações'
 - tapOn:
-    id: "filters-trigger-button"
+    id: 'filters-trigger-button'
 - extendedWaitUntil:
     visible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
 - assertVisible:
-    id: "shift-filter-tarde"
+    id: 'shift-filter-tarde'
 - tapOn:
-    id: "shift-filter-tarde"
+    id: 'shift-filter-tarde'
 - tapOn:
-    id: "class-filter-7-ano-c"
+    id: 'class-filter-7-ano-c'
 - tapOn:
-    id: "bottom-sheet-dismiss"
+    id: 'bottom-sheet-dismiss'
 - extendedWaitUntil:
     notVisible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
 - assertVisible:
-    id: "observation-card-obs-04"
+    id: 'observation-card-obs-04'
 - assertNotVisible:
-    id: "observation-card-obs-05"
+    id: 'observation-card-obs-05'
 - tapOn:
-    id: "filters-trigger-button"
+    id: 'filters-trigger-button'
 - extendedWaitUntil:
     visible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
 - tapOn:
-    id: "favorites-filter-chip"
+    id: 'favorites-filter-chip'
 - tapOn:
-    id: "bottom-sheet-dismiss"
+    id: 'bottom-sheet-dismiss'
 - extendedWaitUntil:
     notVisible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
-- assertVisible: "Nenhuma observação por aqui"
-- assertVisible: "Nenhuma observação favorita para essa turma."
+- assertVisible: 'Nenhuma observação por aqui'
+- assertVisible: 'Nenhuma observação favorita para essa turma.'
 - tapOn:
-    id: "filters-trigger-button"
+    id: 'filters-trigger-button'
 - extendedWaitUntil:
     visible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
 - tapOn:
-    id: "reset-filters-button"
+    id: 'reset-filters-button'
 - tapOn:
-    id: "bottom-sheet-dismiss"
+    id: 'bottom-sheet-dismiss'
 - extendedWaitUntil:
     notVisible:
-      id: "bottom-sheet-content"
+      id: 'bottom-sheet-content'
     timeout: 10000
 - assertVisible:
-    id: "observation-card-obs-05"
+    id: 'observation-card-obs-05'
