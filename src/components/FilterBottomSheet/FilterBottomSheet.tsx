@@ -1,35 +1,33 @@
 import React from 'react';
+import {View} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useTheme} from 'styled-components/native';
 
+import {ClassShift, SchoolClass} from '../../types/classes';
 import {ObservationSortOrder} from '@store/observations/slice';
 import {BottomSheet} from '@components/BottomSheet';
+import {Chip} from '@components/Chip';
 
 import {
-  ChipLabel,
-  ChipPressable,
   ChipsRow,
   HeaderResetAction,
   HeaderResetLabel,
+  RadioDot,
+  RadioOuter,
   Section,
   SectionTitle,
   SortOption,
   SortOptionLabel,
+  SortOptionRow,
 } from './styles';
 
-interface FilterBottomSheetProps {
-  filterByClass: string | null;
-  filterByFavorites: boolean;
-  availableClasses: string[];
-  isOpen: boolean;
-  sortOrder: ObservationSortOrder;
-  onClose: () => void;
-  onReset: () => void;
-  onSelectClass: (value: string | null) => void;
-  onToggleFavorites: () => void;
-  onSelectSortOrder: (value: ObservationSortOrder) => void;
-}
+const SHIFTS: Array<{label: string; value: ClassShift | null}> = [
+  {label: 'Todos', value: null},
+  {label: 'Manhã', value: 'Manhã'},
+  {label: 'Tarde', value: 'Tarde'},
+  {label: 'Noite', value: 'Noite'},
+  {label: 'Outro', value: 'Outro'},
+];
 
 const SORT_OPTIONS: Array<{label: string; value: ObservationSortOrder}> = [
   {label: 'Mais recentes primeiro', value: 'recent-first'},
@@ -37,7 +35,31 @@ const SORT_OPTIONS: Array<{label: string; value: ObservationSortOrder}> = [
   {label: 'Favoritas primeiro', value: 'favorites-first'},
 ];
 
+const normalizeForTestId = (value: string) =>
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
+
+interface FilterBottomSheetProps {
+  filterByShift: ClassShift | null;
+  filterByClass: string | null;
+  filterByFavorites: boolean;
+  availableClasses: SchoolClass[];
+  isOpen: boolean;
+  sortOrder: ObservationSortOrder;
+  onClose: () => void;
+  onReset: () => void;
+  onSelectShift: (value: ClassShift | null) => void;
+  onSelectClass: (value: string | null) => void;
+  onToggleFavorites: () => void;
+  onSelectSortOrder: (value: ObservationSortOrder) => void;
+}
+
 export const FilterBottomSheet = ({
+  filterByShift,
   filterByClass,
   filterByFavorites,
   availableClasses,
@@ -45,6 +67,7 @@ export const FilterBottomSheet = ({
   sortOrder,
   onClose,
   onReset,
+  onSelectShift,
   onSelectClass,
   onToggleFavorites,
   onSelectSortOrder,
@@ -68,67 +91,83 @@ export const FilterBottomSheet = ({
       title="Filtros">
 
       <Section>
-        <SectionTitle>Turma</SectionTitle>
+        <SectionTitle>TURNO</SectionTitle>
         <ChipsRow>
-          <ChipPressable
+          {SHIFTS.map(({label, value}) => (
+            <Chip
+              key={label}
+              label={label}
+              active={filterByShift === value}
+              onPress={() => onSelectShift(value)}
+              testID={`shift-filter-${value === null ? 'all' : normalizeForTestId(value)}`}
+              accessibilityRole="radio"
+              accessibilityState={{selected: filterByShift === value}}
+            />
+          ))}
+        </ChipsRow>
+      </Section>
+
+      <Section>
+        <SectionTitle>TURMA</SectionTitle>
+        <ChipsRow>
+          <Chip
+            label="Todas"
             active={filterByClass === null}
             onPress={() => onSelectClass(null)}
+            testID="class-filter-all"
             accessibilityRole="radio"
             accessibilityState={{selected: filterByClass === null}}
-            accessibilityLabel="Todas as turmas">
-            <ChipLabel active={filterByClass === null}>Todas</ChipLabel>
-          </ChipPressable>
-
+            accessibilityLabel="Todas as turmas"
+          />
           {availableClasses.map(cls => {
-            const isActive = cls === filterByClass;
+            const isActive = cls.id === filterByClass;
             return (
-              <ChipPressable
-                key={cls}
+              <Chip
+                key={cls.id}
+                label={cls.name}
                 active={isActive}
-                onPress={() => onSelectClass(isActive ? null : cls)}
+                onPress={() => onSelectClass(isActive ? null : cls.id)}
+                testID={`class-filter-${normalizeForTestId(cls.name)}`}
                 accessibilityRole="radio"
                 accessibilityState={{selected: isActive}}
-                accessibilityLabel={cls}>
-                <ChipLabel active={isActive}>{cls}</ChipLabel>
-              </ChipPressable>
+              />
             );
           })}
         </ChipsRow>
       </Section>
 
       <Section>
-        <SectionTitle>Tipo</SectionTitle>
+        <SectionTitle>TIPO</SectionTitle>
         <ChipsRow>
-          <ChipPressable
+          <Chip
+            label="Somente favoritas"
             active={filterByFavorites}
             onPress={onToggleFavorites}
             testID="favorites-filter-chip"
             accessibilityRole="checkbox"
             accessibilityState={{checked: filterByFavorites}}
-            accessibilityLabel="Somente favoritas">
-            <MaterialCommunityIcons
-              name={filterByFavorites ? 'star' : 'star-outline'}
-              size={16}
-              color={filterByFavorites ? theme.colors.warning : theme.colors.textSubtle}
-            />
-            <ChipLabel active={filterByFavorites}>Somente favoritas</ChipLabel>
-          </ChipPressable>
+          />
         </ChipsRow>
       </Section>
 
       <Section>
-        <SectionTitle>Ordenação</SectionTitle>
+        <SectionTitle>ORDENAÇÃO</SectionTitle>
         {SORT_OPTIONS.map(option => {
           const isActive = option.value === sortOrder;
           return (
             <SortOption
               key={option.value}
-              active={isActive}
               onPress={() => onSelectSortOrder(option.value)}
+              testID={isActive ? `sort-order-selected-${option.value}` : `sort-order-${option.value}`}
               accessibilityRole="radio"
               accessibilityState={{selected: isActive}}
               accessibilityLabel={option.label}>
-              <SortOptionLabel active={isActive}>{option.label}</SortOptionLabel>
+              <SortOptionRow>
+                <RadioOuter active={isActive}>
+                  {isActive ? <RadioDot /> : null}
+                </RadioOuter>
+                <SortOptionLabel active={isActive}>{option.label}</SortOptionLabel>
+              </SortOptionRow>
             </SortOption>
           );
         })}

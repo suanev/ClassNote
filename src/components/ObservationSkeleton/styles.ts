@@ -53,10 +53,17 @@ export const SkeletonChipRow = styled.View`
 
 export const SkeletonCard = styled.View`
   margin-bottom: ${({theme}) => theme.spacing[3]}px;
-  padding: ${({theme}) => theme.spacing[4]}px;
-  border-radius: ${({theme}) => theme.radii['2xl']}px;
-  background-color: ${({theme}) => theme.colors.surfaceAlt};
+  padding: 16px;
+  border-radius: ${({theme}) => theme.radii.card}px;
+  background-color: ${({theme}) => theme.colors.surface};
   border-width: 1px;
-  border-color: ${({theme}) => theme.colors.borderStrong};
-  ${({theme}) => theme.shadows.sm};
+  border-color: ${({theme}) => theme.colors.border};
+`;
+
+export const SkeletonDashedLine = styled.View`
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-top-width: 1px;
+  border-style: dashed;
+  border-color: ${({theme}) => theme.colors.border};
 `;

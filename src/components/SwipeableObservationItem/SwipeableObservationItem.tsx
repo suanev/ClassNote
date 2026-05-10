@@ -4,18 +4,18 @@ import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from 'react-native-gesture-handler/ReanimatedSwipeable';
 import {RectButton} from 'react-native-gesture-handler';
-import Reanimated, {FadeIn, FadeOutLeft, LinearTransition} from 'react-native-reanimated';
+import {FadeIn, FadeOutLeft, LinearTransition} from 'react-native-reanimated';
 import Feather from 'react-native-vector-icons/Feather';
-import {useTheme} from 'styled-components/native';
 
 import {ObservationListItem} from '@components/ObservationListItem';
 
-import {DeleteAction, DeleteActionLabel, DeleteActionText} from './styles';
+import {DeleteAction, ItemContainer} from './styles';
 
 interface SwipeableObservationItemProps {
   id: string;
   student: string;
   className: string;
+  shift?: string;
   relativeTime: string;
   text: string;
   isFavorite: boolean;
@@ -29,6 +29,7 @@ const SwipeableObservationItemComponent = ({
   id,
   student,
   className,
+  shift,
   relativeTime,
   text,
   isFavorite,
@@ -37,7 +38,6 @@ const SwipeableObservationItemComponent = ({
   onDelete,
   onToggleFavorite,
 }: SwipeableObservationItemProps) => {
-  const theme = useTheme();
   const swipeableRef = useRef<SwipeableMethods | null>(null);
 
   const handleDelete = useCallback(() => {
@@ -45,11 +45,10 @@ const SwipeableObservationItemComponent = ({
   }, [id, onDelete]);
 
   return (
-    <Reanimated.View
+    <ItemContainer
       entering={FadeIn.duration(220)}
       exiting={FadeOutLeft.duration(200)}
-      layout={LinearTransition.duration(200)}
-      style={{marginBottom: theme.spacing[2]}}>
+      layout={LinearTransition.duration(200)}>
       <ReanimatedSwipeable
         ref={swipeableRef}
         friction={2}
@@ -62,16 +61,15 @@ const SwipeableObservationItemComponent = ({
           }
         }}
         renderRightActions={() => (
-          <DeleteAction as={RectButton} onPress={handleDelete}>
-            <Feather name="trash-2" size={20} color={theme.colors.onPrimary} />
-            <DeleteActionLabel>
-              <DeleteActionText>Apagar</DeleteActionText>
-            </DeleteActionLabel>
+          <DeleteAction as={RectButton} onPress={handleDelete} testID={`delete-observation-swipe-${id}`}>
+            <Feather name="trash-2" size={22} color="#FFFFFF" />
           </DeleteAction>
         )}>
         <ObservationListItem
+          id={id}
           student={student}
           className={className}
+          shift={shift}
           relativeTime={relativeTime}
           text={text}
           isFavorite={isFavorite}
@@ -80,7 +78,7 @@ const SwipeableObservationItemComponent = ({
           onToggleFavorite={onToggleFavorite}
         />
       </ReanimatedSwipeable>
-    </Reanimated.View>
+    </ItemContainer>
   );
 };
 
@@ -91,6 +89,7 @@ export const SwipeableObservationItem = memo(
     prev.id === next.id &&
     prev.student === next.student &&
     prev.className === next.className &&
+    prev.shift === next.shift &&
     prev.relativeTime === next.relativeTime &&
     prev.text === next.text &&
     prev.isFavorite === next.isFavorite &&

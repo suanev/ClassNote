@@ -1,79 +1,72 @@
 import styled from 'styled-components/native';
 
-export type FilterVariant = 'active' | 'default';
-
-interface ChipPressableProps {
+interface ActiveProps {
   active: boolean;
 }
 
 export const Section = styled.View`
-  margin-bottom: ${({theme}) => theme.spacing[5]}px;
+  margin-bottom: 20px;
 `;
 
 export const SectionTitle = styled.Text`
-  margin-bottom: ${({theme}) => theme.spacing[2]}px;
-  color: ${({theme}) => theme.colors.text};
-  font-size: ${({theme}) => theme.typography.fontSizes.sm}px;
+  margin-bottom: 10px;
+  color: ${({theme}) => theme.colors.textMuted};
+  font-size: ${({theme}) => theme.typography.size.xs}px;
   font-family: ${({theme}) => theme.typography.fontFamily.ui};
-  font-weight: ${({theme}) => theme.typography.fontWeights.semibold};
+  font-weight: 600;
+  letter-spacing: 1.1px;
 `;
 
 export const ChipsRow = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
-  gap: ${({theme}) => theme.spacing[3]}px;
+  gap: 8px;
 `;
 
-export const ChipPressable = styled.Pressable<ChipPressableProps>`
-  flex-direction: row;
-  min-height: 44px;
-  align-items: center;
-  justify-content: center;
-  gap: ${({theme}) => theme.spacing[2]}px;
-  padding-horizontal: ${({theme}) => theme.spacing[4]}px;
-  border-radius: ${({theme}) => theme.radii.pill}px;
-  background-color: ${({theme, active}) =>
-    active ? theme.colors.successSubtle : theme.colors.surface};
-  border-width: 1px;
-  border-color: ${({theme, active}) =>
-    active ? theme.colors.success : theme.colors.borderStrong};
-`;
-
-export const ChipLabel = styled.Text<ChipPressableProps>`
-  color: ${({theme, active}) => (active ? theme.colors.success : theme.colors.text)};
-  font-size: ${({theme}) => theme.typography.fontSizes.sm}px;
-  font-family: ${({theme}) => theme.typography.fontFamily.ui};
-  font-weight: ${({theme}) => theme.typography.fontWeights.semibold};
-`;
-
-export const SortOption = styled.Pressable<ChipPressableProps>`
+export const SortOption = styled.Pressable`
   min-height: 48px;
   justify-content: center;
-  margin-bottom: ${({theme}) => theme.spacing[2]}px;
-  padding-horizontal: ${({theme}) => theme.spacing[4]}px;
-  border-radius: ${({theme}) => theme.radii.xl}px;
-  background-color: ${({theme, active}) =>
-    active ? theme.colors.successSubtle : theme.colors.surfaceAlt};
-  border-width: ${({active}) => (active ? 2 : 1)}px;
-  border-color: ${({theme, active}) =>
-    active ? theme.colors.success : theme.colors.border};
+  margin-bottom: 4px;
 `;
 
-export const SortOptionLabel = styled.Text<ChipPressableProps>`
-  color: ${({theme, active}) => (active ? theme.colors.success : theme.colors.text)};
-  font-size: ${({theme}) => theme.typography.fontSizes.sm}px;
+export const SortOptionRow = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+`;
+
+export const RadioOuter = styled.View<ActiveProps>`
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  border-width: 2px;
+  border-color: ${({theme, active}) =>
+    active ? theme.colors.primary : theme.colors.borderStrong};
+  align-items: center;
+  justify-content: center;
+`;
+
+export const RadioDot = styled.View`
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: ${({theme}) => theme.colors.primary};
+`;
+
+export const SortOptionLabel = styled.Text<ActiveProps>`
+  color: ${({theme, active}) => (active ? theme.colors.text : theme.colors.textMutedStrong)};
+  font-size: ${({theme}) => theme.typography.size.md}px;
   font-family: ${({theme}) => theme.typography.fontFamily.ui};
-  font-weight: ${({theme, active}) =>
-    active ? theme.typography.fontWeights.semibold : theme.typography.fontWeights.medium};
+  font-weight: ${({active}) => (active ? '500' : '400')};
 `;
 
 export const HeaderResetAction = styled.Pressable`
   flex-direction: row;
   align-items: center;
-  gap: ${({theme}) => theme.spacing[1]}px;
+  gap: 4px;
   min-height: 32px;
-  padding-horizontal: ${({theme}) => theme.spacing[2]}px;
-  border-radius: ${({theme}) => theme.radii.pill}px;
+  padding-horizontal: 10px;
+  border-radius: 6px;
   background-color: ${({theme}) => theme.colors.dangerSubtle};
   border-width: 1px;
   border-color: ${({theme}) => theme.colors.danger};
@@ -81,7 +74,7 @@ export const HeaderResetAction = styled.Pressable`
 
 export const HeaderResetLabel = styled.Text`
   color: ${({theme}) => theme.colors.danger};
-  font-size: ${({theme}) => theme.typography.fontSizes.xs}px;
+  font-size: ${({theme}) => theme.typography.size.xs}px;
   font-family: ${({theme}) => theme.typography.fontFamily.ui};
-  font-weight: ${({theme}) => theme.typography.fontWeights.semibold};
+  font-weight: 600;
 `;

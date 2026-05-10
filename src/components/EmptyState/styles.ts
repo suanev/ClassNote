@@ -1,58 +1,41 @@
-import {Pressable} from 'react-native';
 import styled from 'styled-components/native';
 
-import {Card} from '@components/Card';
-
-export const EmptyCard = styled(Card).attrs({
-  padding: 24,
-  variant: 'default',
-})`
+export const EmptyWrapper = styled.View`
   align-items: center;
-  margin-top: ${({theme}) => theme.spacing[3]}px;
+  padding: 32px 24px;
+  margin-top: 12px;
 `;
 
 export const IconBadge = styled.View`
-  width: 56px;
-  height: 56px;
-  border-radius: ${({theme}) => theme.radii.pill}px;
+  width: 140px;
+  height: 140px;
+  border-radius: 70px;
   align-items: center;
   justify-content: center;
   background-color: ${({theme}) => theme.colors.primarySubtle};
   border-width: 1px;
-  border-color: ${({theme}) => theme.colors.primaryBorder};
+  border-color: ${({theme}) => theme.colors.border};
 `;
 
 export const Title = styled.Text`
-  margin-top: ${({theme}) => theme.spacing[4]}px;
+  margin-top: 20px;
   color: ${({theme}) => theme.colors.text};
-  font-size: ${({theme}) => theme.typography.size.xl}px;
-  font-family: ${({theme}) => theme.typography.fontFamily.ui};
-  font-weight: ${({theme}) => theme.typography.fontWeights.semibold};
-  text-align: center;
-`;
-
-export const Description = styled.Text`
-  margin-top: ${({theme}) => theme.spacing[2]}px;
-  color: ${({theme}) => theme.colors.textMuted};
-  font-size: ${({theme}) => theme.typography.size.md}px;
-  font-family: ${({theme}) => theme.typography.fontFamily.ui};
+  font-size: ${({theme}) => theme.typography.size.lg}px;
+  font-family: ${({theme}) => theme.typography.fonts.displayMedium};
   line-height: 24px;
   text-align: center;
 `;
 
-export const ActionButton = styled(Pressable)`
-  margin-top: ${({theme}) => theme.spacing[5]}px;
-  min-height: 48px;
-  padding-horizontal: ${({theme}) => theme.spacing[5]}px;
-  border-radius: ${({theme}) => theme.radii.pill}px;
-  align-items: center;
-  justify-content: center;
-  background-color: ${({theme}) => theme.colors.primary};
+export const ActionWrapper = styled.View`
+  margin-top: 24px;
+  align-self: stretch;
 `;
 
-export const ActionLabel = styled.Text`
-  color: ${({theme}) => theme.colors.onPrimary};
+export const Description = styled.Text`
+  margin-top: 8px;
+  color: ${({theme}) => theme.colors.textMutedStrong};
   font-size: ${({theme}) => theme.typography.size.md}px;
   font-family: ${({theme}) => theme.typography.fontFamily.ui};
-  font-weight: ${({theme}) => theme.typography.fontWeights.semibold};
+  line-height: 22px;
+  text-align: center;
 `;

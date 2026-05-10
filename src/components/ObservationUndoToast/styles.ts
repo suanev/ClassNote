@@ -2,9 +2,9 @@ import styled from 'styled-components/native';
 
 export const ToastContainer = styled.View`
   position: absolute;
-  left: ${({theme}) => theme.spacing[5]}px;
-  right: ${({theme}) => theme.spacing[5]}px;
-  bottom: 108px;
+  left: 20px;
+  right: 20px;
+  bottom: 110px;
   z-index: ${({theme}) => theme.zIndex.toast};
 `;
 
@@ -14,19 +14,19 @@ export const ToastCard = styled.View`
   align-items: center;
   justify-content: space-between;
   gap: ${({theme}) => theme.spacing[3]}px;
-  padding-horizontal: ${({theme}) => theme.spacing[4]}px;
-  padding-vertical: ${({theme}) => theme.spacing[3]}px;
-  border-radius: ${({theme}) => theme.radii.xl}px;
-  background-color: ${({theme}) => theme.colors.text};
-  ${({theme}) => theme.shadows.lg};
+  padding-horizontal: 16px;
+  padding-vertical: 12px;
+  border-radius: 6px;
+  background-color: #1C1815;
+  ${({theme}) => theme.shadows.xl};
 `;
 
 export const Message = styled.Text`
   flex: 1;
-  color: ${({theme}) => theme.colors.surface};
-  font-size: ${({theme}) => theme.typography.fontSizes.sm}px;
+  color: #FAF8F2;
+  font-size: ${({theme}) => theme.typography.size.sm}px;
   font-family: ${({theme}) => theme.typography.fontFamily.ui};
-  font-weight: ${({theme}) => theme.typography.fontWeights.medium};
+  font-weight: 500;
 `;
 
 export const ActionButton = styled.Pressable`
@@ -34,14 +34,13 @@ export const ActionButton = styled.Pressable`
   min-height: 36px;
   align-items: center;
   justify-content: center;
-  border-radius: ${({theme}) => theme.radii.pill}px;
-  background-color: ${({theme}) => theme.colors.primarySubtle};
-  padding-horizontal: ${({theme}) => theme.spacing[3]}px;
+  border-radius: 4px;
+  padding-horizontal: 12px;
 `;
 
 export const ActionLabel = styled.Text`
-  color: ${({theme}) => theme.colors.primaryActive};
-  font-size: ${({theme}) => theme.typography.fontSizes.sm}px;
+  color: #7DA3D4;
+  font-size: ${({theme}) => theme.typography.size.sm}px;
   font-family: ${({theme}) => theme.typography.fontFamily.ui};
-  font-weight: ${({theme}) => theme.typography.fontWeights.semibold};
+  font-weight: 600;
 `;

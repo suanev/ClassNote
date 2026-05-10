@@ -2,11 +2,12 @@ import React from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from 'styled-components/native';
 
+import {Button} from '@components/Button';
+
 import {
-  ActionButton,
-  ActionLabel,
+  ActionWrapper,
   Description,
-  EmptyCard,
+  EmptyWrapper,
   IconBadge,
   Title,
 } from './styles';
@@ -14,6 +15,7 @@ import {
 interface EmptyStateProps {
   title: string;
   description: string;
+  icon?: string;
   actionLabel?: string;
   onAction?: () => void;
 }
@@ -21,23 +23,26 @@ interface EmptyStateProps {
 export const EmptyState = ({
   title,
   description,
+  icon = 'file-text',
   actionLabel,
   onAction,
 }: EmptyStateProps) => {
   const theme = useTheme();
 
   return (
-    <EmptyCard>
+    <EmptyWrapper>
       <IconBadge>
-        <Feather name="file-text" size={24} color={theme.colors.primary} />
+        <Feather name={icon} size={56} color={theme.colors.primary} />
       </IconBadge>
       <Title>{title}</Title>
       <Description>{description}</Description>
       {actionLabel && onAction ? (
-        <ActionButton onPress={onAction}>
-          <ActionLabel>{actionLabel}</ActionLabel>
-        </ActionButton>
+        <ActionWrapper>
+          <Button variant="secondary" onPress={onAction}>
+            {actionLabel}
+          </Button>
+        </ActionWrapper>
       ) : null}
-    </EmptyCard>
+    </EmptyWrapper>
   );
 };

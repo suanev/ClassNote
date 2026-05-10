@@ -13,6 +13,12 @@ export const radii = {
   xl: 16,
   '2xl': 24,
   pill: 9999,
+  // Design "Notebook" semantic aliases
+  card: 8,
+  control: 6,   // buttons, inputs
+  chip: 9999,   // pill chips
+  sheet: 24,    // bottom sheet top corners
+  fab: 30,      // circular FAB
 } as const;
 
 export const breakpoints = {

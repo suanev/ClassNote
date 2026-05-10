@@ -1,62 +1,45 @@
-const sage = {
-  50: '#f3f5f2',
-  100: '#e4e9e3',
-  200: '#c8d2c6',
-  300: '#a6b4a4',
-  400: '#869584',
-  500: '#6b7d6e',
-  600: '#566656',
-  700: '#445244',
-  800: '#343f35',
-  900: '#222a23',
-} as const;
-
-const neutralLight = {
-  bg: '#e8ece7',
-  surface: '#ffffff',
-  surfaceAlt: '#f3f5f2',
-  text: '#1f2922',
-  textMuted: '#4d5e51',
-  textSubtle: '#7a8a7c',
-  border: '#cdd5cb',
-  borderStrong: '#b4bfb2',
-  overlay: 'rgba(34, 42, 35, 0.5)',
-} as const;
-
-const status = {
-  success: '#4f7a4a',
-  successSubtle: '#e6efe1',
-  warning: '#b3852d',
-  warningSubtle: '#f7ecd2',
-  danger: '#b04a3f',
-  dangerSubtle: '#f5dfdb',
-  info: '#4a6f88',
-  infoSubtle: '#dfe8ef',
-} as const;
-
 export const colors = {
-  sage,
+  // Brand
+  primary: '#1F3A5F',
+  primaryHover: '#17304F',
+  primaryActive: '#0F2540',
+  primarySubtle: '#EAF0F7',
+  primaryBorder: '#C0D4EC',
+  onPrimary: '#FFFFFF',
 
-  primary: sage[600],
-  primaryHover: sage[700],
-  primaryActive: sage[800],
-  primarySubtle: sage[100],
-  primaryBorder: sage[300],
-  onPrimary: '#ffffff',
+  // Surfaces (warm paper)
+  bg: '#FAF8F2',
+  background: '#FAF8F2',
+  surface: '#FFFFFF',
+  surfaceAlt: '#F3F0E7',
+  surface2: '#F3F0E7',
+  surface3: '#E8E4D6',
 
-  bg: neutralLight.bg,
-  background: neutralLight.bg,
-  surface: neutralLight.surface,
-  surfaceAlt: neutralLight.surfaceAlt,
-  text: neutralLight.text,
-  textMuted: neutralLight.textMuted,
-  mutedText: neutralLight.textMuted,
-  textSubtle: neutralLight.textSubtle,
-  border: neutralLight.border,
-  borderStrong: neutralLight.borderStrong,
-  overlay: neutralLight.overlay,
+  // Text
+  text: '#1C1815',
+  textMuted: '#6E6657',
+  mutedText: '#6E6657',
+  textSubtle: '#6E6657',
+  textMutedStrong: '#3F3A31',
 
-  ...status,
-  error: status.danger,
-  favorite: sage[500],
+  // Borders
+  border: '#E5DFCE',
+  borderStrong: '#CFC8B3',
+
+  // Overlay
+  overlay: 'rgba(28, 24, 21, 0.55)',
+
+  // Status
+  success: '#067647',
+  successSubtle: '#D1FAE5',
+  warning: '#B45309',
+  warningSubtle: '#FEF3C7',
+  danger: '#B42318',
+  dangerSubtle: '#FEE2E2',
+  info: '#1D4ED8',
+  infoSubtle: '#DBEAFE',
+  error: '#B42318',
+
+  // Favorite / star
+  favorite: '#D97706',
 } as const;

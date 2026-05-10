@@ -5,12 +5,19 @@ import {Portal, Surface, Text} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import {useTheme} from 'styled-components/native';
 
+import {isDev} from '@constants/environment';
 import type {RootState} from '../../store/index';
 
 const TOOLTIP_MESSAGES = {
   offline: 'Sem conexão — alterações salvas localmente.',
   syncing: 'Sincronizando com o servidor...',
   synced: 'Tudo sincronizado.',
+} as const;
+
+const DEVELOPMENT_TOOLTIP_MESSAGES = {
+  offline: 'Sem conexão — alterações salvas localmente no aparelho.',
+  syncing: 'No celular, a nuvem não sincroniza neste ambiente de desenvolvimento.',
+  synced: 'No celular, a nuvem não sincroniza neste ambiente de desenvolvimento.',
 } as const;
 
 type SyncStatus = keyof typeof TOOLTIP_MESSAGES;
@@ -27,8 +34,14 @@ export const SyncStatusIcon = () => {
   const iconRef = useRef<View>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const status: SyncStatus = isOffline ? 'offline' : isSyncing ? 'syncing' : 'synced';
-  const message = TOOLTIP_MESSAGES[status];
+  const getSyncStatus = (): SyncStatus => {
+    if (isOffline) return 'offline';
+    if (isSyncing) return 'syncing';
+    return 'synced';
+  };
+
+  const status = getSyncStatus();
+  const message = (isDev ? DEVELOPMENT_TOOLTIP_MESSAGES : TOOLTIP_MESSAGES)[status];
 
   const clearTimer = useCallback(() => {
     if (timerRef.current) {
@@ -59,7 +72,13 @@ export const SyncStatusIcon = () => {
 
   useEffect(() => () => clearTimer(), [clearTimer]);
 
-  const iconColor = isOffline ? theme.colors.danger : theme.colors.primary;
+  const getSyncIcon = (): React.ReactNode => {
+    if (isOffline) return <MaterialCommunityIcons name="cloud-off-outline" size={22} color={theme.colors.danger} />;
+    if (isSyncing) return <ActivityIndicator size="small" color={theme.colors.primary} />;
+    return <MaterialCommunityIcons name="cloud-check" size={22} color={theme.colors.success} />;
+  };
+
+  const syncIcon = getSyncIcon();
 
   return (
     <View ref={iconRef} collapsable={false} style={styles.wrapper}>
@@ -69,17 +88,7 @@ export const SyncStatusIcon = () => {
         accessibilityLabel="Status de sincronização"
         accessibilityRole="button"
         testID="sync-status-icon">
-        {isOffline ? (
-          <MaterialCommunityIcons
-            name="cloud-off-outline"
-            size={22}
-            color={iconColor}
-          />
-        ) : isSyncing ? (
-          <ActivityIndicator size="small" color={iconColor} />
-        ) : (
-          <MaterialCommunityIcons name="cloud-check" size={22} color={iconColor} />
-        )}
+        {syncIcon}
       </Pressable>
 
       <Portal>

@@ -1,27 +1,37 @@
 export const typography = {
   fontFamily: {
-    ui: 'IBM Plex Sans',
-    display: 'IBM Plex Serif',
-    mono: 'IBM Plex Mono',
+    display: 'Newsreader-Medium',  // titulares, nomes de aluno
+    ui: 'Geist-Regular',           // corpo, botões, labels
+    mono: 'GeistMono-Regular',     // tempos, timestamps, versão
+  },
+  // Named font variants for direct use in styled-components
+  fonts: {
+    displayRegular: 'Newsreader-Regular',
+    displayMedium: 'Newsreader-Medium',
+    displaySemiBold: 'Newsreader-SemiBold',
+    uiRegular: 'Geist-Regular',
+    uiMedium: 'Geist-Medium',
+    uiSemiBold: 'Geist-SemiBold',
+    mono: 'GeistMono-Regular',
   },
   size: {
-    xs: 12,
-    sm: 14,
-    md: 16,
+    xs: 11,
+    sm: 13,
+    md: 15,
     lg: 18,
-    xl: 20,
-    '2xl': 24,
+    xl: 22,
+    '2xl': 28,
     '3xl': 30,
     '4xl': 36,
     '5xl': 48,
   },
   fontSizes: {
-    xs: 12,
-    sm: 14,
-    md: 16,
+    xs: 11,
+    sm: 13,
+    md: 15,
     lg: 18,
-    xl: 20,
-    xxl: 24,
+    xl: 22,
+    xxl: 28,
   },
   weight: {
     regular: 400,
@@ -42,8 +52,9 @@ export const typography = {
     relaxed: 1.7,
   },
   letterSpacing: {
-    tight: -0.01,
+    tight: -0.3,   // -0.01em at ~30px
     normal: 0,
-    wide: 0.04,
+    wide: 0.4,     // 0.04em at ~11px (mono)
+    section: 1.1,  // 0.10em at 11px (section labels)
   },
 } as const;

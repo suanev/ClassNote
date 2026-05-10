@@ -7,7 +7,6 @@ interface FABProps {
   icon?: string;
   onPress: () => void;
   disabled?: boolean;
-  size?: number;
   right?: number;
   bottom?: number;
   accessibilityLabel?: string;
@@ -18,7 +17,6 @@ export const FAB = ({
   icon = 'plus',
   onPress,
   disabled = false,
-  size = 64,
   right = 24,
   bottom = 28,
   accessibilityLabel = 'Criar observação',
@@ -34,25 +32,13 @@ export const FAB = ({
         testID={testID}
         accessibilityLabel={accessibilityLabel}
         accessibilityRole="button"
-        style={({pressed}) => ({
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          backgroundColor: pressed ? theme.colors.primaryHover : theme.colors.primary,
-          alignItems: 'center',
-          justifyContent: 'center',
-          opacity: disabled ? 0.5 : 1,
-          elevation: 4,
-          shadowColor: '#000',
-          shadowOffset: {width: 0, height: 2},
-          shadowOpacity: 0.2,
-          shadowRadius: 4,
-        })}>
-        <Feather
-          name={icon}
-          size={Math.round(size * 0.38)}
-          color={theme.colors.onPrimary}
-        />
+        style={({pressed}) => [
+          styles.fab,
+          {backgroundColor: theme.colors.primary},
+          theme.shadows.fab,
+          {opacity: disabled ? 0.5 : pressed ? 0.85 : 1},
+        ]}>
+        <Feather name={icon} size={26} color={theme.colors.onPrimary} />
       </Pressable>
     </View>
   );
@@ -61,5 +47,12 @@ export const FAB = ({
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
+  },
+  fab: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

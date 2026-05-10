@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from 'styled-components/native';
 
@@ -13,6 +13,8 @@ interface InputProps {
   multiline?: boolean;
   numberOfLines?: number;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  testID?: string;
+  accessibilityLabel?: string;
 }
 
 export const Input = ({
@@ -24,21 +26,28 @@ export const Input = ({
   multiline = false,
   numberOfLines,
   autoCapitalize = 'sentences',
+  testID,
+  accessibilityLabel,
 }: InputProps) => {
   const theme = useTheme();
+  const [focused, setFocused] = useState(false);
 
   return (
-    <InputWrapper marginTop={marginTop} multiline={multiline}>
-      {icon ? <Feather name={icon} size={18} color={theme.colors.textSubtle} /> : null}
+    <InputWrapper marginTop={marginTop} multiline={multiline} focused={focused}>
+      {icon ? <Feather name={icon} size={18} color={theme.colors.textMuted} /> : null}
       <InputField
         multiline={multiline}
         numberOfLines={numberOfLines}
         textAlignVertical={multiline ? 'top' : 'center'}
         autoCapitalize={autoCapitalize}
         placeholder={placeholder}
-        placeholderTextColor={theme.colors.textSubtle}
+        placeholderTextColor={theme.colors.textMuted}
         value={value}
         onChangeText={onChangeText}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        testID={testID}
+        accessibilityLabel={accessibilityLabel}
       />
     </InputWrapper>
   );

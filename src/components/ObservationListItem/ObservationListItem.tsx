@@ -6,16 +6,21 @@ import {useTheme} from 'styled-components/native';
 import {Card} from '@components/Card';
 
 import {
+  CardInner,
+  DashedSeparator,
   FavoriteButton,
   MetaText,
   ObservationText,
-  Row,
   StudentName,
+  TimeText,
+  TopRow,
 } from './styles';
 
 interface ObservationListItemProps {
+  id: string;
   student: string;
   className: string;
+  shift?: string;
   relativeTime: string;
   text: string;
   isFavorite: boolean;
@@ -25,8 +30,10 @@ interface ObservationListItemProps {
 }
 
 const ObservationListItemComponent = ({
+  id,
   student,
   className,
+  shift,
   relativeTime,
   text,
   isFavorite,
@@ -35,17 +42,8 @@ const ObservationListItemComponent = ({
   onToggleFavorite,
 }: ObservationListItemProps) => {
   const theme = useTheme();
-  /* istanbul ignore next */
-  const favoriteIconColor = (pressed: boolean) =>
-    isFavorite
-      ? theme.colors.primary
-      : pressed
-        ? theme.colors.textMuted
-        : theme.colors.textSubtle;
-  /* istanbul ignore next */
-  const stopFavoritePressPropagation = (event?: {stopPropagation?: () => void}) => {
-    event?.stopPropagation?.();
-  };
+
+  const metaLabel = shift ? `${className} · ${shift}` : className;
 
   return (
     <Pressable
@@ -54,33 +52,41 @@ const ObservationListItemComponent = ({
       accessibilityState={{disabled: isDisabled}}
       disabled={isDisabled}
       onPress={onPress}
-      testID="observation-card">
+      testID={`observation-card-${id}`}>
       <Card variant="default" padding={16}>
-      <Row>
-        <StudentName>{student}</StudentName>
-        <FavoriteButton
-          hitSlop={8}
-          testID="favorite-button"
-          accessibilityRole="button"
-          accessibilityLabel={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-          accessibilityState={{checked: isFavorite}}
-          onPress={event => {
-            stopFavoritePressPropagation(event);
-            onToggleFavorite();
-          }}>
-          {({pressed}) => (
-            <MaterialCommunityIcons
-              name={isFavorite ? 'star' : 'star-outline'}
-              size={20}
-              color={favoriteIconColor(pressed)}
-            />
-          )}
-        </FavoriteButton>
-      </Row>
-      <MetaText>
-        {className} · {relativeTime}
-      </MetaText>
-      <ObservationText numberOfLines={2}>{text}</ObservationText>
+        <CardInner>
+          <TopRow>
+            <StudentName>{student}</StudentName>
+            <FavoriteButton
+              hitSlop={8}
+              testID={`favorite-button-${id}`}
+              accessibilityRole="button"
+              accessibilityLabel={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+              accessibilityState={{checked: isFavorite}}
+              onPress={event => {
+                event?.stopPropagation?.();
+                onToggleFavorite();
+              }}>
+              {({pressed}) => (
+                <MaterialCommunityIcons
+                  name={isFavorite ? 'star' : 'star-outline'}
+                  size={18}
+                  color={
+                    isFavorite
+                      ? theme.colors.favorite
+                      : pressed
+                      ? theme.colors.textMuted
+                      : theme.colors.textSubtle
+                  }
+                />
+              )}
+            </FavoriteButton>
+          </TopRow>
+          <MetaText>{metaLabel}</MetaText>
+          <ObservationText numberOfLines={2}>{text}</ObservationText>
+          <DashedSeparator />
+          <TimeText>{relativeTime}</TimeText>
+        </CardInner>
       </Card>
     </Pressable>
   );
@@ -90,8 +96,10 @@ export const ObservationListItem = memo(
   ObservationListItemComponent,
   /* istanbul ignore next */
   (prevProps, nextProps) =>
+    prevProps.id === nextProps.id &&
     prevProps.student === nextProps.student &&
     prevProps.className === nextProps.className &&
+    prevProps.shift === nextProps.shift &&
     prevProps.relativeTime === nextProps.relativeTime &&
     prevProps.text === nextProps.text &&
     prevProps.isFavorite === nextProps.isFavorite &&

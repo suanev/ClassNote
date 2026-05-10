@@ -1,6 +1,6 @@
 import styled from 'styled-components/native';
 
-export type CardVariant = 'default' | 'dark';
+export type CardVariant = 'default' | 'elevated';
 
 interface CardContainerProps {
   variant: CardVariant;
@@ -8,12 +8,9 @@ interface CardContainerProps {
 }
 
 export const CardContainer = styled.View<CardContainerProps>`
-  background-color: ${({theme, variant}) =>
-    variant === 'dark' ? theme.colors.primary : theme.colors.surface};
+  background-color: ${({theme}) => theme.colors.surface};
   border-width: 1px;
-  border-color: ${({theme, variant}) =>
-    variant === 'dark' ? theme.colors.primary : theme.colors.border};
-  border-radius: ${({theme}) => theme.radii['2xl']}px;
+  border-color: ${({theme}) => theme.colors.border};
+  border-radius: ${({theme}) => theme.radii.card}px;
   padding: ${({theme, padding}) => padding ?? theme.spacing[4]}px;
-  ${({theme, variant}) => (variant === 'dark' ? theme.shadows.md : theme.shadows.sm)};
 `;

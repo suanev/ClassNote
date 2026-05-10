@@ -1,10 +1,11 @@
-import React, {PropsWithChildren, useCallback, useEffect, useRef} from 'react';
+import React, {PropsWithChildren, useCallback, useEffect, useRef, useState} from 'react';
 import {useWindowDimensions} from 'react-native';
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {
   BottomSheetComponent,
@@ -15,6 +16,7 @@ import {
 } from './styles';
 
 interface BottomSheetProps extends PropsWithChildren {
+  disableClose?: boolean;
   headerAction?: React.ReactNode;
   isOpen: boolean;
   onClose: () => void;
@@ -22,6 +24,7 @@ interface BottomSheetProps extends PropsWithChildren {
 }
 
 export const BottomSheet = ({
+  disableClose = false,
   headerAction,
   isOpen,
   onClose,
@@ -29,13 +32,24 @@ export const BottomSheet = ({
   children,
 }: BottomSheetProps) => {
   const {height: windowHeight} = useWindowDimensions();
+  const {bottom} = useSafeAreaInsets();
   const sheetRef = useRef<BottomSheetModal<unknown> | null>(null);
+  const [isMounted, setIsMounted] = useState(isOpen);
+  const bottomInset = Math.max(bottom, 12);
+  const shouldRender = isMounted || isOpen;
 
   useEffect(() => {
+    if (!shouldRender) {
+      return;
+    }
+
     if (isOpen) {
       sheetRef.current?.present();
+      return;
     }
-  }, [isOpen]);
+
+    sheetRef.current?.dismiss();
+  }, [isOpen, shouldRender]);
 
   const renderBackdrop = useCallback(
     /* istanbul ignore next */
@@ -44,18 +58,26 @@ export const BottomSheet = ({
         {...props}
         appearsOnIndex={0}
         disappearsOnIndex={-1}
-        pressBehavior="close"
+        pressBehavior={disableClose ? 'none' : 'close'}
         opacity={0.4}
       />
     ),
-    [],
+    [disableClose],
   );
 
   const handleDismiss = useCallback(() => {
+    setIsMounted(false);
     onClose();
   }, [onClose]);
 
-  if (!isOpen) {
+  const handleDismissPress = useCallback(() => {
+    if (disableClose) {
+      return;
+    }
+    sheetRef.current?.dismiss();
+  }, [disableClose]);
+
+  if (!shouldRender) {
     return null;
   }
 
@@ -64,17 +86,27 @@ export const BottomSheet = ({
       ref={sheetRef}
       enableDynamicSizing
       maxDynamicContentSize={windowHeight * 0.85}
+      bottomInset={bottomInset}
       enableContentPanningGesture={false}
-      enablePanDownToClose
-      enableDismissOnClose
+      enablePanDownToClose={!disableClose}
+      enableDismissOnClose={!disableClose}
       enableHandlePanningGesture={false}
       enableOverDrag={false}
+      keyboardBehavior="interactive"
+      keyboardBlurBehavior="restore"
+      android_keyboardInputMode="adjustResize"
       stackBehavior="push"
       onDismiss={handleDismiss}
       backdropComponent={renderBackdrop}>
       <BottomSheetView testID="bottom-sheet-content">
-        <SheetContainer>
-          <SheetHandle />
+        <SheetContainer $bottomInset={bottomInset}>
+          <SheetHandle
+            onPress={handleDismissPress}
+            disabled={disableClose}
+            testID="bottom-sheet-dismiss"
+            accessibilityRole="button"
+            accessibilityLabel="Fechar painel"
+          />
           {title ? (
             <SheetHeader>
               <SheetTitle>{title}</SheetTitle>
