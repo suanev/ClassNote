@@ -14,7 +14,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Botão principal do design system. Altura 48 px, Geist 15/500, border-radius 6. Cinco variantes semânticas: `primary` (ação principal), `secondary` (ação secundária com borda), `ghost` (sem borda, ação terciária), `danger` (destructive com borda), `dangerSolid` (destructive preenchido para confirmações). Suporta ícone Feather à esquerda, estado de loading (spinner substitui label) e disabled (opacidade 0.5).',
+          'Botão principal do design system. Altura 48 px, Geist 15/500, border-radius 6. Seis variantes semânticas: `primary` (ação principal), `secondary` (ação secundária com borda), `ghost` (sem borda, ação terciária), `danger` (destructive com borda), `dangerSolid` (destructive preenchido) e `dangerStrong` (destructive escuro para confirmações críticas). Suporta ícone Feather à esquerda, estado de loading (spinner substitui label) e disabled (opacidade 0.5).',
       },
     },
   },
@@ -22,7 +22,7 @@ const meta = {
     variant: {
       description: 'Hierarquia visual do botão.',
       control: {type: 'select'},
-      options: ['primary', 'secondary', 'ghost', 'danger', 'dangerSolid'],
+      options: ['primary', 'secondary', 'ghost', 'danger', 'dangerSolid', 'dangerStrong'],
     },
     children: {description: 'Texto do botão.', control: {type: 'text'}},
     icon: {description: 'Nome do ícone Feather exibido à esquerda do texto.', control: {type: 'text'}},
@@ -52,15 +52,15 @@ export const Docs: Story = {
   render: () => (
     <DocNote
       title="Button"
-      description="Botão principal do design system. Altura 48 px, Geist 15/500, border-radius 6. Cinco variantes semânticas para diferentes hierarquias de ação."
+      description="Botão principal do design system. Altura 48 px, Geist 15/500, border-radius 6. Seis variantes semânticas para diferentes hierarquias de ação."
       notes={[
         'loading: spinner substitui o label — o botão mantém o tamanho e fica não-interativo',
         'disabled: opacidade 0.5, sem clique',
         'icon: ícone Feather à esquerda do texto (qualquer nome válido do Feather)',
-        'Aliases aceitos: fill → primary, outline → secondary, text → ghost',
+        'dangerStrong: ação destrutiva mais crítica, usada nos sheets de confirmação',
       ]}
       props={[
-        {name: 'variant', type: "'primary' | 'secondary' | 'ghost' | 'danger' | 'dangerSolid'", description: 'Hierarquia visual. primary = ação principal; secondary = ação com borda; ghost = sem borda; danger = destructive com borda; dangerSolid = destructive preenchido.'},
+        {name: 'variant', type: "'primary' | 'secondary' | 'ghost' | 'danger' | 'dangerSolid' | 'dangerStrong'", description: 'Hierarquia visual. primary = ação principal; secondary = ação com borda; ghost = sem borda; danger = destructive com borda; dangerSolid = destructive preenchido; dangerStrong = destructive escuro para confirmações críticas.'},
         {name: 'children', type: 'ReactNode', required: true, description: 'Conteúdo do botão (normalmente texto).'},
         {name: 'icon', type: 'string', description: 'Nome do ícone Feather exibido à esquerda.'},
         {name: 'loading', type: 'boolean', description: 'Exibe spinner e bloqueia interação.'},
@@ -89,6 +89,10 @@ export const Danger: Story = {
 
 export const DangerSolid: Story = {
   args: {children: 'Confirmar exclusão', variant: 'dangerSolid', onPress: noop},
+};
+
+export const DangerStrong: Story = {
+  args: {children: 'Excluir', variant: 'dangerStrong', onPress: noop},
 };
 
 export const WithIcon: Story = {

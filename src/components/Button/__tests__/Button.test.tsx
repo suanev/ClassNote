@@ -9,7 +9,7 @@ describe('Button', () => {
     const onPress = jest.fn();
 
     renderWithProviders(
-      <Button icon="tune" minWidth={120} onPress={onPress} variant="outline">
+      <Button icon="tune" minWidth={120} onPress={onPress} variant="secondary">
         Filtros
       </Button>,
     );

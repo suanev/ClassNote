@@ -41,14 +41,6 @@ import {
 } from './styles';
 import { AppIconVariant } from '@services/appIcon';
 
-const normalizeForTestId = (value: string) =>
-  value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .toLowerCase();
-
 const THEME_OPTIONS: Array<{ value: ThemePreference; label: string; icon: string }> = [
   { value: 'light', label: 'Claro', icon: 'sun' },
   { value: 'dark', label: 'Escuro', icon: 'moon' },
@@ -97,6 +89,34 @@ const SettingsScreen = ({
   onOpenDesignSystem,
 }: SettingsScreenProps) => {
   const theme = useTheme();
+  const normalizeForTestId = (value: string) => {
+    const normalized = value.normalize('NFD').toLowerCase();
+    let result = '';
+    let lastWasHyphen = false;
+
+    for (const char of normalized) {
+      const code = char.charCodeAt(0);
+      const isDigit = code >= 48 && code <= 57;
+      const isLowercaseLetter = code >= 97 && code <= 122;
+
+      if (code >= 0x0300 && code <= 0x036f) {
+        continue;
+      }
+
+      if (isDigit || isLowercaseLetter) {
+        result += char;
+        lastWasHyphen = false;
+        continue;
+      }
+
+      if (!lastWasHyphen && result.length > 0) {
+        result += '-';
+        lastWasHyphen = true;
+      }
+    }
+
+    return lastWasHyphen ? result.slice(0, -1) : result;
+  };
   const deleteObservationsLabel = classPendingDeletion?.observationsCount === 1
     ? '1 observação'
     : `${classPendingDeletion?.observationsCount ?? 0} observações`;

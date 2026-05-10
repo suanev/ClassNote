@@ -16,10 +16,7 @@ export type ButtonVariant =
   | 'ghost'
   | 'danger'
   | 'dangerSolid'
-  | 'dangerStrong'
-  | 'fill'
-  | 'outline'
-  | 'text';
+  | 'dangerStrong';
 
 interface ButtonProps {
   children?: React.ReactNode;
@@ -33,15 +30,6 @@ interface ButtonProps {
   testID?: string;
 }
 
-const resolveVariant = (
-  v: ButtonVariant,
-): 'primary' | 'secondary' | 'ghost' | 'danger' | 'dangerSolid' | 'dangerStrong' => {
-  if (v === 'fill') return 'primary';
-  if (v === 'outline') return 'secondary';
-  if (v === 'text') return 'ghost';
-  return v;
-};
-
 export const Button = ({
   children,
   onPress,
@@ -54,7 +42,6 @@ export const Button = ({
   testID,
 }: ButtonProps) => {
   const theme = useTheme();
-  const resolved = resolveVariant(variant);
   const isIconOnly = Boolean(icon) && !children;
 
   const bg = {
@@ -64,7 +51,7 @@ export const Button = ({
     danger: 'transparent',
     dangerSolid: theme.colors.danger,
     dangerStrong: theme.colors.errorSubtle,
-  }[resolved];
+  }[variant];
 
   const borderColor = {
     primary: 'transparent',
@@ -73,7 +60,7 @@ export const Button = ({
     danger: theme.colors.danger,
     dangerSolid: 'transparent',
     dangerStrong: 'transparent',
-  }[resolved];
+  }[variant];
 
   const textColor = {
     primary: theme.colors.surface,
@@ -82,10 +69,10 @@ export const Button = ({
     danger: theme.colors.danger,
     dangerSolid: theme.colors.surface,
     dangerStrong: theme.colors.surface,
-  }[resolved];
+  }[variant];
 
   const spinnerColor =
-    resolved === 'primary' || resolved === 'dangerSolid' || resolved === 'dangerStrong'
+    variant === 'primary' || variant === 'dangerSolid' || variant === 'dangerStrong'
       ? theme.colors.surface
       : theme.colors.primary;
 
