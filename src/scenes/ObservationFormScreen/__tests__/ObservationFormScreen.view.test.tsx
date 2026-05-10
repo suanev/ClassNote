@@ -5,14 +5,14 @@ import {renderWithProviders} from '@test-utils';
 import ObservationFormScreen from '../ObservationFormScreen';
 
 const mockClasses = [
-  {id: 'c1', name: '5º Ano A', shift: 'Manhã' as const},
+  {id: 'c1', name: '5º Áno A', shift: 'Manhã' as const},
   {id: 'c2', name: '6º Ano B', shift: 'Tarde' as const},
   {id: 'c3', name: '7º Ano C', shift: 'Noite' as const},
 ];
 
 const baseProps = {
   student: '',
-  className: '5º Ano A',
+  className: '5º Áno A',
   classId: 'c1',
   text: '',
   classes: mockClasses,
@@ -76,6 +76,7 @@ describe('ObservationFormScreen (view)', () => {
         <ObservationFormScreen mode="create" {...baseProps} onSelectClass={onSelectClass} />,
       );
 
+      expect(screen.getByTestId('select-class-5-ano-a')).toBeOnTheScreen();
       fireEvent.press(screen.getByTestId('select-class-6-ano-b'));
       expect(onSelectClass).toHaveBeenCalledWith('c2');
     });
@@ -182,6 +183,17 @@ describe('ObservationFormScreen (view)', () => {
       expect(onDelete).not.toHaveBeenCalled();
     });
 
+    it('should close the delete sheet from the dismiss handle when not deleting', () => {
+      renderWithProviders(<ObservationFormScreen {...editProps} />);
+
+      fireEvent.press(screen.getByTestId('delete-observation-button'));
+      expect(screen.getByText('Apagar observação?')).toBeOnTheScreen();
+
+      fireEvent.press(screen.getAllByTestId('bottom-sheet-dismiss')[0]);
+
+      expect(screen.queryByText('Apagar observação?')).not.toBeOnTheScreen();
+    });
+
     it('should show loading state on delete button while deleting', () => {
       renderWithProviders(<ObservationFormScreen {...editProps} isDeleting />);
       expect(screen.getByTestId('delete-observation-button')).toBeOnTheScreen();
@@ -220,6 +232,17 @@ describe('ObservationFormScreen (view)', () => {
         />,
       );
       expect(screen.queryByTestId('delete-observation-button')).not.toBeOnTheScreen();
+    });
+
+    it('should close the new class sheet through its own onClose callback', () => {
+      renderWithProviders(<ObservationFormScreen mode="create" {...baseProps} />);
+
+      fireEvent.press(screen.getByTestId('add-class-chip'));
+      expect(screen.getByTestId('new-class-name-input')).toBeOnTheScreen();
+
+      fireEvent.press(screen.getAllByTestId('bottom-sheet-dismiss')[0]);
+
+      expect(screen.queryByTestId('new-class-name-input')).not.toBeOnTheScreen();
     });
   });
 });

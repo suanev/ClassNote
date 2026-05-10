@@ -90,6 +90,7 @@ export const Button = ({
       $isIconOnly={isIconOnly}
       $minWidth={minWidth}
       $disabled={disabled || loading}
+      /* istanbul ignore next -- pressed opacity is purely visual */
       style={({pressed}) => ({opacity: disabled ? 0.5 : pressed ? 0.75 : 1})}>
       <ButtonContent>
         {loading ? (

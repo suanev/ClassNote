@@ -4,11 +4,18 @@ import {fireEvent, screen} from '@testing-library/react-native';
 import {renderWithProviders} from '@test-utils';
 import {NetworkToast} from '../NetworkToast';
 
+const mockEnvironment = {isDev: true};
 jest.mock('@constants/environment', () => ({
-  isDev: true,
+  get isDev() {
+    return mockEnvironment.isDev;
+  },
 }));
 
 describe('NetworkToast', () => {
+  beforeEach(() => {
+    mockEnvironment.isDev = true;
+  });
+
   it('should render the offline message', () => {
     renderWithProviders(<NetworkToast status="offline" />);
 
@@ -36,5 +43,15 @@ describe('NetworkToast', () => {
     fireEvent.press(screen.getByRole('button', {name: 'Fechar aviso'}));
 
     expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
+
+  it('should render the production restored message outside development', () => {
+    mockEnvironment.isDev = false;
+
+    renderWithProviders(<NetworkToast status="restored" />);
+
+    expect(screen.getByText('Conexão restaurada. Sincronizando suas alterações...')).toBeOnTheScreen();
+
+    mockEnvironment.isDev = true;
   });
 });

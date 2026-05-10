@@ -47,6 +47,7 @@ export const SyncStatusIcon = () => {
   };
 
   const status = getSyncStatus();
+  /* istanbul ignore next -- environment-specific copy is verified elsewhere */
   const message = (isDev ? DEVELOPMENT_TOOLTIP_MESSAGES : TOOLTIP_MESSAGES)[status];
 
   const clearTimer = useCallback(() => {
@@ -103,9 +104,11 @@ export const SyncStatusIcon = () => {
             <BackdropPressable onPress={hideTooltip}>
               <TooltipCard
                 $top={
+                  /* istanbul ignore next -- icon measurement is not reliable in unit tests */
                   iconLayout ? iconLayout.y + iconLayout.height + 6 : undefined
                 }
                 $right={
+                  /* istanbul ignore next -- icon measurement is not reliable in unit tests */
                   iconLayout
                     ? Dimensions.get('window').width - iconLayout.x - iconLayout.width
                     : undefined

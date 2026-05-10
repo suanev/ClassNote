@@ -116,7 +116,12 @@ function renderViewModel() {
     reducer: () => ({}),
   });
 
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {retry: false, gcTime: Infinity},
+      mutations: {retry: false, gcTime: Infinity},
+    },
+  });
 
   const wrapper = ({children}: {children: React.ReactNode}) => (
     <QueryClientProvider client={queryClient}>
@@ -343,6 +348,101 @@ describe('useObservationFormViewModel', () => {
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'observations/showObservationErrorToast',
       payload: 'Não foi possível atualizar a observação.',
+    });
+  });
+
+  it('should expose route loading and resolve class id from class name fallback', () => {
+    useClassesQuery.mockReturnValue({
+      data: [{id: 'class-1', name: '5º A'}],
+    });
+    useObservationsQuery.mockReturnValue({
+      data: [
+        {
+          id: 'obs-1',
+          student: 'Ana',
+          className: '5º A',
+          text: 'Observação',
+          favorite: false,
+          createdAt: '2026-05-09T00:00:00.000Z',
+          updatedAt: '2026-05-09T00:00:00.000Z',
+        },
+      ],
+      isLoading: true,
+    });
+
+    const {result} = renderViewModel();
+
+    expect(result.current.classId).toBe('class-1');
+    expect(result.current.className).toBe('5º A');
+    expect(result.current.isRouteLoading).toBe(true);
+  });
+
+  it('should fall back to the first class when creating a new observation', () => {
+    mockRouteParams = {mode: 'create'};
+    useClassesQuery.mockReturnValue({
+      data: [
+        {id: 'class-1', name: '5º A'},
+        {id: 'class-2', name: '6º B'},
+      ],
+    });
+    useObservationsQuery.mockReturnValue({data: [], isLoading: false});
+
+    const {result} = renderViewModel();
+
+    expect(result.current.classId).toBe('class-1');
+    expect(result.current.className).toBe('5º A');
+  });
+
+  it('should not save while required fields are invalid', () => {
+    mockRouteParams = {mode: 'create'};
+    useObservationsQuery.mockReturnValue({data: [], isLoading: false});
+
+    const {result} = renderViewModel();
+
+    act(() => {
+      result.current.onChangeStudent('   ');
+      result.current.onChangeText('   ');
+      result.current.onSave();
+    });
+
+    expect(result.current.canSave).toBe(false);
+    expect(mockCreateMutate).not.toHaveBeenCalled();
+    expect(mockUpdateMutate).not.toHaveBeenCalled();
+  });
+
+  it('should select the newly created class on createClass success', () => {
+    mockRouteParams = {mode: 'create'};
+    useObservationsQuery.mockReturnValue({data: [], isLoading: false});
+
+    const {result} = renderViewModel();
+
+    act(() => {
+      result.current.onCreateClass('Nova turma', 'Tarde');
+    });
+
+    expect(mockCreateClassMutate).toHaveBeenCalledWith({name: 'Nova turma', shift: 'Tarde'});
+
+    act(() => {
+      latestCreateClassOptions?.onSuccess?.({
+        id: 'class-9',
+        name: 'Nova turma',
+        shift: 'Tarde',
+      });
+    });
+
+    expect(result.current.classId).toBe('class-9');
+  });
+
+  it('should log create class errors', () => {
+    const {result} = renderViewModel();
+
+    act(() => {
+      result.current.onCreateClass('Nova turma', 'Tarde');
+      latestCreateClassOptions?.onError?.(new Error('create class failed'));
+    });
+
+    expect(mockLogError).toHaveBeenCalledWith(expect.any(Error), {
+      action: 'create_class',
     });
   });
 

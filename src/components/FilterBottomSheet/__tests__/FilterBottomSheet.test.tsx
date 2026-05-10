@@ -5,7 +5,7 @@ import {renderWithProviders} from '@test-utils';
 import {FilterBottomSheet} from '../FilterBottomSheet';
 
 const mockClasses = [
-  {id: 'c1', name: '5º A', shift: 'Manhã' as const},
+  {id: 'c1', name: '5º Á', shift: 'Manhã' as const},
   {id: 'c2', name: '6º B', shift: 'Tarde' as const},
   {id: 'c3', name: '8º D', shift: 'Noite' as const},
 ];
@@ -46,7 +46,7 @@ describe('FilterBottomSheet', () => {
 
     expect(screen.getByText('Filtros')).toBeOnTheScreen();
     expect(screen.getByText('Todas')).toBeOnTheScreen();
-    expect(screen.getByText('5º A')).toBeOnTheScreen();
+    expect(screen.getByText('5º Á')).toBeOnTheScreen();
     expect(screen.getByText('6º B')).toBeOnTheScreen();
     expect(screen.getByText('8º D')).toBeOnTheScreen();
     expect(screen.getByText('Somente favoritas')).toBeOnTheScreen();
@@ -75,8 +75,24 @@ describe('FilterBottomSheet', () => {
       />,
     );
 
-    fireEvent.press(screen.getByText('5º A'));
+    fireEvent.press(screen.getByText('5º Á'));
     expect(onSelectClass).toHaveBeenCalledWith(null);
+  });
+
+  it('should select a shift and expose normalized test ids for accented labels', () => {
+    const onSelectShift = jest.fn();
+
+    renderWithProviders(
+      <FilterBottomSheet
+        {...baseProps}
+        onSelectShift={onSelectShift}
+      />,
+    );
+
+    fireEvent.press(screen.getByTestId('shift-filter-manha'));
+
+    expect(onSelectShift).toHaveBeenCalledWith('Manhã');
+    expect(screen.getByTestId('class-filter-5-a')).toBeOnTheScreen();
   });
 
   it('should reset to all classes when pressing the "Todas" chip', () => {

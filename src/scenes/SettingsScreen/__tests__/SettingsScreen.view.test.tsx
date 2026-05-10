@@ -46,14 +46,15 @@ describe('SettingsScreen (view)', () => {
       <SettingsScreen
         {...baseProps}
         classes={[
-          {id: 'class-1', name: '5º Ano A', shift: 'Manhã'},
+          {id: 'class-1', name: '5º Áno A', shift: 'Manhã'},
           {id: 'class-2', name: '6º Ano B', shift: 'Tarde'},
         ]}
       />,
     );
 
-    expect(screen.getByText('5º Ano A')).toBeOnTheScreen();
+    expect(screen.getByText('5º Áno A')).toBeOnTheScreen();
     expect(screen.getByText('6º Ano B')).toBeOnTheScreen();
+    expect(screen.getByTestId('class-row-5-ano-a')).toBeOnTheScreen();
 
     fireEvent.press(screen.getByTestId('delete-class-6-ano-b'));
 

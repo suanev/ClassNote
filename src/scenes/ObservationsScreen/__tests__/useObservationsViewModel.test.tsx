@@ -19,6 +19,9 @@ const mockResetPagination = jest.fn();
 const mockCreateMutate = jest.fn();
 const mockUpdateMutate = jest.fn();
 const mockDeleteMutate = jest.fn();
+const mockLogEvent = jest.fn();
+const mockLogError = jest.fn();
+const mockBreadcrumb = jest.fn();
 
 let latestCreateOptions: {
   onSuccess?: () => void;
@@ -93,6 +96,21 @@ jest.mock('@hooks/useObservations', () => ({
 
 jest.mock('@hooks/usePagination', () => ({usePagination: jest.fn()}));
 
+jest.mock('@services/monitoring', () => ({
+  monitoring: {
+    logEvent: (...args: unknown[]) => mockLogEvent(...args),
+    logError: (...args: unknown[]) => mockLogError(...args),
+    breadcrumb: (...args: unknown[]) => mockBreadcrumb(...args),
+  },
+  Events: {
+    UNDO_DELETE: 'UNDO_DELETE',
+    OBSERVATION_DELETED: 'OBSERVATION_DELETED',
+    OBSERVATION_FAVORITED: 'OBSERVATION_FAVORITED',
+    FILTER_APPLIED: 'FILTER_APPLIED',
+    SORT_CHANGED: 'SORT_CHANGED',
+  },
+}));
+
 const {useClassesQuery} = jest.requireMock('@hooks/useClasses');
 const {
   useCreateObservationMutation,
@@ -114,7 +132,12 @@ function renderViewModel(
       getDefaultMiddleware({serializableCheck: false}).concat(sagaMiddleware),
   });
   sagaMiddleware.run(rootSaga);
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {retry: false, gcTime: Infinity},
+      mutations: {retry: false, gcTime: Infinity},
+    },
+  });
   setupQueryClient?.(queryClient);
 
   const wrapper = ({children}: {children: React.ReactNode}) => (
@@ -140,9 +163,9 @@ describe('useObservationsViewModel', () => {
 
     useClassesQuery.mockReturnValue({
       data: [
-        {id: 'class-1', name: '5º A'},
-        {id: 'class-2', name: '6º B'},
-        {id: 'class-3', name: '7º C'},
+        {id: 'class-1', name: '5º A', shift: 'Manhã'},
+        {id: 'class-2', name: '6º B', shift: 'Tarde'},
+        {id: 'class-3', name: '7º C', shift: 'Noite'},
       ],
     });
     useObservationsQuery.mockReturnValue({
@@ -204,9 +227,9 @@ describe('useObservationsViewModel', () => {
     const {result} = renderViewModel();
 
     expect(result.current.availableClasses).toEqual([
-      {id: 'class-1', name: '5º A'},
-      {id: 'class-2', name: '6º B'},
-      {id: 'class-3', name: '7º C'},
+      {id: 'class-1', name: '5º A', shift: 'Manhã'},
+      {id: 'class-2', name: '6º B', shift: 'Tarde'},
+      {id: 'class-3', name: '7º C', shift: 'Noite'},
     ]);
     expect(result.current.filterByClass).toBeNull();
     expect(result.current.filterByFavorites).toBe(false);
@@ -219,6 +242,30 @@ describe('useObservationsViewModel', () => {
           relativeTime: expect.any(String),
         }),
       ]),
+    );
+  });
+
+  it('should resolve class metadata through classId when it is available', () => {
+    useObservationsQuery.mockReturnValue({
+      data: [
+        {
+          ...mockObservations[0],
+          classId: 'class-1',
+        },
+      ],
+      isLoading: false,
+      isRefetching: false,
+      isError: false,
+      refetch: mockRefetch,
+    });
+
+    const {result} = renderViewModel();
+
+    expect(result.current.observations[0]).toEqual(
+      expect.objectContaining({
+        className: '5º A',
+        shift: 'Manhã',
+      }),
     );
   });
 
@@ -340,6 +387,20 @@ describe('useObservationsViewModel', () => {
     expect(ids).toEqual(['obs-1']);
   });
 
+  it('should filter observations and available classes by shift', () => {
+    const {result, store} = renderViewModel();
+
+    act(() => {
+      result.current.onSelectShift('Tarde');
+    });
+
+    expect(store.getState().observations.filterByShift).toBe('Tarde');
+    expect(result.current.availableClasses).toEqual([
+      {id: 'class-2', name: '6º B', shift: 'Tarde'},
+    ]);
+    expect(result.current.observations.map(item => item.id)).toEqual(['obs-2']);
+  });
+
   it('should combine class and favorites filters independently', () => {
     const {result} = renderViewModel({
       observations: {
@@ -417,6 +478,36 @@ describe('useObservationsViewModel', () => {
       mode: 'edit',
       observationId: 'obs-2',
     });
+  });
+
+  it('should log class filter selection with "all" when clearing the filter', () => {
+    const {result} = renderViewModel();
+
+    act(() => {
+      result.current.onSelectClass(null);
+    });
+
+    expect(mockLogEvent).toHaveBeenCalledWith('FILTER_APPLIED', {
+      type: 'class',
+      value: 'all',
+    });
+  });
+
+  it('should not load more when there are no more items', () => {
+    usePagination.mockImplementation((items: Observation[]) => ({
+      hasMore: false,
+      loadMore: mockLoadMore,
+      paginatedItems: items,
+      reset: mockResetPagination,
+    }));
+
+    const {result} = renderViewModel();
+
+    act(() => {
+      result.current.onLoadMore();
+    });
+
+    expect(mockLoadMore).not.toHaveBeenCalled();
   });
 
   it('should toggle favorites filter on and off', () => {
@@ -543,5 +634,20 @@ describe('useObservationsViewModel', () => {
     const {result} = renderViewModel();
 
     expect(result.current.deletePendingId).toBe('obs-3');
+  });
+
+  it('should expose loading when the first observations request is still pending', () => {
+    useObservationsQuery.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      isRefetching: false,
+      isError: false,
+      refetch: mockRefetch,
+    });
+
+    const {result} = renderViewModel();
+
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.observations).toEqual([]);
   });
 });

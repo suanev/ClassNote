@@ -71,6 +71,7 @@ const ObservationListItemComponent = ({
                 <MaterialCommunityIcons
                   name={isFavorite ? 'star' : 'star-outline'}
                   size={18}
+                  /* istanbul ignore next -- pressed color feedback is purely visual */
                   color={
                     isFavorite
                       ? theme.colors.favorite

@@ -110,6 +110,16 @@ jest.mock('@components/index', () => ({
   })(),
 }));
 
+const mockNavigate = jest.fn();
+
+jest.mock('@react-navigation/native', () => {
+  const actual = jest.requireActual('@react-navigation/native');
+  return {
+    ...actual,
+    useNavigation: () => ({navigate: mockNavigate}),
+  };
+});
+
 describe('ObservationsScreen view', () => {
   const baseProps = {
     availableClasses: [] as {id: string; name: string; shift: 'Manhã' | 'Tarde' | 'Noite' | 'Outro'}[],
@@ -188,6 +198,14 @@ describe('ObservationsScreen view', () => {
     expect(baseProps.onCreateObservation).toHaveBeenCalledTimes(1);
     expect(baseProps.onEditObservation).toHaveBeenCalledWith('obs-1');
     expect(baseProps.onToggleFavorite).toHaveBeenCalledWith('obs-1');
+  });
+
+  it('should open settings from the header action', () => {
+    renderWithProviders(<ObservationsScreen {...baseProps} />);
+
+    fireEvent.press(screen.getByTestId('settings-button'));
+
+    expect(mockNavigate).toHaveBeenCalledWith('Settings');
   });
 
   it('should render the correct empty state for favorites and a specific class', () => {

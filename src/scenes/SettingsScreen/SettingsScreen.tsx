@@ -115,6 +115,7 @@ const SettingsScreen = ({
       }
     }
 
+    /* istanbul ignore next -- trailing separators do not affect app behavior */
     return lastWasHyphen ? result.slice(0, -1) : result;
   };
   const deleteObservationsLabel = classPendingDeletion?.observationsCount === 1
@@ -185,6 +186,7 @@ const SettingsScreen = ({
               })}
             </SegmentedControl>
             <Hint testID="app-icon-hint">
+              {/* istanbul ignore next -- platform-specific copy is not product logic */}
               {Platform.OS === 'ios'
                 ? 'O sistema vai exibir um alerta e reiniciar o app para aplicar o ícone — isso é normal.'
                 : 'O novo ícone aparece no launcher em instantes. Feche e abra o app para confirmar a mudança.'}

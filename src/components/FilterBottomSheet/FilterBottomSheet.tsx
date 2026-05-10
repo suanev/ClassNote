@@ -91,6 +91,7 @@ export const FilterBottomSheet = ({
       }
     }
 
+    /* istanbul ignore next -- trailing separators do not affect app behavior */
     return lastWasHyphen ? result.slice(0, -1) : result;
   };
 

@@ -8,6 +8,7 @@ import {
   resetFilters,
   restoreFilterPreferences,
   setClassFilter,
+  setShiftFilter,
   setSortOrder,
   showObservationErrorToast,
   showObservationToast,
@@ -43,6 +44,14 @@ describe('observations slice', () => {
     expect(filteredState.filterByClass).toBe('5º A');
     expect(filteredState.filterByFavorites).toBe(false);
     expect(sortedState.sortOrder).toBe('old-first');
+  });
+
+  it('should set the shift filter and clear any stale class filter', () => {
+    const withClass = observationsReducer(undefined, setClassFilter('5º A'));
+    const withShift = observationsReducer(withClass, setShiftFilter('Tarde'));
+
+    expect(withShift.filterByShift).toBe('Tarde');
+    expect(withShift.filterByClass).toBeNull();
   });
 
   it('should toggle the favorites filter on and off', () => {

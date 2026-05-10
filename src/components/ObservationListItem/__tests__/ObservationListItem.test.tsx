@@ -36,6 +36,7 @@ describe('ObservationListItem', () => {
         id="obs-1"
         student="Ana Silva"
         className="5º A"
+        shift="Manhã"
         relativeTime="há 5 minutos"
         text="Demonstrou autonomia na atividade."
         isFavorite={false}
@@ -43,5 +44,7 @@ describe('ObservationListItem', () => {
         onToggleFavorite={onToggleFavorite}
       />,
     );
+
+    expect(screen.getByText('5º A · Manhã')).toBeOnTheScreen();
   });
 });

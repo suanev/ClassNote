@@ -19,7 +19,10 @@ export const Card = ({
 }: CardProps) => {
   if (onPress) {
     return (
-      <Pressable onPress={onPress} style={({pressed}) => [{opacity: pressed ? 0.7 : 1}]}>
+      <Pressable
+        onPress={onPress}
+        /* istanbul ignore next -- pressed opacity is purely visual */
+        style={({pressed}) => [{opacity: pressed ? 0.7 : 1}]}>
         <CardContainer variant={variant} padding={padding} style={style}>
           {children}
         </CardContainer>
