@@ -2,7 +2,7 @@
 
 ## Visão geral
 
-O pipeline roda em `.github/workflows/ci.yml` e é ativado em **push para `main`** e em **Pull Requests**.
+O pipeline roda em `.github/workflows/cicd.yml` e é ativado em **push para `main`** e em **Pull Requests**.
 
 ```
 Push / PR

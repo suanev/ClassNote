@@ -1,10 +1,11 @@
-name: CI
+name: CI/CD
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,9 +17,10 @@ permissions:
   checks: write
 
 jobs:
-  lint-and-test:
-    name: Lint & Test
+  quality:
+    name: CI / Quality
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
@@ -36,16 +38,11 @@ jobs:
       - name: Lint
         run: yarn lint
 
-      - name: Unit tests with coverage
-        run: yarn test:coverage --runInBand
+      - name: Type check
+        run: npx tsc --noEmit
 
-      - name: Coverage report on PR
-        uses: ArtiomTr/jest-coverage-report-action@v2
-        if: github.event_name == 'pull_request'
-        with:
-          skip-step: all
-          coverage-file: coverage/coverage-summary.json
-          base-coverage-file: coverage/coverage-summary.json
+      - name: Unit tests with coverage
+        run: yarn test:coverage
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
@@ -55,10 +52,12 @@ jobs:
           path: coverage/
           retention-days: 7
 
-  build-android:
-    name: Build Android (Debug)
+  deliver-android:
+    name: CD / Android Artifacts
     runs-on: ubuntu-latest
-    needs: lint-and-test
+    needs: quality
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -92,22 +91,33 @@ jobs:
           key: gradle-${{ hashFiles('android/gradle/wrapper/gradle-wrapper.properties', 'android/build.gradle', 'android/app/build.gradle') }}
           restore-keys: gradle-
 
-      - name: Build Android Debug APK
+      - name: Build Android Release Artifacts
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleRelease bundleRelease --no-daemon
 
-      - name: Upload APK
+      - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: android-release-apk-${{ github.sha }}
+          path: android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Android AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-aab-${{ github.sha }}
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
           retention-days: 7
 
-  build-ios:
-    name: Build iOS (Simulator)
+  deliver-ios:
+    name: CD / iOS Simulator Artifact
     runs-on: macos-15
-    needs: lint-and-test
+    needs: quality
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    timeout-minutes: 40
 
     steps:
       - name: Checkout
@@ -137,8 +147,16 @@ jobs:
           xcodebuild \
             -workspace ios/TeacherObservations.xcworkspace \
             -scheme TeacherObservations \
-            -configuration Debug \
+            -configuration Release \
             -sdk iphonesimulator \
             -derivedDataPath ios/build \
             CODE_SIGNING_ALLOWED=NO \
             build
+
+      - name: Upload iOS app bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-app-${{ github.sha }}
+          path: ios/build/Build/Products/Release-iphonesimulator/*.app
+          if-no-files-found: error
+          retention-days: 14
