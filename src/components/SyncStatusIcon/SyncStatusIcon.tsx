@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {ActivityIndicator, Dimensions, Pressable, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, Dimensions, Pressable, View} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Portal, Surface, Text} from 'react-native-paper';
 import {useSelector} from 'react-redux';
@@ -7,6 +7,12 @@ import {useTheme} from 'styled-components/native';
 
 import {isDev} from '@constants/environment';
 import type {RootState} from '../../store/index';
+import {
+  BackdropPressable,
+  TooltipCard,
+  TooltipLabel,
+  Wrapper,
+} from './styles';
 
 const TOOLTIP_MESSAGES = {
   offline: 'Sem conexão — alterações salvas localmente.',
@@ -81,7 +87,7 @@ export const SyncStatusIcon = () => {
   const syncIcon = getSyncIcon();
 
   return (
-    <View ref={iconRef} collapsable={false} style={styles.wrapper}>
+    <Wrapper ref={iconRef} collapsable={false}>
       <Pressable
         onPress={handlePress}
         hitSlop={10}
@@ -93,53 +99,23 @@ export const SyncStatusIcon = () => {
 
       <Portal>
         {tooltipVisible ? (
-          <Pressable style={StyleSheet.absoluteFill} onPress={hideTooltip}>
-            <Surface
-              style={[
-                styles.tooltip,
-                /* istanbul ignore next */
+          <BackdropPressable onPress={hideTooltip}>
+            <TooltipCard
+              $top={
+                iconLayout ? iconLayout.y + iconLayout.height + 6 : undefined
+              }
+              $right={
                 iconLayout
-                  ? {
-                      top: iconLayout.y + iconLayout.height + 6,
-                      right:
-                        Dimensions.get('window').width -
-                        iconLayout.x -
-                        iconLayout.width,
-                    }
-                  : styles.tooltipFallback,
-                {backgroundColor: theme.colors.text},
-              ]}
+                  ? Dimensions.get('window').width - iconLayout.x - iconLayout.width
+                  : undefined
+              }
               elevation={3}
               testID="sync-tooltip">
-              <Text style={[styles.tooltipText, {color: theme.colors.surface}]}>
-                {message}
-              </Text>
-            </Surface>
-          </Pressable>
+              <TooltipLabel>{message}</TooltipLabel>
+            </TooltipCard>
+          </BackdropPressable>
         ) : null}
       </Portal>
-    </View>
+    </Wrapper>
   );
 };
-
-const styles = StyleSheet.create({
-  wrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tooltip: {
-    position: 'absolute',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    maxWidth: 220,
-  },
-  tooltipFallback: {
-    top: 32,
-    right: 0,
-  },
-  tooltipText: {
-    fontSize: 13,
-    lineHeight: 18,
-  },
-});

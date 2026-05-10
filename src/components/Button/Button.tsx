@@ -1,7 +1,14 @@
 import React from 'react';
-import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from 'styled-components/native';
+
+import {
+  ButtonContainer,
+  ButtonContent,
+  ButtonIconWrapper,
+  ButtonLabel,
+} from './styles';
 
 export type ButtonVariant =
   | 'primary'
@@ -10,9 +17,9 @@ export type ButtonVariant =
   | 'danger'
   | 'dangerSolid'
   | 'dangerStrong'
-  | 'fill'      // legacy alias → primary
-  | 'outline'   // legacy alias → secondary
-  | 'text';     // legacy alias → ghost
+  | 'fill'
+  | 'outline'
+  | 'text';
 
 interface ButtonProps {
   children?: React.ReactNode;
@@ -56,7 +63,7 @@ export const Button = ({
     ghost: 'transparent',
     danger: 'transparent',
     dangerSolid: theme.colors.danger,
-    dangerStrong: '#7A1A12',
+    dangerStrong: theme.colors.errorSubtle,
   }[resolved];
 
   const borderColor = {
@@ -69,98 +76,51 @@ export const Button = ({
   }[resolved];
 
   const textColor = {
-    primary: '#FFFFFF',
+    primary: theme.colors.surface,
     secondary: theme.colors.text,
     ghost: theme.colors.text,
     danger: theme.colors.danger,
-    dangerSolid: '#FFFFFF',
-    dangerStrong: '#FFFFFF',
+    dangerSolid: theme.colors.surface,
+    dangerStrong: theme.colors.surface,
   }[resolved];
 
   const spinnerColor =
     resolved === 'primary' || resolved === 'dangerSolid' || resolved === 'dangerStrong'
-      ? '#FFFFFF'
+      ? theme.colors.surface
       : theme.colors.primary;
 
   return (
-    <Pressable
+    <ButtonContainer
       onPress={onPress}
       disabled={disabled || loading}
       testID={testID}
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
-      style={({pressed}) => [
-        styles.btn,
-        {
-          backgroundColor: bg,
-          borderColor,
-          borderWidth: borderColor === 'transparent' ? 0 : 1,
-          borderRadius: theme.radii.control,
-          width: isIconOnly ? 48 : undefined,
-          minWidth: minWidth ?? undefined,
-          paddingHorizontal: isIconOnly ? 0 : 20,
-          opacity: disabled ? 0.5 : pressed ? 0.75 : 1,
-        },
-      ]}>
-      <View style={styles.content}>
+      $backgroundColor={bg}
+      $borderColor={borderColor}
+      $borderWidth={borderColor === 'transparent' ? 0 : 1}
+      $borderRadius={theme.radii.control}
+      $isIconOnly={isIconOnly}
+      $minWidth={minWidth}
+      $disabled={disabled || loading}
+      style={({pressed}) => ({opacity: disabled ? 0.5 : pressed ? 0.75 : 1})}>
+      <ButtonContent>
         {loading ? (
           <>
             <ActivityIndicator size="small" color={spinnerColor} />
-            {children && !isIconOnly ? (
-              <Text
-                style={[
-                  styles.label,
-                  {
-                    color: textColor,
-                    fontFamily: theme.typography.fonts?.uiMedium ?? theme.typography.fontFamily.ui,
-                  },
-                ]}>
-                {children}
-              </Text>
-            ) : null}
+            {children && !isIconOnly ? <ButtonLabel $color={textColor}>{children}</ButtonLabel> : null}
           </>
         ) : (
           <>
-            {icon ? <Feather name={icon} size={18} color={textColor} style={styles.icon} /> : null}
-            {children ? (
-              <Text
-                style={[
-                  styles.label,
-                  {
-                    color: textColor,
-                    fontFamily: theme.typography.fonts?.uiMedium ?? theme.typography.fontFamily.ui,
-                  },
-                ]}>
-                {children}
-              </Text>
+            {icon ? (
+              <ButtonIconWrapper>
+                <Feather name={icon} size={18} color={textColor} />
+              </ButtonIconWrapper>
             ) : null}
+            {children ? <ButtonLabel $color={textColor}>{children}</ButtonLabel> : null}
           </>
         )}
-      </View>
-    </Pressable>
+      </ButtonContent>
+    </ButtonContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  btn: {
-    height: 48,
-    paddingHorizontal: 20,
-    alignSelf: 'stretch',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  label: {
-    fontSize: 15,
-    lineHeight: 20,
-    fontWeight: '500',
-    letterSpacing: -0.15,
-  },
-  icon: {
-    marginTop: 1,
-  },
-});

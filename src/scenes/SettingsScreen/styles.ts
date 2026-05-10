@@ -108,7 +108,7 @@ export const SegmentedOption = styled.Pressable<ActiveProps>`
 `;
 
 export const SegmentedOptionLabel = styled.Text<ActiveProps>`
-  color: ${({ theme, active }) => (active ? '#FFFFFF' : theme.colors.textMutedStrong)};
+  color: ${({ theme, active }) => (active ? theme.colors.surface : theme.colors.textMutedStrong)};
   font-size: ${({ theme }) => theme.typography.size.sm}px;
   font-family: ${({ theme }) => theme.typography.fontFamily.ui};
   font-weight: 500;

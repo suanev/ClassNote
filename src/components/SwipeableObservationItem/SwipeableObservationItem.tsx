@@ -6,6 +6,7 @@ import ReanimatedSwipeable, {
 import {RectButton} from 'react-native-gesture-handler';
 import {FadeIn, FadeOutLeft, LinearTransition} from 'react-native-reanimated';
 import Feather from 'react-native-vector-icons/Feather';
+import {useTheme} from 'styled-components/native';
 
 import {ObservationListItem} from '@components/ObservationListItem';
 
@@ -38,6 +39,7 @@ const SwipeableObservationItemComponent = ({
   onDelete,
   onToggleFavorite,
 }: SwipeableObservationItemProps) => {
+  const theme = useTheme();
   const swipeableRef = useRef<SwipeableMethods | null>(null);
 
   const handleDelete = useCallback(() => {
@@ -62,7 +64,7 @@ const SwipeableObservationItemComponent = ({
         }}
         renderRightActions={() => (
           <DeleteAction as={RectButton} onPress={handleDelete} testID={`delete-observation-swipe-${id}`}>
-            <Feather name="trash-2" size={22} color="#FFFFFF" />
+            <Feather name="trash-2" size={22} color={theme.colors.onPrimary} />
           </DeleteAction>
         )}>
         <ObservationListItem

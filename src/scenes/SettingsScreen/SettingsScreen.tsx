@@ -157,7 +157,7 @@ const SettingsScreen = ({
                     <MaterialCommunityIcons
                       name={option.icon}
                       size={16}
-                      color={isActive ? '#FFFFFF' : theme.colors.textMutedStrong}
+                      color={isActive ? theme.colors.surface : theme.colors.textMutedStrong}
                     />
                     <SegmentedOptionLabel active={isActive}>{option.label}</SegmentedOptionLabel>
                   </SegmentedOption>

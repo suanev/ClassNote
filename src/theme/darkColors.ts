@@ -6,6 +6,7 @@ export const darkColors = {
   primarySubtle: '#1A2A40',
   primaryBorder: '#2D4A6E',
   onPrimary: '#0F2540',
+  onPrimaryMuted: '#0F2540',
 
   // Surfaces (dark warm)
   bg: '#13110E',
@@ -14,6 +15,7 @@ export const darkColors = {
   surfaceAlt: '#211E18',
   surface2: '#211E18',
   surface3: '#2A271F',
+  surfaceInverse: '#F2EEE3',
 
   // Text
   text: '#F2EEE3',
@@ -21,6 +23,7 @@ export const darkColors = {
   mutedText: '#9E9583',
   textSubtle: '#9E9583',
   textMutedStrong: '#C8C0AE',
+  textOnInverse: '#13110E',
 
   // Borders
   border: '#2D2A22',
@@ -28,6 +31,11 @@ export const darkColors = {
 
   // Overlay
   overlay: 'rgba(0, 0, 0, 0.65)',
+
+  // Utility / shadows
+  shadow: '#000000',
+  shadowBrand: '#000000',
+  focusRing: '#2D4A6E',
 
   // Status
   success: '#47CD89',

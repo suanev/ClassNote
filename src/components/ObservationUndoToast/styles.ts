@@ -17,13 +17,13 @@ export const ToastCard = styled.View`
   padding-horizontal: 16px;
   padding-vertical: 12px;
   border-radius: 6px;
-  background-color: #1C1815;
+  background-color: ${({theme}) => theme.colors.surfaceInverse};
   ${({theme}) => theme.shadows.xl};
 `;
 
 export const Message = styled.Text`
   flex: 1;
-  color: #FAF8F2;
+  color: ${({theme}) => theme.colors.textOnInverse};
   font-size: ${({theme}) => theme.typography.size.sm}px;
   font-family: ${({theme}) => theme.typography.fontFamily.ui};
   font-weight: 500;
@@ -39,7 +39,7 @@ export const ActionButton = styled.Pressable`
 `;
 
 export const ActionLabel = styled.Text`
-  color: #7DA3D4;
+  color: ${({theme}) => theme.colors.primary};
   font-size: ${({theme}) => theme.typography.size.sm}px;
   font-family: ${({theme}) => theme.typography.fontFamily.ui};
   font-weight: 600;

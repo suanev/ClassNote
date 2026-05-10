@@ -1,8 +1,13 @@
 import React from 'react';
-import {Pressable, View, Text, StyleSheet} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useTheme} from 'styled-components/native';
+
+import {
+  IconButtonBadge,
+  IconButtonBadgeText,
+  IconButtonRoot,
+} from './styles';
 
 type IconLibrary = 'feather' | 'material-community';
 
@@ -37,7 +42,7 @@ export const IconButton = ({
     );
 
   return (
-    <Pressable
+    <IconButtonRoot
       onPress={onPress}
       disabled={disabled}
       testID={testID}
@@ -45,39 +50,13 @@ export const IconButton = ({
       accessibilityRole="button"
       accessibilityState={{disabled}}
       hitSlop={8}
-      style={({pressed}) => [styles.btn, {opacity: pressed ? 0.7 : 1}]}>
+      style={({pressed}) => ({opacity: pressed ? 0.7 : 1})}>
       {iconNode}
       {showBadge && (
-        <View style={[styles.badge, {backgroundColor: theme.colors.primary}]}>
-          <Text style={styles.badgeText}>{badgeCount! > 9 ? '9+' : badgeCount}</Text>
-        </View>
+        <IconButtonBadge>
+          <IconButtonBadgeText>{badgeCount! > 9 ? '9+' : badgeCount}</IconButtonBadgeText>
+        </IconButtonBadge>
       )}
-    </Pressable>
+    </IconButtonRoot>
   );
 };
-
-const styles = StyleSheet.create({
-  btn: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  badge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  badgeText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: '600',
-    lineHeight: 12,
-  },
-});

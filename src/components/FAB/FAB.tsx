@@ -1,7 +1,8 @@
 import React from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from 'styled-components/native';
+
+import {FabButton, FabContainer} from './styles';
 
 interface FABProps {
   icon?: string;
@@ -25,34 +26,19 @@ export const FAB = ({
   const theme = useTheme();
 
   return (
-    <View style={[styles.container, {right, bottom}]}>
-      <Pressable
+    <FabContainer $right={right} $bottom={bottom}>
+      <FabButton
         onPress={onPress}
         disabled={disabled}
         testID={testID}
         accessibilityLabel={accessibilityLabel}
         accessibilityRole="button"
         style={({pressed}) => [
-          styles.fab,
-          {backgroundColor: theme.colors.primary},
           theme.shadows.fab,
           {opacity: disabled ? 0.5 : pressed ? 0.85 : 1},
         ]}>
         <Feather name={icon} size={26} color={theme.colors.onPrimary} />
-      </Pressable>
-    </View>
+      </FabButton>
+    </FabContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-  },
-  fab: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

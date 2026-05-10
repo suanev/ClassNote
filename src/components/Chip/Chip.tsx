@@ -1,16 +1,21 @@
 import React from 'react';
-import {Pressable, Text, StyleSheet, View} from 'react-native';
 import {useTheme} from 'styled-components/native';
+
+import {ChipButton, ChipLabel, ChipPlusIcon} from './styles';
+
+type ChipVariant = 'default' | 'dashed';
+type ChipRole = 'radio' | 'checkbox' | 'button';
+type ChipState = { selected?: boolean; checked?: boolean };
 
 interface ChipProps {
   label: string;
   active?: boolean;
   onPress?: () => void;
-  variant?: 'default' | 'dashed';
+  variant?: ChipVariant;
   testID?: string;
   accessibilityLabel?: string;
-  accessibilityRole?: 'radio' | 'checkbox' | 'button';
-  accessibilityState?: {selected?: boolean; checked?: boolean};
+  accessibilityRole?: ChipRole;
+  accessibilityState?: ChipState;
 }
 
 export const Chip = ({
@@ -27,60 +32,19 @@ export const Chip = ({
   const isDashed = variant === 'dashed';
 
   return (
-    <Pressable
+    <ChipButton
       onPress={onPress}
       testID={testID}
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityRole={accessibilityRole}
-      accessibilityState={accessibilityState ?? (accessibilityRole === 'radio' ? {selected: active} : undefined)}
-      style={({pressed}) => [
-        styles.chip,
-        {
-          backgroundColor: active ? theme.colors.primary : 'transparent',
-          borderColor: isDashed
-            ? theme.colors.borderStrong
-            : active
-            ? theme.colors.primary
-            : theme.colors.border,
-          borderStyle: isDashed ? 'dashed' : 'solid',
-          opacity: pressed ? 0.7 : 1,
-        },
-      ]}>
-      {isDashed && (
-        <Text style={[styles.plusIcon, {color: theme.colors.textMuted}]}>+</Text>
-      )}
-      <Text
-        style={[
-          styles.label,
-          {
-            color: active ? '#FFFFFF' : theme.colors.text,
-            fontFamily: theme.typography.fonts?.uiMedium ?? theme.typography.fontFamily.ui,
-          },
-        ]}>
-        {label}
-      </Text>
-    </Pressable>
+      accessibilityState={
+        accessibilityState ?? (accessibilityRole === 'radio' ? { selected: active } : undefined)
+      }
+      $active={active}
+      $dashed={isDashed}
+      style={({pressed}) => ({opacity: pressed ? 0.7 : 1, borderStyle: isDashed ? 'dashed' : 'solid'})}>
+      {isDashed ? <ChipPlusIcon>+</ChipPlusIcon> : null}
+      <ChipLabel $active={active}>{label}</ChipLabel>
+    </ChipButton>
   );
 };
-
-const styles = StyleSheet.create({
-  chip: {
-    height: 36,
-    paddingHorizontal: 14,
-    borderRadius: 9999,
-    borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-  },
-  label: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  plusIcon: {
-    fontSize: 16,
-    lineHeight: 20,
-    marginRight: 2,
-  },
-});

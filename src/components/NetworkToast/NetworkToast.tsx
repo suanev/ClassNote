@@ -1,12 +1,13 @@
 import React from 'react';
-import {Pressable} from 'react-native';
-import Reanimated, {FadeInDown, FadeOutUp} from 'react-native-reanimated';
+import { Pressable } from 'react-native';
+import Reanimated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Portal} from 'react-native-paper';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { Portal } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {isDev} from '@constants/environment';
-import {ToastLabel, ToastRow, ToastWrapper} from './styles';
+import { isDev } from '@constants/environment';
+import { ToastLabel, ToastRow, ToastWrapper } from './styles';
+import { useTheme } from 'styled-components/native';
 
 const DEFAULT_MESSAGES = {
   offline:
@@ -31,23 +32,24 @@ interface NetworkToastProps {
   onDismiss?: () => void;
 }
 
-export const NetworkToast = ({status, onDismiss}: NetworkToastProps) => {
-  const {top} = useSafeAreaInsets();
+export const NetworkToast = ({ status, onDismiss }: NetworkToastProps) => {
+  const theme = useTheme();
+  const { top } = useSafeAreaInsets();
   const messages = isDev ? DEVELOPMENT_MESSAGES : DEFAULT_MESSAGES;
 
   return (
     <Portal>
       <ToastWrapper
         testID="network-toast"
-        as={Reanimated.View}
         entering={FadeInDown.duration(220)}
         exiting={FadeOutUp.duration(180)}
-        safeTop={top}>
+        safeTop={top}
+      >
         <ToastRow status={status}>
           <MaterialCommunityIcons
             name={ICONS[status]}
             size={16}
-            color="#ffffff"
+            color={theme.colors.onPrimary}
             accessibilityLabel={status === 'offline' ? 'Sem conexão' : 'Conexão restaurada'}
           />
           <ToastLabel>{messages[status]}</ToastLabel>
@@ -56,8 +58,9 @@ export const NetworkToast = ({status, onDismiss}: NetworkToastProps) => {
               onPress={onDismiss}
               hitSlop={8}
               accessibilityRole="button"
-              accessibilityLabel="Fechar aviso">
-              <MaterialCommunityIcons name="close" size={16} color="#ffffff" />
+              accessibilityLabel="Fechar aviso"
+            >
+              <MaterialCommunityIcons name="close" size={16} color={theme.colors.surface} />
             </Pressable>
           ) : null}
         </ToastRow>
