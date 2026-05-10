@@ -1,6 +1,7 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StatusBar, View} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import BootSplash from 'react-native-bootsplash';
 import {useDispatch} from 'react-redux';
 
 import {NetworkToast} from '@components/NetworkToast';
@@ -27,14 +28,12 @@ if (errorUtils?.getGlobalHandler) {
   });
 }
 
-const OFFLINE_TOAST_MESSAGE =
-  'Você está offline. Suas alterações ficam salvas no aparelho e serão enviadas para a nuvem assim que a conexão voltar.';
-
 export const AppShell = () => {
-  const {resolved} = useThemeContext();
+  const {resolved, isHydrated} = useThemeContext();
   const networkStatus = useNetworkStatus();
   useMonitoringContext();
   const dispatch = useDispatch<AppDispatch>();
+  const [toastDismissed, setToastDismissed] = useState(false);
 
   useEffect(() => {
     dispatch(setOffline(networkStatus === 'offline'));
@@ -42,6 +41,20 @@ export const AppShell = () => {
       dispatch(flushSyncQueue());
     }
   }, [dispatch, networkStatus]);
+
+  useEffect(() => {
+    setToastDismissed(false);
+  }, [networkStatus]);
+
+  useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
+    BootSplash.hide({fade: true}).catch(() => {
+      // Ignore native failures in tests or unsupported runtimes.
+    });
+  }, [isHydrated]);
 
   return (
     <View style={{flex: 1}}>
@@ -51,8 +64,11 @@ export const AppShell = () => {
         translucent
       />
       <RootNavigator />
-      {networkStatus === 'offline' ? (
-        <NetworkToast message={OFFLINE_TOAST_MESSAGE} />
+      {(networkStatus === 'offline' || networkStatus === 'restored') && !toastDismissed ? (
+        <NetworkToast
+          status={networkStatus}
+          onDismiss={() => setToastDismissed(true)}
+        />
       ) : null}
     </View>
   );

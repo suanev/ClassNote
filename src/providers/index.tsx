@@ -1,7 +1,7 @@
 import React, {PropsWithChildren} from 'react';
 import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {NavigationContainer} from '@react-navigation/native';
-import {QueryClientProvider} from '@tanstack/react-query';
+import {PersistQueryClientProvider} from '@tanstack/react-query-persist-client';
 import {Provider as ReduxProvider} from 'react-redux';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {PaperProvider} from 'react-native-paper';
@@ -10,7 +10,7 @@ import {ThemeProvider} from 'styled-components/native';
 import {linking} from '@navigation/linking';
 import {ThemeContextProvider, useThemeContext} from '@theme/ThemeContext';
 import {store} from '../store';
-import {queryClient} from '../store/queryClient';
+import {mmkvPersister, queryClient} from '../store/queryClient';
 
 const UIProvidersBridge = ({children}: PropsWithChildren) => {
   const {theme, paperTheme} = useThemeContext();
@@ -25,7 +25,9 @@ const UIProvidersBridge = ({children}: PropsWithChildren) => {
 
 const AppProviders = ({children}: PropsWithChildren) => {
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{persister: mmkvPersister}}>
       <ReduxProvider store={store}>
         <SafeAreaProvider>
           <ThemeContextProvider>
@@ -37,7 +39,7 @@ const AppProviders = ({children}: PropsWithChildren) => {
           </ThemeContextProvider>
         </SafeAreaProvider>
       </ReduxProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 };
 
