@@ -1,13 +1,6 @@
 {
   "classes": [
     {
-      "id": "class-5a",
-      "name": "5º Ano A",
-      "teacherName": "Profa. Marina",
-      "shift": "Manhã",
-      "students": 28
-    },
-    {
       "id": "class-6b",
       "name": "6º Ano B",
       "teacherName": "Profa. Marina",
@@ -24,15 +17,6 @@
   ],
   "observations": [
     {
-      "id": "obs-02",
-      "student": "Pedro Lima",
-      "className": "5º Ano A",
-      "text": "Precisou de retomada das instruções em matemática e respondeu melhor quando a tarefa foi dividida em etapas menores.",
-      "createdAt": "2026-05-07T09:35:00.000Z",
-      "updatedAt": "2026-05-07T09:35:00.000Z",
-      "favorite": false
-    },
-    {
       "id": "obs-03",
       "student": "Júlia Costa",
       "className": "6º Ano B",
@@ -43,12 +27,13 @@
     },
     {
       "id": "obs-04",
-      "student": "Lucas Ferreira",
+      "student": "Lucas Eduardo Ferreira",
       "className": "7º Ano C",
       "text": "Participou mais da discussão em história e conseguiu justificar melhor seu ponto de vista com exemplos do texto.",
       "createdAt": "2026-05-06T19:40:00.000Z",
-      "updatedAt": "2026-05-06T19:40:00.000Z",
-      "favorite": false
+      "updatedAt": "2026-05-09T14:28:44.203Z",
+      "favorite": false,
+      "classId": "class-7c"
     },
     {
       "id": "obs-05",
@@ -57,15 +42,6 @@
       "text": "Mostrou evolução na leitura em voz alta e participação mais confiante.",
       "createdAt": "2026-05-06T17:15:00.000Z",
       "updatedAt": "2026-05-06T17:15:00.000Z",
-      "favorite": false
-    },
-    {
-      "id": "obs-06",
-      "student": "Bianca Nunes",
-      "className": "5º Ano A",
-      "text": "Concluiu a produção escrita com autonomia e revisou o texto com bastante atenção aos combinados da turma.",
-      "createdAt": "2026-05-06T15:05:00.000Z",
-      "updatedAt": "2026-05-06T15:05:00.000Z",
       "favorite": false
     },
     {
@@ -85,15 +61,6 @@
       "createdAt": "2026-05-06T11:55:00.000Z",
       "updatedAt": "2026-05-06T11:55:00.000Z",
       "favorite": true
-    },
-    {
-      "id": "obs-09",
-      "student": "Gabriel Teixeira",
-      "className": "5º Ano A",
-      "text": "Perdeu parte da explicação inicial, mas conseguiu acompanhar a turma depois de retomar os combinados no caderno.",
-      "createdAt": "2026-05-06T10:10:00.000Z",
-      "updatedAt": "2026-05-06T10:10:00.000Z",
-      "favorite": false
     },
     {
       "id": "obs-10",
@@ -132,15 +99,6 @@
       "favorite": false
     },
     {
-      "id": "obs-14",
-      "student": "Miguel Araújo",
-      "className": "5º Ano A",
-      "text": "Mostrou dispersão no início da aula, mas retomou a atividade após reorganizar o material.",
-      "createdAt": "2026-05-05T14:30:00.000Z",
-      "updatedAt": "2026-05-05T14:30:00.000Z",
-      "favorite": false
-    },
-    {
       "id": "obs-15",
       "student": "Larissa Campos",
       "className": "6º Ano B",
@@ -157,15 +115,6 @@
       "createdAt": "2026-05-05T10:55:00.000Z",
       "updatedAt": "2026-05-05T10:55:00.000Z",
       "favorite": false
-    },
-    {
-      "id": "obs-17",
-      "student": "Helena Pires",
-      "className": "5º Ano A",
-      "text": "Participou da leitura compartilhada com entusiasmo e fez inferências interessantes sobre a história.",
-      "createdAt": "2026-05-05T09:10:00.000Z",
-      "updatedAt": "2026-05-05T09:10:00.000Z",
-      "favorite": true
     },
     {
       "id": "obs-18",
@@ -186,15 +135,6 @@
       "favorite": true
     },
     {
-      "id": "obs-20",
-      "student": "Enzo Carvalho",
-      "className": "5º Ano A",
-      "text": "Completou a atividade com rapidez, mas precisou revisar o registro para incluir todas as etapas solicitadas.",
-      "createdAt": "2026-05-04T15:40:00.000Z",
-      "updatedAt": "2026-05-04T15:40:00.000Z",
-      "favorite": false
-    },
-    {
       "id": "obs-21",
       "student": "Valentina Cardoso",
       "className": "6º Ano B",
@@ -211,15 +151,6 @@
       "createdAt": "2026-05-04T11:20:00.000Z",
       "updatedAt": "2026-05-04T11:20:00.000Z",
       "favorite": false
-    },
-    {
-      "id": "obs-23",
-      "student": "Laura Farias",
-      "className": "5º Ano A",
-      "text": "Contribuiu com ideias criativas na construção do cartaz e ouviu as sugestões do grupo com abertura.",
-      "createdAt": "2026-05-04T09:45:00.000Z",
-      "updatedAt": "2026-05-04T09:45:00.000Z",
-      "favorite": true
     },
     {
       "id": "obs-24",
@@ -240,15 +171,6 @@
       "favorite": true
     },
     {
-      "id": "obs-26",
-      "student": "Daniel Pereira",
-      "className": "5º Ano A",
-      "text": "Interrompeu alguns colegas na atividade em grupo, mas conseguiu ajustar a escuta depois da mediação.",
-      "createdAt": "2026-05-03T14:20:00.000Z",
-      "updatedAt": "2026-05-03T14:20:00.000Z",
-      "favorite": false
-    },
-    {
       "id": "obs-27",
       "student": "Nicole Batista",
       "className": "6º Ano B",
@@ -267,15 +189,6 @@
       "favorite": false
     },
     {
-      "id": "obs-29",
-      "student": "Isabela Monteiro",
-      "className": "5º Ano A",
-      "text": "Fez boas conexões entre o texto lido e experiências do cotidiano, enriquecendo a conversa da turma.",
-      "createdAt": "2026-05-03T09:50:00.000Z",
-      "updatedAt": "2026-05-03T09:50:00.000Z",
-      "favorite": true
-    },
-    {
       "id": "obs-30",
       "student": "Vinícius Lopes",
       "className": "6º Ano B",
@@ -291,15 +204,6 @@
       "text": "Aproveitou bem o tempo de revisão e entregou uma versão mais completa da atividade escrita.",
       "createdAt": "2026-05-02T16:40:00.000Z",
       "updatedAt": "2026-05-02T16:40:00.000Z",
-      "favorite": false
-    },
-    {
-      "id": "obs-32",
-      "student": "Otávio Freitas",
-      "className": "5º Ano A",
-      "text": "Participou pouco da socialização, mas registrou tudo com bastante atenção no caderno.",
-      "createdAt": "2026-05-02T14:35:00.000Z",
-      "updatedAt": "2026-05-02T14:35:00.000Z",
       "favorite": false
     },
     {
@@ -321,6 +225,5 @@
       "favorite": false
     }
   ],
-  "favorites": [],
   "$schema": "./node_modules/json-server/schema.json"
 }

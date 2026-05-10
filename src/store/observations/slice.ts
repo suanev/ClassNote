@@ -1,5 +1,6 @@
 import {PayloadAction, createSlice} from '@reduxjs/toolkit';
 import {Observation} from '../../types/observations';
+import {ClassShift} from '../../types/classes';
 
 export const DEFAULT_OBSERVATION_SORT_ORDER = 'recent-first';
 
@@ -15,6 +16,7 @@ type ObservationToastState = {
 
 type ObservationsState = {
   filterByClass: string | null;
+  filterByShift: ClassShift | null;
   filterByFavorites: boolean;
   sortOrder: ObservationSortOrder;
   isFilterSheetOpen: boolean;
@@ -25,6 +27,7 @@ type ObservationsState = {
 
 const initialState: ObservationsState = {
   filterByClass: null,
+  filterByShift: null,
   filterByFavorites: false,
   sortOrder: DEFAULT_OBSERVATION_SORT_ORDER,
   isFilterSheetOpen: false,
@@ -51,6 +54,11 @@ const observationsSlice = createSlice({
     setClassFilter(state, action: PayloadAction<string | null>) {
       state.filterByClass = action.payload;
     },
+    setShiftFilter(state, action: PayloadAction<ClassShift | null>) {
+      state.filterByShift = action.payload;
+      // Reset class filter when shift changes to avoid stale class selection
+      state.filterByClass = null;
+    },
     toggleFavoritesFilter(state) {
       state.filterByFavorites = !state.filterByFavorites;
     },
@@ -59,6 +67,7 @@ const observationsSlice = createSlice({
     },
     resetFilters(state) {
       state.filterByClass = null;
+      state.filterByShift = null;
       state.filterByFavorites = false;
       state.sortOrder = DEFAULT_OBSERVATION_SORT_ORDER;
     },
@@ -133,6 +142,7 @@ export const {
   resetFilters,
   restoreFilterPreferences,
   setClassFilter,
+  setShiftFilter,
   setSortOrder,
   showObservationToast,
   showObservationErrorToast,

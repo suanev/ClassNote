@@ -15,7 +15,8 @@ import {
   useUpdateObservationMutation,
 } from '@hooks/useObservations';
 import {queryKeys} from '@constants/queryKeys';
-import {ObservationsStackParamList} from '@navigation/types';
+import {RootStackParamList} from '@navigation/types';
+import {ClassShift, SchoolClass} from '../../types/classes';
 import {Observation} from '../../types/observations';
 import {formatRelativeObservationTime} from '@utils/date';
 import {sortObservations} from '@utils/sort';
@@ -28,6 +29,7 @@ import {
   queueDeletedObservation,
   resetFilters,
   setClassFilter,
+  setShiftFilter,
   setSortOrder,
   showObservationErrorToast,
   showObservationToast,
@@ -35,28 +37,32 @@ import {
   toggleFavoritesFilter,
 } from '../../store/observations/slice';
 
-type Navigation = StackNavigationProp<ObservationsStackParamList>;
+type Navigation = StackNavigationProp<RootStackParamList>;
 
 export type ObservationItemView = {
   id: string;
   student: string;
   className: string;
+  shift?: string;
   text: string;
   relativeTime: string;
   favorite: boolean;
 };
 
 export type ObservationsViewModel = {
-  availableClasses: string[];
+  availableClasses: SchoolClass[];
+  filteredObservationsCount: number;
+  filterByShift: ClassShift | null;
   filterByClass: string | null;
   filterByFavorites: boolean;
+  filterCount: number;
+  hasAnyObservations: boolean;
   isFilterSheetOpen: boolean;
   observations: ObservationItemView[];
   deletePendingId: string | null | undefined;
   hasMore: boolean;
   isLoadingMore: boolean;
   isLoading: boolean;
-  isError: boolean;
   isRefreshing: boolean;
   sortOrder: ObservationSortOrder;
   toastVisible: boolean;
@@ -69,8 +75,8 @@ export type ObservationsViewModel = {
   onLoadMore: () => void;
   onOpenFilters: () => void;
   onRefresh: () => void;
-  onRetry: () => void;
   onResetFilters: () => void;
+  onSelectShift: (value: ClassShift | null) => void;
   onSelectClass: (value: string | null) => void;
   onSelectSortOrder: (value: ObservationSortOrder) => void;
   onToggleFavoritesFilter: () => void;
@@ -84,9 +90,11 @@ export function useObservationsViewModel(): ObservationsViewModel {
   const dispatch = useDispatch<AppDispatch>();
   const queryClient = useQueryClient();
   const {
+    filterByShift,
     filterByClass,
     filterByFavorites,
     isFilterSheetOpen,
+    // network slice lives in a separate branch, read below
     pendingDeletedObservation,
     sortOrder,
     toast,
@@ -95,24 +103,46 @@ export function useObservationsViewModel(): ObservationsViewModel {
 
   const classesQuery = useClassesQuery();
   const observationsQuery = useObservationsQuery();
+  const cachedObservations = queryClient.getQueryData<Observation[]>(queryKeys.observations);
+  const cachedClasses = queryClient.getQueryData<SchoolClass[]>(queryKeys.classes);
   const observations = useMemo(
-    () => observationsQuery.data ?? [],
-    [observationsQuery.data],
+    () => observationsQuery.data ?? cachedObservations ?? [],
+    [cachedObservations, observationsQuery.data],
   );
 
+  const allClasses: SchoolClass[] = useMemo(
+    () => classesQuery.data ?? cachedClasses ?? [],
+    [cachedClasses, classesQuery.data],
+  );
+
+  // Classes shown in filter: cascade from selected shift
   const availableClasses = useMemo(() => {
-    const classesFromApi = (classesQuery.data ?? [])
-      .map(item => item.name)
-      .filter(Boolean);
-
-    if (classesFromApi.length > 0) {
-      return Array.from(new Set(classesFromApi));
+    if (filterByShift) {
+      return allClasses.filter(c => c.shift === filterByShift);
     }
+    return allClasses;
+  }, [allClasses, filterByShift]);
 
-    return Array.from(
-      new Set(observations.map(item => item.className).filter(Boolean)),
-    );
-  }, [classesQuery.data, observations]);
+  // Two maps: by id and by name, for observations that may lack classId
+  const classById = useMemo(() => {
+    const map = new Map<string, SchoolClass>();
+    allClasses.forEach(c => map.set(c.id, c));
+    return map;
+  }, [allClasses]);
+
+  const classByName = useMemo(() => {
+    const map = new Map<string, SchoolClass>();
+    allClasses.forEach(c => map.set(c.name, c));
+    return map;
+  }, [allClasses]);
+
+  const resolveClass = useCallback(
+    (obs: Observation): SchoolClass | undefined => {
+      if (obs.classId) return classById.get(obs.classId);
+      return classByName.get(obs.className);
+    },
+    [classById, classByName],
+  );
 
   const createObservationMutation = useCreateObservationMutation({
     onSuccess: () => {
@@ -200,6 +230,13 @@ export function useObservationsViewModel(): ObservationsViewModel {
     [dispatch, observations, updateObservationMutation],
   );
 
+  const handleSelectShift = useCallback(
+    (value: ClassShift | null) => {
+      dispatch(setShiftFilter(value));
+    },
+    [dispatch],
+  );
+
   const handleSelectClass = useCallback(
     (value: string | null) => {
       dispatch(setClassFilter(value));
@@ -255,14 +292,21 @@ export function useObservationsViewModel(): ObservationsViewModel {
 
   const filteredObservations = useMemo(() => {
     let result = observations;
+    // Apply shift filter first (via class shift)
+    if (filterByShift !== null) {
+      result = result.filter(item => resolveClass(item)?.shift === filterByShift);
+    }
     if (filterByClass !== null) {
-      result = result.filter(item => item.className === filterByClass);
+      // filterByClass stores classId; fall back to className match for old data
+      result = result.filter(
+        item => (item.classId ?? item.className) === filterByClass,
+      );
     }
     if (filterByFavorites) {
       result = result.filter(item => item.favorite);
     }
     return sortObservations(result, sortOrder);
-  }, [filterByClass, filterByFavorites, observations, sortOrder]);
+  }, [filterByShift, filterByClass, filterByFavorites, observations, resolveClass, sortOrder]);
 
   const {hasMore, loadMore, paginatedItems, reset: resetPagination} =
     usePagination(filteredObservations, 12);
@@ -309,17 +353,35 @@ export function useObservationsViewModel(): ObservationsViewModel {
 
   const observationItems = useMemo(
     () =>
-      paginatedItems.map(item => ({
-        ...item,
-        relativeTime: formatRelativeObservationTime(item.createdAt),
-      })),
-    [paginatedItems],
+      paginatedItems.map(item => {
+        const cls = resolveClass(item);
+        return {
+          ...item,
+          className: cls?.name ?? item.className,
+          shift: cls?.shift,
+          relativeTime: formatRelativeObservationTime(item.createdAt),
+        };
+      }),
+    [paginatedItems, resolveClass],
   );
+
+  // Count active non-default filters for badge
+  const filterCount = useMemo(() => {
+    let count = 0;
+    if (filterByShift !== null) count++;
+    if (filterByClass !== null) count++;
+    if (filterByFavorites) count++;
+    return count;
+  }, [filterByShift, filterByClass, filterByFavorites]);
 
   return {
     availableClasses,
+    filteredObservationsCount: filteredObservations.length,
+    filterByShift,
     filterByClass,
     filterByFavorites,
+    filterCount,
+    hasAnyObservations: observations.length > 0,
     isFilterSheetOpen,
     observations: observationItems,
     deletePendingId: deleteObservationMutation.isPending
@@ -327,8 +389,7 @@ export function useObservationsViewModel(): ObservationsViewModel {
       : null,
     hasMore,
     isLoadingMore,
-    isLoading: observationsQuery.isLoading,
-    isError: observationsQuery.isError,
+    isLoading: observationsQuery.isLoading && observations.length === 0,
     isRefreshing: observationsQuery.isRefetching,
     sortOrder,
     toastVisible: toast.visible,
@@ -341,8 +402,8 @@ export function useObservationsViewModel(): ObservationsViewModel {
     onLoadMore: handleLoadMore,
     onOpenFilters: handleOpenFilters,
     onRefresh: handleRefresh,
-    onRetry: () => observationsQuery.refetch(),
     onResetFilters: handleResetFilters,
+    onSelectShift: handleSelectShift,
     onSelectClass: handleSelectClass,
     onSelectSortOrder: handleSelectSortOrder,
     onToggleFavoritesFilter: handleToggleFavoritesFilter,

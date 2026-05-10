@@ -8,6 +8,7 @@ import {
 } from '@services/observations';
 import {monitoring, Events} from '@services/monitoring';
 import {syncQueue, SyncOperation} from '@services/syncQueue';
+import {touchLastSync} from '@storage/index';
 import {sortObservations} from '@utils/sort';
 import {Observation} from '../../types/observations';
 import {queryClient} from '../queryClient';
@@ -92,6 +93,7 @@ function* handleSyncQueueFlush() {
 
 
   if (synced > 0 && failed === 0) {
+    yield call(touchLastSync);
     monitoring.logEvent(Events.SYNC_COMPLETED, {synced_count: synced});
     yield put(
       showObservationToast({

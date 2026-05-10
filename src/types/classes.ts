@@ -1,7 +1,12 @@
+export type ClassShift = 'Manhã' | 'Tarde' | 'Noite' | 'Outro';
+
 export type SchoolClass = {
   id: string;
   name: string;
-  teacherName: string;
-  shift: string;
-  students: number;
+  shift: ClassShift;
+};
+
+export type SchoolClassCreatePayload = {
+  name: string;
+  shift: ClassShift;
 };

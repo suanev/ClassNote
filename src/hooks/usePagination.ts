@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 /***
  * Pagina uma lista local por página.
@@ -13,15 +13,22 @@ export const usePagination = <T>(items: T[], pageSize = 10) => {
 
   const hasMore = paginatedItems.length < items.length;
 
+  const loadMore = useCallback(
+    () =>
+      setPage(currentPage =>
+        currentPage * pageSize >= items.length ? currentPage : currentPage + 1,
+      ),
+    [items.length, pageSize],
+  );
+
+  const reset = useCallback(() => setPage(1), []);
+
   return {
     page,
     pageSize,
     hasMore,
     paginatedItems,
-    loadMore: () =>
-      setPage((currentPage) =>
-        currentPage * pageSize >= items.length ? currentPage : currentPage + 1,
-      ),
-    reset: () => setPage(1),
+    loadMore,
+    reset,
   };
 };

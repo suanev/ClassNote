@@ -1,10 +1,9 @@
 import {useCallback, useMemo, useState} from 'react';
-import {Alert} from 'react-native';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useDispatch} from 'react-redux';
 
-import {useClassesQuery} from '@hooks/useClasses';
+import {useClassesQuery, useCreateClassMutation} from '@hooks/useClasses';
 import {
   useCreateObservationMutation,
   useDeleteObservationMutation,
@@ -12,9 +11,9 @@ import {
   useUpdateObservationMutation,
 } from '@hooks/useObservations';
 import {monitoring, Events} from '@services/monitoring';
-import {ObservationsStackParamList} from '@navigation/types';
+import {RootStackParamList} from '@navigation/types';
+import {SchoolClass} from '../../types/classes';
 import {
-  ObservationClass,
   ObservationDraft,
   ObservationUpsertPayload,
 } from '../../types/observations';
@@ -22,24 +21,28 @@ import {showObservationErrorToast} from '@store/observations/slice';
 import {AppDispatch} from '@store/index';
 import {isNetworkError} from '@utils/network';
 
-type Navigation = StackNavigationProp<ObservationsStackParamList>;
-type ObservationFormRoute = RouteProp<ObservationsStackParamList, 'ObservationForm'>;
+type Navigation = StackNavigationProp<RootStackParamList>;
+type ObservationFormRoute = RouteProp<RootStackParamList, 'ObservationForm'>;
 
 export type ObservationFormViewModel = {
   mode: 'create' | 'edit';
   student: string;
-  className: ObservationClass;
+  className: string;
+  classId: string;
   text: string;
-  classOptions: ObservationClass[];
+  classes: SchoolClass[];
   isFavorite: boolean;
   isLoading: boolean;
   isDeleting: boolean;
   isRouteLoading: boolean;
+  isCreatingClass: boolean;
+  canSave: boolean;
   onBackPress: () => void;
   onChangeStudent: (value: string) => void;
-  onChangeClass: (value: ObservationClass) => void;
+  onSelectClass: (id: string) => void;
   onChangeText: (value: string) => void;
   onToggleFavorite: () => void;
+  onCreateClass: (name: string, shift: SchoolClass['shift']) => void;
   onSave: () => void;
   onDelete?: () => void;
 };
@@ -54,8 +57,8 @@ export function useObservationFormViewModel(): ObservationFormViewModel {
   const observationsQuery = useObservationsQuery();
   const classesQuery = useClassesQuery();
 
-  const classOptions = useMemo(
-    () => (classesQuery.data ?? []).map(item => item.name),
+  const classes: SchoolClass[] = useMemo(
+    () => classesQuery.data ?? [],
     [classesQuery.data],
   );
 
@@ -66,14 +69,40 @@ export function useObservationFormViewModel(): ObservationFormViewModel {
     [observationId, observationsQuery.data],
   );
 
+  const initialClassId = useMemo(() => {
+    if (existingObservation?.classId) return existingObservation.classId;
+    if (existingObservation?.className) {
+      return classes.find(c => c.name === existingObservation.className)?.id ?? '';
+    }
+    return classes[0]?.id ?? '';
+  }, [existingObservation, classes]);
+
   const [student, setStudent] = useState(existingObservation?.student ?? '');
-  const [className, setClassName] = useState<ObservationClass>(
-    existingObservation?.className ?? '',
-  );
+  const [classId, setClassId] = useState<string>(initialClassId);
   const [text, setText] = useState(existingObservation?.text ?? '');
   const [favorite, setFavorite] = useState(existingObservation?.favorite ?? false);
 
-  const selectedClassName = className || classOptions[0] || '';
+  const selectedClassId = classId || classes[0]?.id || '';
+  const selectedClass = classes.find(c => c.id === selectedClassId);
+  const selectedClassName = selectedClass?.name ?? '';
+  const normalizedStudent = student.trim();
+  const normalizedText = text.trim();
+  const canSave = Boolean(normalizedStudent && normalizedText && selectedClassName);
+
+  const navigateToObservationsHome = useCallback(() => {
+    navigation.popToTop();
+    navigation.navigate('ObservationsHome');
+  }, [navigation]);
+
+  const createClassMutation = useCreateClassMutation({
+    onSuccess: newClass => {
+      // Auto-select newly created class
+      setClassId(newClass.id);
+    },
+    onError: error => {
+      monitoring.logError(error, {action: 'create_class'});
+    },
+  });
 
   const createMutation = useCreateObservationMutation({
     onSuccess: () => {
@@ -110,29 +139,35 @@ export function useObservationFormViewModel(): ObservationFormViewModel {
     onSuccess: () => {
       monitoring.logEvent(Events.OBSERVATION_DELETED);
       monitoring.breadcrumb('observation_deleted_from_form');
-      navigation.goBack();
+      navigateToObservationsHome();
     },
     onError: error => {
+      if (isNetworkError(error)) {
+        monitoring.breadcrumb('observation_deleted_offline_from_form');
+        navigateToObservationsHome();
+        return;
+      }
       monitoring.logError(error, {action: 'delete_observation_form'});
       dispatch(showObservationErrorToast('Não foi possível apagar a observação.'));
     },
   });
 
-  const handleSave = useCallback(() => {
-    const normalizedStudent = student.trim();
-    const normalizedText = text.trim();
+  const handleCreateClass = useCallback(
+    (name: string, shift: SchoolClass['shift']) => {
+      createClassMutation.mutate({name, shift});
+    },
+    [createClassMutation],
+  );
 
-    if (!normalizedStudent || !normalizedText || !selectedClassName) {
-      Alert.alert(
-        'Campos obrigatórios',
-        'Preencha o nome do aluno, a turma e a observação antes de salvar.',
-      );
+  const handleSave = useCallback(() => {
+    if (!canSave) {
       return;
     }
 
     const draft: ObservationDraft = {
       student: normalizedStudent,
       className: selectedClassName,
+      classId: selectedClassId || undefined,
       text: normalizedText,
     };
 
@@ -163,9 +198,11 @@ export function useObservationFormViewModel(): ObservationFormViewModel {
     existingObservation,
     favorite,
     mode,
+    canSave,
+    selectedClassId,
     selectedClassName,
-    student,
-    text,
+    normalizedStudent,
+    normalizedText,
     updateMutation,
   ]);
 
@@ -173,17 +210,21 @@ export function useObservationFormViewModel(): ObservationFormViewModel {
     mode,
     student,
     className: selectedClassName,
+    classId: selectedClassId,
     text,
-    classOptions,
+    classes,
     isFavorite: favorite,
     isLoading: createMutation.isPending || updateMutation.isPending,
     isDeleting: deleteMutation.isPending,
     isRouteLoading: mode === 'edit' && observationsQuery.isLoading,
+    isCreatingClass: createClassMutation.isPending,
+    canSave,
     onBackPress: () => navigation.goBack(),
     onChangeStudent: setStudent,
-    onChangeClass: setClassName,
+    onSelectClass: setClassId,
     onChangeText: setText,
     onToggleFavorite: () => setFavorite(prev => !prev),
+    onCreateClass: handleCreateClass,
     onSave: handleSave,
     onDelete:
       mode === 'edit' && existingObservation

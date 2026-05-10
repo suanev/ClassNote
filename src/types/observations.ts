@@ -1,9 +1,8 @@
-export type ObservationClass = string;
-
 export type Observation = {
   id: string;
   student: string;
-  className: ObservationClass;
+  className: string;
+  classId?: string;
   text: string;
   createdAt: string;
   updatedAt: string;
@@ -12,7 +11,8 @@ export type Observation = {
 
 export type ObservationDraft = {
   student: string;
-  className: ObservationClass;
+  className: string;
+  classId?: string;
   text: string;
 };
 
