@@ -1,0 +1,28 @@
+diff --git a/node_modules/@react-native-community/cli-config-android/build/config/getMainActivity.js b/node_modules/@react-native-community/cli-config-android/build/config/getMainActivity.js
+index 40b86b3..df7bdcf 100644
+--- a/node_modules/@react-native-community/cli-config-android/build/config/getMainActivity.js
++++ b/node_modules/@react-native-community/cli-config-android/build/config/getMainActivity.js
+@@ -39,13 +39,19 @@ function getMainActivity(manifestPath) {
+       } = xmlParser.parse(manifestContent);
+       const application = manifest.application || {};
+       const activity = application.activity || {};
+-      let activities = [];
++      const activityAlias = application['activity-alias'] || {};
++      let launchableEntries = [];
+       if (!Array.isArray(activity)) {
+-        activities = [activity];
++        launchableEntries = [activity];
+       } else {
+-        activities = activity;
++        launchableEntries = activity;
+       }
+-      const mainActivity = activities.find(act => {
++      if (!Array.isArray(activityAlias)) {
++        launchableEntries = launchableEntries.concat([activityAlias]);
++      } else {
++        launchableEntries = launchableEntries.concat(activityAlias);
++      }
++      const mainActivity = launchableEntries.find(act => {
+         let intentFilters = act['intent-filter'];
+         if (!intentFilters) {
+           return false;

@@ -19,9 +19,11 @@ module.exports = {
           '@theme': './src/theme',
           '@types': './src/types',
           '@utils': './src/utils',
+          '@test-utils': './src/__tests__/testUtils',
         },
       },
     ],
     'react-native-reanimated/plugin',
+    '@babel/plugin-transform-class-static-block',
   ],
 };
