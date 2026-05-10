@@ -1,0 +1,59 @@
+appId: com.teacherobservations
+---
+- clearState
+- openLink: teacherobs://observations
+- assertVisible: "Observações"
+- tapOn:
+    id: "filters-trigger-button"
+- extendedWaitUntil:
+    visible:
+      id: "bottom-sheet-content"
+    timeout: 10000
+- assertVisible:
+    id: "shift-filter-tarde"
+- tapOn:
+    id: "shift-filter-tarde"
+- tapOn:
+    id: "class-filter-7-ano-c"
+- tapOn:
+    id: "bottom-sheet-dismiss"
+- extendedWaitUntil:
+    notVisible:
+      id: "bottom-sheet-content"
+    timeout: 10000
+- assertVisible:
+    id: "observation-card-obs-04"
+- assertNotVisible:
+    id: "observation-card-obs-05"
+- tapOn:
+    id: "filters-trigger-button"
+- extendedWaitUntil:
+    visible:
+      id: "bottom-sheet-content"
+    timeout: 10000
+- tapOn:
+    id: "favorites-filter-chip"
+- tapOn:
+    id: "bottom-sheet-dismiss"
+- extendedWaitUntil:
+    notVisible:
+      id: "bottom-sheet-content"
+    timeout: 10000
+- assertVisible: "Nenhuma observação por aqui"
+- assertVisible: "Nenhuma observação favorita para essa turma."
+- tapOn:
+    id: "filters-trigger-button"
+- extendedWaitUntil:
+    visible:
+      id: "bottom-sheet-content"
+    timeout: 10000
+- tapOn:
+    id: "reset-filters-button"
+- tapOn:
+    id: "bottom-sheet-dismiss"
+- extendedWaitUntil:
+    notVisible:
+      id: "bottom-sheet-content"
+    timeout: 10000
+- assertVisible:
+    id: "observation-card-obs-05"

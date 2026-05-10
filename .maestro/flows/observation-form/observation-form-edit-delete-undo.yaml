@@ -1,0 +1,56 @@
+appId: com.teacherobservations
+---
+- clearState
+- openLink: teacherobs://observations
+- assertVisible: "Observações"
+- openLink: teacherobs://observations/form?mode=create
+- extendedWaitUntil:
+    visible:
+      id: "student-name-input"
+    timeout: 10000
+- tapOn:
+    id: "student-name-input"
+- setClipboard: ${'Aluno Editar E2E ' + E2E_RUN_ID}
+- pasteText
+- hideKeyboard
+- tapOn:
+    id: "select-class-6-ano-b"
+- tapOn:
+    id: "observation-text-input"
+- setClipboard: ${'Texto base da observação E2E ' + E2E_RUN_ID}
+- pasteText
+- hideKeyboard
+- tapOn:
+    id: "save-observation-button"
+- assertVisible: ${'Aluno Editar E2E ' + E2E_RUN_ID}
+- tapOn: ${'Aluno Editar E2E ' + E2E_RUN_ID}
+- assertVisible: "Editar observação"
+- tapOn:
+    id: "observation-text-input"
+- inputText: " atualizado"
+- hideKeyboard
+- tapOn:
+    id: "update-observation-button"
+- assertVisible: "Observações"
+- tapOn: ${'Aluno Editar E2E ' + E2E_RUN_ID}
+- extendedWaitUntil:
+    visible:
+      text: "Editar observação"
+    timeout: 10000
+- tapOn:
+    id: "delete-observation-button"
+- extendedWaitUntil:
+    visible:
+      id: "bottom-sheet-content"
+    timeout: 10000
+- assertVisible: "Apagar observação?"
+- assertVisible:
+    id: "cancel-delete-observation-button"
+- assertVisible:
+    id: "confirm-delete-observation-button"
+- tapOn:
+    id: "cancel-delete-observation-button"
+- extendedWaitUntil:
+    notVisible:
+      id: "bottom-sheet-content"
+    timeout: 10000

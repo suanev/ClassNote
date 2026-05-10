@@ -1,0 +1,17 @@
+appId: com.teacherobservations
+---
+- clearState
+- openLink: teacherobs://observations
+- assertVisible: 'Observações'
+- assertVisible:
+    id: 'filters-trigger-button'
+- assertVisible:
+    id: 'observation-card-obs-05'
+- assertVisible:
+    id: 'observation-card-obs-03'
+- assertVisible:
+    id: 'observation-card-obs-04'
+- assertVisible:
+    id: 'create-observation-button'
+- assertVisible:
+    id: 'settings-button'

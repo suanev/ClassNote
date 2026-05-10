@@ -1,0 +1,23 @@
+appId: com.teacherobservations
+# Android only — setAirplaneMode é no-op no iOS Simulator
+---
+- clearState
+- openLink: teacherobs://observations
+- assertVisible: "Observações"
+- setAirplaneMode: enabled
+- extendedWaitUntil:
+    visible:
+      id: "network-toast"
+    timeout: 10000
+- assertVisible: "Você está offline."
+- assertVisible: "nuvem não sincroniza neste ambiente de desenvolvimento"
+- setAirplaneMode: disabled
+- extendedWaitUntil:
+    visible:
+      id: "network-toast"
+    timeout: 10000
+- assertVisible: "Conexão restaurada."
+- extendedWaitUntil:
+    notVisible:
+      id: "network-toast"
+    timeout: 10000
