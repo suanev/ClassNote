@@ -18,7 +18,10 @@ const testStore = configureStore({
 
 const makeQueryClient = () =>
   new QueryClient({
-    defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+    defaultOptions: {
+      queries: {retry: false, gcTime: Infinity},
+      mutations: {retry: false, gcTime: Infinity},
+    },
   });
 
 const TestProviders = ({children}: PropsWithChildren) => {

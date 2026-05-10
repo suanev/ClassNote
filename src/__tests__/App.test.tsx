@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import React from 'react';
-import {screen} from '@testing-library/react-native';
+import {fireEvent, screen} from '@testing-library/react-native';
 import ReactTestRenderer from 'react-test-renderer';
 
 import {renderWithProviders} from '@test-utils';
@@ -11,6 +11,13 @@ const mockUseNetworkStatus = jest.fn();
 const mockUseThemeContext = jest.fn();
 const mockLogError = jest.fn();
 const mockPreviousGlobalHandler = jest.fn();
+const mockBootSplashHide = jest.fn(
+  (_options?: {fade?: boolean}) => Promise.resolve(),
+);
+
+jest.mock('react-native-bootsplash', () => ({
+  hide: (options?: {fade?: boolean}) => mockBootSplashHide(options),
+}));
 
 jest.mock('../providers', () => ({
   __esModule: true,
@@ -55,7 +62,7 @@ jest.mock('react-redux', () => ({
 describe('App', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseThemeContext.mockReturnValue({resolved: 'light'});
+    mockUseThemeContext.mockReturnValue({resolved: 'light', isHydrated: true});
     mockUseNetworkStatus.mockReturnValue(null);
     delete (globalThis as {ErrorUtils?: unknown}).ErrorUtils;
   });
@@ -74,6 +81,21 @@ describe('App', () => {
     renderWithProviders(<AppShell />);
 
     expect(screen.getByText('Root navigator')).toBeOnTheScreen();
+  });
+
+  it('should hide the offline toast after dismissing it', () => {
+    const {AppShell} = require('../App');
+    mockUseNetworkStatus.mockReturnValue('offline');
+
+    renderWithProviders(<AppShell />);
+
+    fireEvent.press(screen.getByRole('button', {name: 'Fechar aviso'}));
+
+    expect(
+      screen.queryByText(
+        'Você está offline. Suas alterações continuam salvas no aparelho. No celular, a nuvem não sincroniza neste ambiente de desenvolvimento.',
+      ),
+    ).not.toBeOnTheScreen();
   });
 
   it('should show the offline toast and dispatch offline state', () => {
@@ -99,6 +121,19 @@ describe('App', () => {
 
     expect(mockDispatch).toHaveBeenCalledWith(setOffline(false));
     expect(mockDispatch).toHaveBeenCalledWith(flushSyncQueue());
+  });
+
+  it('should ignore bootsplash hide failures in unsupported runtimes', async () => {
+    mockBootSplashHide.mockReturnValueOnce(Promise.reject(new Error('native missing')));
+    const {AppShell} = require('../App');
+
+    renderWithProviders(<AppShell />);
+
+    await ReactTestRenderer.act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(mockBootSplashHide).toHaveBeenCalledWith({fade: true});
   });
 
   it('should log global errors and call the previous handler when ErrorUtils is available', () => {

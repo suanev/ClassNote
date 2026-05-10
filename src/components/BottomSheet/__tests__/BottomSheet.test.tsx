@@ -47,4 +47,34 @@ describe('BottomSheet', () => {
 
     expect(screen.queryByText('Filtros')).not.toBeOnTheScreen();
   });
+
+  it('should dismiss the sheet when isOpen becomes false after mounting', () => {
+    const onClose = jest.fn();
+
+    const {rerender} = renderWithProviders(
+      <BottomSheet isOpen onClose={onClose} title="Filtros">
+        <Text>Conteúdo</Text>
+      </BottomSheet>,
+    );
+
+    rerender(
+      <BottomSheet isOpen={false} onClose={onClose} title="Filtros">
+        <Text>Conteúdo</Text>
+      </BottomSheet>,
+    );
+
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('should keep the sheet open when close is disabled', () => {
+    renderWithProviders(
+      <BottomSheet isOpen disableClose onClose={jest.fn()} title="Bloqueado">
+        <Text>Conteúdo bloqueado</Text>
+      </BottomSheet>,
+    );
+
+    fireEvent.press(screen.getAllByTestId('bottom-sheet-dismiss')[0]);
+
+    expect(screen.getByText('Conteúdo bloqueado')).toBeOnTheScreen();
+  });
 });

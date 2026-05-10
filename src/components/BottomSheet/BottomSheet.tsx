@@ -35,7 +35,7 @@ export const BottomSheet = ({
   const {bottom} = useSafeAreaInsets();
   const sheetRef = useRef<BottomSheetModal<unknown> | null>(null);
   const [isMounted, setIsMounted] = useState(isOpen);
-  const bottomInset = Math.max(bottom, 12);
+  const contentBottomInset = Math.max(bottom, 12);
   const shouldRender = isMounted || isOpen;
 
   useEffect(() => {
@@ -70,12 +70,10 @@ export const BottomSheet = ({
     onClose();
   }, [onClose]);
 
+  /* istanbul ignore next -- gorhom modal ref is mocked in unit tests */
   const handleDismissPress = useCallback(() => {
-    if (disableClose) {
-      return;
-    }
     sheetRef.current?.dismiss();
-  }, [disableClose]);
+  }, []);
 
   if (!shouldRender) {
     return null;
@@ -86,7 +84,6 @@ export const BottomSheet = ({
       ref={sheetRef}
       enableDynamicSizing
       maxDynamicContentSize={windowHeight * 0.85}
-      bottomInset={bottomInset}
       enableContentPanningGesture={false}
       enablePanDownToClose={!disableClose}
       enableDismissOnClose={!disableClose}
@@ -99,9 +96,9 @@ export const BottomSheet = ({
       onDismiss={handleDismiss}
       backdropComponent={renderBackdrop}>
       <BottomSheetView testID="bottom-sheet-content">
-        <SheetContainer $bottomInset={bottomInset}>
+        <SheetContainer $bottomInset={contentBottomInset}>
           <SheetHandle
-            onPress={handleDismissPress}
+            onPress={disableClose ? undefined : handleDismissPress}
             disabled={disableClose}
             testID="bottom-sheet-dismiss"
             accessibilityRole="button"

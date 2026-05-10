@@ -39,6 +39,18 @@ const SettingsScreenContainer = () => {
 
   const classes = useMemo(() => classesQuery.data ?? [], [classesQuery.data]);
   const observations = useMemo(() => observationsQuery.data ?? [], [observationsQuery.data]);
+  const hasLoadedInitialSync = React.useRef(false);
+  const classesSignature = useMemo(
+    () => classes.map(item => `${item.id}:${item.name}:${item.shift}`).join('|'),
+    [classes],
+  );
+  const observationsSignature = useMemo(
+    () =>
+      observations
+        .map(item => `${item.id}:${item.classId ?? item.className}:${item.updatedAt}`)
+        .join('|'),
+    [observations],
+  );
 
   const getObservationsForClass = useCallback(
     (classId: string, className: string) =>
@@ -160,6 +172,7 @@ const SettingsScreenContainer = () => {
       }
 
       setLastSync(syncAt);
+      hasLoadedInitialSync.current = true;
 
       try {
         const stored = await getItem(storageKeys.appIcon);
@@ -194,8 +207,24 @@ const SettingsScreenContainer = () => {
   }, []);
 
   useEffect(() => {
-    getLastSync().then(setLastSync);
-  }, [classes, observations]);
+    if (!hasLoadedInitialSync.current) {
+      return;
+    }
+
+    let isActive = true;
+
+    void (async () => {
+      const syncAt = await getLastSync();
+
+      if (isActive) {
+        setLastSync(syncAt);
+      }
+    })();
+
+    return () => {
+      isActive = false;
+    };
+  }, [classesSignature, observationsSignature]);
 
   return (
     <SettingsScreen
