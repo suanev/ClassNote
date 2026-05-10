@@ -39,6 +39,8 @@ module.exports = {
   modulePathIgnorePatterns: ['<rootDir>/.claude/'],
   testMatch: ['**/?(*.)+(test).[tj]s?(x)'],
   testPathIgnorePatterns: ['<rootDir>/.claude/'],
+  watchman: false,
+  openHandlesTimeout: 0,
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|@react-native|@react-navigation|@react-native-community|react-native-safe-area-context|react-redux|@reduxjs/toolkit|redux-saga|styled-components|react-native-mmkv|react-native-nitro-modules|immer|react-native-vector-icons|react-native-config|@react-native-firebase)/)',
   ],
