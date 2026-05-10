@@ -5,6 +5,7 @@ interface ButtonContainerProps {
   $borderColor: string;
   $borderWidth: number;
   $borderRadius: number;
+  $disabled?: boolean;
   $isIconOnly: boolean;
   $minWidth?: number;
 }

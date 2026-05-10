@@ -7,6 +7,44 @@ import {Chip} from './Chip';
 
 const noop = () => {};
 
+const ShiftFilterPreview = () => {
+  const shifts = ['Todos', 'Manhã', 'Tarde', 'Noite', 'Outro'];
+  const [selected, setSelected] = useState<string>('Todos');
+
+  return (
+    <View style={{padding: 24, flexDirection: 'row', flexWrap: 'wrap', gap: 8}}>
+      {shifts.map(shift => (
+        <Chip
+          key={shift}
+          label={shift}
+          active={selected === shift}
+          onPress={() => setSelected(shift)}
+          accessibilityRole="radio"
+        />
+      ))}
+    </View>
+  );
+};
+
+const ClassSelectorPreview = () => {
+  const classes = ['5º Ano A', '5º Ano B', '6º Ano A'];
+  const [selected, setSelected] = useState<string | null>(null);
+
+  return (
+    <View style={{padding: 24, flexDirection: 'row', flexWrap: 'wrap', gap: 8}}>
+      {classes.map(cls => (
+        <Chip
+          key={cls}
+          label={cls}
+          active={selected === cls}
+          onPress={() => setSelected(selected === cls ? null : cls)}
+        />
+      ))}
+      <Chip label="Nova turma" variant="dashed" onPress={noop} />
+    </View>
+  );
+};
+
 const meta = {
   title: 'Components/Chip',
   component: Chip,
@@ -87,41 +125,9 @@ export const Dashed: Story = {
 };
 
 export const ShiftFilter: Story = {
-  render: () => {
-    const shifts = ['Todos', 'Manhã', 'Tarde', 'Noite', 'Outro'];
-    const [selected, setSelected] = useState<string>('Todos');
-    return (
-      <View style={{padding: 24, flexDirection: 'row', flexWrap: 'wrap', gap: 8}}>
-        {shifts.map(shift => (
-          <Chip
-            key={shift}
-            label={shift}
-            active={selected === shift}
-            onPress={() => setSelected(shift)}
-            accessibilityRole="radio"
-          />
-        ))}
-      </View>
-    );
-  },
+  render: () => <ShiftFilterPreview />,
 };
 
 export const ClassSelector: Story = {
-  render: () => {
-    const classes = ['5º Ano A', '5º Ano B', '6º Ano A'];
-    const [selected, setSelected] = useState<string | null>(null);
-    return (
-      <View style={{padding: 24, flexDirection: 'row', flexWrap: 'wrap', gap: 8}}>
-        {classes.map(cls => (
-          <Chip
-            key={cls}
-            label={cls}
-            active={selected === cls}
-            onPress={() => setSelected(selected === cls ? null : cls)}
-          />
-        ))}
-        <Chip label="Nova turma" variant="dashed" onPress={noop} />
-      </View>
-    );
-  },
+  render: () => <ClassSelectorPreview />,
 };

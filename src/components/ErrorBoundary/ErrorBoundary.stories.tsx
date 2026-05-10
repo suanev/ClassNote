@@ -2,7 +2,6 @@ import React from 'react';
 import {View} from 'react-native';
 import type {Meta, StoryObj} from '@storybook/react';
 
-import {DocNote} from '../../../.storybook/DocNote';
 import {ErrorBoundary} from './ErrorBoundary';
 
 const ThrowError = () => {

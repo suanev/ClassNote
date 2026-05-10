@@ -7,6 +7,16 @@ import {ObservationListItem} from './ObservationListItem';
 
 const noop = () => {};
 
+const InteractiveFavoritePreview = (args: React.ComponentProps<typeof ObservationListItem>) => {
+  const [fav, setFav] = useState(false);
+
+  return (
+    <View style={{padding: 16}}>
+      <ObservationListItem {...args} isFavorite={fav} onToggleFavorite={() => setFav(f => !f)} />
+    </View>
+  );
+};
+
 const meta = {
   title: 'Components/ObservationListItem',
   component: ObservationListItem,
@@ -123,12 +133,5 @@ export const Deleting: Story = {
 };
 
 export const InteractiveFavorite: Story = {
-  render: args => {
-    const [fav, setFav] = useState(false);
-    return (
-      <View style={{padding: 16}}>
-        <ObservationListItem {...args} isFavorite={fav} onToggleFavorite={() => setFav(f => !f)} />
-      </View>
-    );
-  },
+  render: args => <InteractiveFavoritePreview {...args} />,
 };

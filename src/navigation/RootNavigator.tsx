@@ -46,6 +46,7 @@ export const RootNavigator = () => {
       {isDev ? (
         <Stack.Screen
           name="DesignSystem"
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
           getComponent={() => require('@scenes/DesignSystemScreen').default}
           options={{
             headerShown: true,

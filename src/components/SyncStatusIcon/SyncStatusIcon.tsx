@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, Dimensions, Pressable, View} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Portal, Surface, Text} from 'react-native-paper';
+import {Portal} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import {useTheme} from 'styled-components/native';
 
@@ -87,35 +87,37 @@ export const SyncStatusIcon = () => {
   const syncIcon = getSyncIcon();
 
   return (
-    <Wrapper ref={iconRef} collapsable={false}>
-      <Pressable
-        onPress={handlePress}
-        hitSlop={10}
-        accessibilityLabel="Status de sincronização"
-        accessibilityRole="button"
-        testID="sync-status-icon">
-        {syncIcon}
-      </Pressable>
+    <View ref={iconRef} collapsable={false}>
+      <Wrapper>
+        <Pressable
+          onPress={handlePress}
+          hitSlop={10}
+          accessibilityLabel="Status de sincronização"
+          accessibilityRole="button"
+          testID="sync-status-icon">
+          {syncIcon}
+        </Pressable>
 
-      <Portal>
-        {tooltipVisible ? (
-          <BackdropPressable onPress={hideTooltip}>
-            <TooltipCard
-              $top={
-                iconLayout ? iconLayout.y + iconLayout.height + 6 : undefined
-              }
-              $right={
-                iconLayout
-                  ? Dimensions.get('window').width - iconLayout.x - iconLayout.width
-                  : undefined
-              }
-              elevation={3}
-              testID="sync-tooltip">
-              <TooltipLabel>{message}</TooltipLabel>
-            </TooltipCard>
-          </BackdropPressable>
-        ) : null}
-      </Portal>
-    </Wrapper>
+        <Portal>
+          {tooltipVisible ? (
+            <BackdropPressable onPress={hideTooltip}>
+              <TooltipCard
+                $top={
+                  iconLayout ? iconLayout.y + iconLayout.height + 6 : undefined
+                }
+                $right={
+                  iconLayout
+                    ? Dimensions.get('window').width - iconLayout.x - iconLayout.width
+                    : undefined
+                }
+                elevation={3}
+                testID="sync-tooltip">
+                <TooltipLabel>{message}</TooltipLabel>
+              </TooltipCard>
+            </BackdropPressable>
+          ) : null}
+        </Portal>
+      </Wrapper>
+    </View>
   );
 };

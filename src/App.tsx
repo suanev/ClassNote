@@ -34,6 +34,7 @@ export const AppShell = () => {
   useMonitoringContext();
   const dispatch = useDispatch<AppDispatch>();
   const [toastDismissed, setToastDismissed] = useState(false);
+  const [dismissedStatus, setDismissedStatus] = useState<'offline' | 'restored' | null>(null);
 
   useEffect(() => {
     dispatch(setOffline(networkStatus === 'offline'));
@@ -41,10 +42,6 @@ export const AppShell = () => {
       dispatch(flushSyncQueue());
     }
   }, [dispatch, networkStatus]);
-
-  useEffect(() => {
-    setToastDismissed(false);
-  }, [networkStatus]);
 
   useEffect(() => {
     if (!isHydrated) {
@@ -64,10 +61,15 @@ export const AppShell = () => {
         translucent
       />
       <RootNavigator />
-      {(networkStatus === 'offline' || networkStatus === 'restored') && !toastDismissed ? (
+      {(networkStatus === 'offline' || networkStatus === 'restored') &&
+      dismissedStatus !== networkStatus &&
+      !toastDismissed ? (
         <NetworkToast
           status={networkStatus}
-          onDismiss={() => setToastDismissed(true)}
+          onDismiss={() => {
+            setToastDismissed(true);
+            setDismissedStatus(networkStatus);
+          }}
         />
       ) : null}
     </View>

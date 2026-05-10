@@ -47,6 +47,7 @@ export const darkColors = {
   info: '#60A5FA',
   infoSubtle: '#1E3A5F',
   error: '#F97066',
+  errorSubtle: '#7A1A12',
 
   // Favorite / star
   favorite: '#FBBF24',

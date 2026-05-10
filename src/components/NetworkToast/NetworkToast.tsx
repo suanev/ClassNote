@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable } from 'react-native';
-import Reanimated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
+import { FadeInDown, FadeOutUp } from 'react-native-reanimated';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Portal } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

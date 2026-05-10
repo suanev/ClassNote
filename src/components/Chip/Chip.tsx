@@ -1,5 +1,4 @@
 import React from 'react';
-import {useTheme} from 'styled-components/native';
 
 import {ChipButton, ChipLabel, ChipPlusIcon} from './styles';
 
@@ -28,7 +27,6 @@ export const Chip = ({
   accessibilityRole = 'button',
   accessibilityState,
 }: ChipProps) => {
-  const theme = useTheme();
   const isDashed = variant === 'dashed';
 
   return (

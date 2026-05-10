@@ -11,11 +11,12 @@ import {linking} from '@navigation/linking';
 import {ThemeContextProvider, useThemeContext} from '@theme/ThemeContext';
 import {store} from '../store';
 import {mmkvPersister, queryClient} from '../store/queryClient';
+import type {AppTheme} from '@theme/index';
 
 const UIProvidersBridge = ({children}: PropsWithChildren) => {
   const {theme, paperTheme} = useThemeContext();
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme as AppTheme}>
       <PaperProvider theme={paperTheme}>
         <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
       </PaperProvider>
