@@ -1,0 +1,7 @@
+<resources>
+    <color name="bootsplash_background">#faf8f2</color>
+    <color name="bootsplash_background_light">#faf8f2</color>
+    <color name="bootsplash_background_dark">#1f3a5f</color>
+    <color name="ic_launcher_background">#1f3a5f</color>
+    <color name="ic_launcher_background_second_option">#faf8f2</color>
+</resources>

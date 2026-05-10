@@ -3,6 +3,22 @@ import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
 import FirebaseCore
+import RNBootSplash
+
+enum NativeThemePreference {
+  static let userDefaultsKey = "theme_preference"
+
+  static func currentInterfaceStyle() -> UIUserInterfaceStyle {
+    switch UserDefaults.standard.string(forKey: userDefaultsKey) {
+    case "light":
+      return .light
+    case "dark":
+      return .dark
+    default:
+      return .unspecified
+    }
+  }
+}
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -25,9 +41,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     reactNativeFactory = factory
 
     window = UIWindow(frame: UIScreen.main.bounds)
+    window?.overrideUserInterfaceStyle = NativeThemePreference.currentInterfaceStyle()
 
     factory.startReactNative(
-      withModuleName: "TeacherObservations",
+      withModuleName: "ClassNote",
       in: window,
       launchOptions: launchOptions
     )
@@ -57,6 +74,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
+  override func customize(_ rootView: RCTRootView) {
+    super.customize(rootView)
+    RNBootSplash.initWithStoryboard("BootSplash", rootView: rootView)
+  }
+
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()
   }
