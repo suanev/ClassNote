@@ -1,9 +1,4 @@
 import { useCallback, useMemo, useState } from 'react';
-
-/***
- * Pagina uma lista local por página.
- * Ex.: com 30 itens e pageSize 10, começa mostrando só 10.
- */
 export const usePagination = <T>(items: T[], pageSize = 10) => {
   const [page, setPage] = useState(1);
 

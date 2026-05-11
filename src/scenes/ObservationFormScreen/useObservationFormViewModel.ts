@@ -102,8 +102,11 @@ export function useObservationFormViewModel(): ObservationFormViewModel {
 
   const createClassMutation = useCreateClassMutation({
     onSuccess: newClass => {
-      // Auto-select newly created class
       setClassId(newClass.id);
+    },
+    onQueued: queuedClass => {
+      setClassId(queuedClass.id);
+      monitoring.breadcrumb('class_created_offline');
     },
     onError: error => {
       monitoring.logError(error, {action: 'create_class'});
@@ -133,7 +136,17 @@ export function useObservationFormViewModel(): ObservationFormViewModel {
       monitoring.breadcrumb('observation_edited');
       navigation.goBack();
     },
+    onQueued: () => {
+      monitoring.logEvent(Events.OBSERVATION_EDITED);
+      monitoring.breadcrumb('observation_updated_offline');
+      navigation.goBack();
+    },
     onError: error => {
+      if (isNetworkError(error)) {
+        monitoring.breadcrumb('observation_update_queue_failed');
+        navigation.goBack();
+        return;
+      }
       monitoring.logError(error, {action: 'edit_observation'});
       dispatch(
         showObservationErrorToast('Não foi possível atualizar a observação.'),

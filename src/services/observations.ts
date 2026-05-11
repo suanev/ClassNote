@@ -4,21 +4,10 @@ import { ApiItemResponse, ApiListResponse } from './types';
 import { Observation, ObservationCreatePayload, ObservationUpsertPayload } from '../types/observations';
 
 /***
- * Simula atraso de resposta na listagem.
- * Ex.: segura o skeleton por alguns milissegundos.
- */
-const simulateListDelay = async () => {
-  await new Promise<void>((resolve) => {
-    setTimeout(resolve, 650);
-  });
-};
-
-/***
  * Busca todas as observações na API.
  * Ex.: GET /observations.
  */
 export const listObservations = async (): Promise<Observation[]> => {
-  await simulateListDelay();
   const response = await api.get<ApiListResponse<Observation>>(endpoints.observations);
   return response.data;
 };

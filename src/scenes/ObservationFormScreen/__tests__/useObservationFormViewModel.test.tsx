@@ -24,6 +24,7 @@ let mockRouteParams: {mode: 'create' | 'edit'; observationId?: string} = {
 let latestCreateClassOptions:
   | {
       onSuccess?: (newClass: {id: string; name: string; shift?: string}) => void;
+      onQueued?: (queuedClass: {id: string; name: string; shift?: string}) => void;
       onError?: (error: unknown) => void;
     }
   | undefined;
@@ -38,6 +39,7 @@ let latestCreateOptions:
 let latestUpdateOptions:
   | {
       onSuccess?: () => void;
+      onQueued?: () => void;
       onError?: (error: unknown) => void;
     }
   | undefined;
@@ -48,6 +50,41 @@ let latestDeleteOptions:
       onError?: (error: unknown) => void;
     }
   | undefined;
+
+const defaultObservation = {
+  id: 'obs-1',
+  student: 'Ana',
+  className: '5º A',
+  classId: 'class-1',
+  text: 'Observação',
+  favorite: false,
+  createdAt: '2026-05-09T00:00:00.000Z',
+  updatedAt: '2026-05-09T00:00:00.000Z',
+};
+
+const setCreateMode = () => {
+  mockRouteParams = {mode: 'create'};
+  useObservationsQuery.mockReturnValue({data: [], isLoading: false});
+};
+
+const fillRequiredFields = (result: ReturnType<typeof renderViewModel>['result']) => {
+  act(() => {
+    result.current.onChangeStudent('Marina');
+    result.current.onChangeText('Participou bem da atividade.');
+  });
+};
+
+const triggerCreateSave = (result: ReturnType<typeof renderViewModel>['result']) => {
+  act(() => {
+    result.current.onSave();
+  });
+};
+
+const triggerDelete = (result: ReturnType<typeof renderViewModel>['result']) => {
+  act(() => {
+    result.current.onDelete?.();
+  });
+};
 
 jest.mock('@react-navigation/native', () => {
   const actual = jest.requireActual('@react-navigation/native');
@@ -157,18 +194,7 @@ describe('useObservationFormViewModel', () => {
       },
     );
     useObservationsQuery.mockReturnValue({
-      data: [
-        {
-          id: 'obs-1',
-          student: 'Ana',
-          className: '5º A',
-          classId: 'class-1',
-          text: 'Observação',
-          favorite: false,
-          createdAt: '2026-05-09T00:00:00.000Z',
-          updatedAt: '2026-05-09T00:00:00.000Z',
-        },
-      ],
+      data: [defaultObservation],
       isLoading: false,
     });
     useCreateObservationMutation.mockImplementation(
@@ -214,18 +240,14 @@ describe('useObservationFormViewModel', () => {
   });
 
   it('should navigate back after creating a new observation successfully', () => {
-    mockRouteParams = {mode: 'create'};
-    useObservationsQuery.mockReturnValue({data: [], isLoading: false});
+    setCreateMode();
 
     const {result} = renderViewModel();
 
-    act(() => {
-      result.current.onChangeStudent('Marina');
-      result.current.onChangeText('Participou bem da atividade.');
-    });
+    fillRequiredFields(result);
+    triggerCreateSave(result);
 
     act(() => {
-      result.current.onSave();
       latestCreateOptions?.onSuccess?.();
     });
 
@@ -244,18 +266,14 @@ describe('useObservationFormViewModel', () => {
   });
 
   it('should queue create offline and navigate back without dispatching an error', () => {
-    mockRouteParams = {mode: 'create'};
-    useObservationsQuery.mockReturnValue({data: [], isLoading: false});
+    setCreateMode();
 
     const {result} = renderViewModel();
 
-    act(() => {
-      result.current.onChangeStudent('Marina');
-      result.current.onChangeText('Participou bem da atividade.');
-    });
+    fillRequiredFields(result);
+    triggerCreateSave(result);
 
     act(() => {
-      result.current.onSave();
       jest.spyOn(axios, 'isAxiosError').mockReturnValue(true);
       latestCreateOptions?.onError?.({isAxiosError: true, response: undefined});
     });
@@ -268,18 +286,14 @@ describe('useObservationFormViewModel', () => {
   });
 
   it('should dispatch an error toast when create fails online', () => {
-    mockRouteParams = {mode: 'create'};
-    useObservationsQuery.mockReturnValue({data: [], isLoading: false});
+    setCreateMode();
 
     const {result} = renderViewModel();
 
-    act(() => {
-      result.current.onChangeStudent('Marina');
-      result.current.onChangeText('Participou bem da atividade.');
-    });
+    fillRequiredFields(result);
+    triggerCreateSave(result);
 
     act(() => {
-      result.current.onSave();
       latestCreateOptions?.onError?.(new Error('server'));
     });
 
@@ -296,13 +310,9 @@ describe('useObservationFormViewModel', () => {
     useObservationsQuery.mockReturnValue({
       data: [
         {
-          id: 'obs-1',
-          student: 'Ana',
-          className: '5º A',
+          ...defaultObservation,
+          classId: undefined,
           text: 'Observação antiga',
-          favorite: false,
-          createdAt: '2026-05-09T00:00:00.000Z',
-          updatedAt: '2026-05-09T00:00:00.000Z',
         },
       ],
       isLoading: false,
@@ -351,22 +361,25 @@ describe('useObservationFormViewModel', () => {
     });
   });
 
+  it('should queue observation update offline and navigate back', () => {
+    const {result} = renderViewModel();
+
+    act(() => {
+      result.current.onChangeText('Observação offline');
+      result.current.onSave();
+      latestUpdateOptions?.onQueued?.();
+    });
+
+    expect(mockBreadcrumb).toHaveBeenCalledWith('observation_updated_offline');
+    expect(mockGoBack).toHaveBeenCalled();
+  });
+
   it('should expose route loading and resolve class id from class name fallback', () => {
     useClassesQuery.mockReturnValue({
       data: [{id: 'class-1', name: '5º A'}],
     });
     useObservationsQuery.mockReturnValue({
-      data: [
-        {
-          id: 'obs-1',
-          student: 'Ana',
-          className: '5º A',
-          text: 'Observação',
-          favorite: false,
-          createdAt: '2026-05-09T00:00:00.000Z',
-          updatedAt: '2026-05-09T00:00:00.000Z',
-        },
-      ],
+      data: [{...defaultObservation, classId: undefined}],
       isLoading: true,
     });
 
@@ -378,14 +391,13 @@ describe('useObservationFormViewModel', () => {
   });
 
   it('should fall back to the first class when creating a new observation', () => {
-    mockRouteParams = {mode: 'create'};
+    setCreateMode();
     useClassesQuery.mockReturnValue({
       data: [
         {id: 'class-1', name: '5º A'},
         {id: 'class-2', name: '6º B'},
       ],
     });
-    useObservationsQuery.mockReturnValue({data: [], isLoading: false});
 
     const {result} = renderViewModel();
 
@@ -394,8 +406,7 @@ describe('useObservationFormViewModel', () => {
   });
 
   it('should not save while required fields are invalid', () => {
-    mockRouteParams = {mode: 'create'};
-    useObservationsQuery.mockReturnValue({data: [], isLoading: false});
+    setCreateMode();
 
     const {result} = renderViewModel();
 
@@ -411,8 +422,7 @@ describe('useObservationFormViewModel', () => {
   });
 
   it('should select the newly created class on createClass success', () => {
-    mockRouteParams = {mode: 'create'};
-    useObservationsQuery.mockReturnValue({data: [], isLoading: false});
+    setCreateMode();
 
     const {result} = renderViewModel();
 
@@ -433,6 +443,24 @@ describe('useObservationFormViewModel', () => {
     expect(result.current.classId).toBe('class-9');
   });
 
+  it('should select the queued class id when class creation happens offline', () => {
+    setCreateMode();
+
+    const {result} = renderViewModel();
+
+    act(() => {
+      result.current.onCreateClass('Nova turma offline', 'Tarde');
+      latestCreateClassOptions?.onQueued?.({
+        id: 'temp-class-9',
+        name: 'Nova turma offline',
+        shift: 'Tarde',
+      });
+    });
+
+    expect(result.current.classId).toBe('temp-class-9');
+    expect(mockBreadcrumb).toHaveBeenCalledWith('class_created_offline');
+  });
+
   it('should log create class errors', () => {
     const {result} = renderViewModel();
 
@@ -449,8 +477,9 @@ describe('useObservationFormViewModel', () => {
   it('should also return to observations home when delete is queued offline', () => {
     const {result} = renderViewModel();
 
+    triggerDelete(result);
+
     act(() => {
-      result.current.onDelete?.();
       jest.spyOn(axios, 'isAxiosError').mockReturnValue(true);
       latestDeleteOptions?.onError?.({isAxiosError: true, response: undefined});
     });
@@ -462,8 +491,9 @@ describe('useObservationFormViewModel', () => {
   it('should dispatch an error toast when delete fails online', () => {
     const {result} = renderViewModel();
 
+    triggerDelete(result);
+
     act(() => {
-      result.current.onDelete?.();
       latestDeleteOptions?.onError?.(new Error('delete failed'));
     });
 

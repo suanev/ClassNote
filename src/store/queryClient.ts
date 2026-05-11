@@ -28,4 +28,5 @@ export const mmkvPersister = createSyncStoragePersister({
     removeItem: (key: string) => storage.remove(key),
   },
   key: CACHE_KEY,
+  throttleTime: 0,
 });

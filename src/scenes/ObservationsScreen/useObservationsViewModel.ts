@@ -94,7 +94,6 @@ export function useObservationsViewModel(): ObservationsViewModel {
     filterByClass,
     filterByFavorites,
     isFilterSheetOpen,
-    // network slice lives in a separate branch, read below
     pendingDeletedObservation,
     sortOrder,
     toast,
@@ -115,7 +114,6 @@ export function useObservationsViewModel(): ObservationsViewModel {
     [cachedClasses, classesQuery.data],
   );
 
-  // Classes shown in filter: cascade from selected shift
   const availableClasses = useMemo(() => {
     if (filterByShift) {
       return allClasses.filter(c => c.shift === filterByShift);
@@ -123,7 +121,6 @@ export function useObservationsViewModel(): ObservationsViewModel {
     return allClasses;
   }, [allClasses, filterByShift]);
 
-  // Two maps: by id and by name, for observations that may lack classId
   const classById = useMemo(() => {
     const map = new Map<string, SchoolClass>();
     allClasses.forEach(c => map.set(c.id, c));
@@ -155,21 +152,23 @@ export function useObservationsViewModel(): ObservationsViewModel {
     },
   });
 
+  const [isPullRefreshing, setIsPullRefreshing] = useState(false);
+
   const updateObservationMutation = useUpdateObservationMutation({
-    onMutate: async ({id, payload}) => {
-      await queryClient.cancelQueries({queryKey: queryKeys.observations});
+    onQueued: variables => {
+      const queuedObservation = observations.find(item => item.id === variables.id);
+      const willBeFavorite = variables.payload.favorite ?? queuedObservation?.favorite;
 
-      const previousObservations =
-        queryClient.getQueryData<Observation[]>(queryKeys.observations) ?? [];
-
-      queryClient.setQueryData<Observation[]>(
-        queryKeys.observations,
-        previousObservations.map(item =>
-          item.id === id ? {...item, ...payload} : item,
-        ),
+      dispatch(
+        showObservationToast({
+          message:
+            variables.payload.favorite === undefined
+              ? 'Alteração salva localmente'
+              : willBeFavorite
+              ? 'Favorito salvo localmente'
+              : 'Remoção dos favoritos salva localmente',
+        }),
       );
-
-      return {previousObservations};
     },
     onError: error => {
       dispatch(showObservationErrorToast('Não foi possível atualizar a observação.'));
@@ -275,7 +274,10 @@ export function useObservationsViewModel(): ObservationsViewModel {
   }, [dispatch]);
 
   const handleRefresh = useCallback(() => {
-    observationsQuery.refetch();
+    setIsPullRefreshing(true);
+    void Promise.resolve(observationsQuery.refetch()).finally(() => {
+      setIsPullRefreshing(false);
+    });
   }, [observationsQuery]);
 
   const handleCreateObservation = useCallback(() => {
@@ -292,12 +294,10 @@ export function useObservationsViewModel(): ObservationsViewModel {
 
   const filteredObservations = useMemo(() => {
     let result = observations;
-    // Apply shift filter first (via class shift)
     if (filterByShift !== null) {
       result = result.filter(item => resolveClass(item)?.shift === filterByShift);
     }
     if (filterByClass !== null) {
-      // filterByClass stores classId; fall back to className match for old data
       result = result.filter(
         item => (item.classId ?? item.className) === filterByClass,
       );
@@ -365,7 +365,6 @@ export function useObservationsViewModel(): ObservationsViewModel {
     [paginatedItems, resolveClass],
   );
 
-  // Count active non-default filters for badge
   const filterCount = useMemo(() => {
     let count = 0;
     if (filterByShift !== null) count++;
@@ -373,6 +372,11 @@ export function useObservationsViewModel(): ObservationsViewModel {
     if (filterByFavorites) count++;
     return count;
   }, [filterByShift, filterByClass, filterByFavorites]);
+
+  const isInitialLoading =
+    observations.length === 0 &&
+    !isPullRefreshing &&
+    (Boolean(observationsQuery.isLoading) || Boolean(observationsQuery.isFetching));
 
   return {
     availableClasses,
@@ -389,8 +393,8 @@ export function useObservationsViewModel(): ObservationsViewModel {
       : null,
     hasMore,
     isLoadingMore,
-    isLoading: observationsQuery.isLoading && observations.length === 0,
-    isRefreshing: observationsQuery.isRefetching,
+    isLoading: isInitialLoading,
+    isRefreshing: isPullRefreshing,
     sortOrder,
     toastVisible: toast.visible,
     toastMessage: toast.message,

@@ -13,7 +13,7 @@ import {useObservationsViewModel} from '../useObservationsViewModel';
 import {Observation} from '../../../types/observations';
 
 const mockNavigate = jest.fn();
-const mockRefetch = jest.fn();
+const mockRefetch = jest.fn(() => Promise.resolve());
 const mockLoadMore = jest.fn();
 const mockResetPagination = jest.fn();
 const mockCreateMutate = jest.fn();
@@ -171,6 +171,7 @@ describe('useObservationsViewModel', () => {
     useObservationsQuery.mockReturnValue({
       data: mockObservations,
       isLoading: false,
+      isFetching: false,
       isRefetching: false,
       isError: false,
       refetch: mockRefetch,
@@ -280,6 +281,7 @@ describe('useObservationsViewModel', () => {
     useObservationsQuery.mockReturnValue({
       data: undefined,
       isLoading: false,
+      isFetching: false,
       isRefetching: false,
       isError: false,
       refetch: mockRefetch,
@@ -314,6 +316,7 @@ describe('useObservationsViewModel', () => {
     useObservationsQuery.mockReturnValue({
       data: undefined,
       isLoading: false,
+      isFetching: false,
       isRefetching: false,
       isError: true,
       error: {isAxiosError: true, response: undefined},
@@ -334,6 +337,7 @@ describe('useObservationsViewModel', () => {
     useObservationsQuery.mockReturnValue({
       data: undefined,
       isLoading: false,
+      isFetching: false,
       isRefetching: false,
       isError: false,
       error: undefined,
@@ -367,6 +371,22 @@ describe('useObservationsViewModel', () => {
     expect(ids).toContain('obs-1');
     expect(ids).toContain('obs-3');
     expect(ids).not.toContain('obs-2');
+  });
+
+  it('should keep the skeleton visible during the first fetch when there is no cached data', () => {
+    useObservationsQuery.mockReturnValue({
+      data: [],
+      isLoading: false,
+      isFetching: true,
+      isRefetching: true,
+      isError: false,
+      refetch: mockRefetch,
+    });
+
+    const {result} = renderViewModel();
+
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.hasAnyObservations).toBe(false);
   });
 
   it('should filter by class only when filterByClass is set', () => {
@@ -454,16 +474,17 @@ describe('useObservationsViewModel', () => {
     expect(store.getState().observations.toast.visible).toBe(false);
   });
 
-  it('should trigger refresh, pagination, navigation, class filter and sort order', () => {
+  it('should trigger refresh, pagination, navigation, class filter and sort order', async () => {
     const {result, store} = renderViewModel();
 
-    act(() => {
+    await act(async () => {
       result.current.onRefresh();
       result.current.onLoadMore();
       result.current.onSelectClass('7º C');
       result.current.onSelectSortOrder('favorites-first');
       result.current.onCreateObservation();
       result.current.onEditObservation('obs-2');
+      await Promise.resolve();
     });
 
     act(() => { jest.advanceTimersByTime(400); });

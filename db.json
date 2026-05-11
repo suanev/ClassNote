@@ -13,6 +13,11 @@
       "teacherName": "Profa. Marina",
       "shift": "Tarde",
       "students": 26
+    },
+    {
+      "name": "5 Ano B",
+      "shift": "Manhã",
+      "id": "NP1lauCS18Y"
     }
   ],
   "observations": [
@@ -32,7 +37,7 @@
       "text": "Participou mais da discussão em história e conseguiu justificar melhor seu ponto de vista com exemplos do texto.",
       "createdAt": "2026-05-06T19:40:00.000Z",
       "updatedAt": "2026-05-09T14:28:44.203Z",
-      "favorite": false,
+      "favorite": true,
       "classId": "class-7c"
     },
     {

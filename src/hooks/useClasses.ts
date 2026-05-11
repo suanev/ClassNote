@@ -2,7 +2,11 @@ import {UseMutationOptions, useMutation, useQuery, useQueryClient} from '@tansta
 
 import {queryKeys} from '@constants/queryKeys';
 import {createClass, deleteClass, listClasses} from '@services/classes';
-import {touchLastSync} from '@storage/index';
+import {
+  getStoredClasses,
+  setStoredClasses,
+  touchLastSync,
+} from '@storage/index';
 import {isNetworkError} from '@utils/network';
 import {syncQueue} from '@services/syncQueue';
 import {SchoolClass, SchoolClassCreatePayload} from '../types/classes';
@@ -12,75 +16,93 @@ type DeleteClassContext = {
   deletedClass: SchoolClass | null;
 };
 
-/** Busca a lista de turmas e mantém no cache por até 30 segundos. */
+type CreateClassContext = {
+  previousClasses: SchoolClass[];
+  tempId: string;
+};
+
+type CreateClassMutationOptions = Omit<
+  UseMutationOptions<SchoolClass, Error, SchoolClassCreatePayload, CreateClassContext>,
+  'mutationFn' | 'onMutate'
+> & {
+  onQueued?: (
+    queuedClass: SchoolClass,
+    variables: SchoolClassCreatePayload,
+    context: CreateClassContext,
+  ) => void;
+};
+
+const persistClasses = (classes: SchoolClass[]): SchoolClass[] => {
+  setStoredClasses(classes);
+  return classes;
+};
+
 export const useClassesQuery = () =>
   useQuery({
     queryKey: queryKeys.classes,
-    queryFn: listClasses,
+    queryFn: async () => {
+      const classes = await listClasses();
+      return persistClasses(classes);
+    },
+    initialData: getStoredClasses,
+    initialDataUpdatedAt: 0,
+    refetchOnMount: 'always',
     staleTime: 30_000,
   });
 
-/**
- * Cria uma nova turma com optimistic update.
- * Em caso de erro de rede, enfileira no syncQueue.
- */
 export const useCreateClassMutation = (
-  options?: Omit<
-    UseMutationOptions<SchoolClass, Error, SchoolClassCreatePayload, {previousClasses: SchoolClass[]; tempId: string}>,
-    'mutationFn' | 'onMutate'
-  >,
+  options?: CreateClassMutationOptions,
 ) => {
   const queryClient = useQueryClient();
-  const {onSuccess, onError, ...restOptions} = options ?? {};
+  const {onSuccess, onError, onQueued, ...restOptions} = options ?? {};
 
-  return useMutation<SchoolClass, Error, SchoolClassCreatePayload, {previousClasses: SchoolClass[]; tempId: string}>({
+  return useMutation<SchoolClass, Error, SchoolClassCreatePayload, CreateClassContext>({
     ...restOptions,
     mutationFn: createClass,
     onMutate: async payload => {
-      // 1. Cancela refetches em andamento
       await queryClient.cancelQueries({queryKey: queryKeys.classes});
-
-      // 2. Salva snapshot para rollback
       const previousClasses = queryClient.getQueryData<SchoolClass[]>(queryKeys.classes) ?? [];
-
-      // 3. Insere a turma com ID temporário
       const tempId = `temp_${Date.now()}`;
-      queryClient.setQueryData<SchoolClass[]>(queryKeys.classes, [
-        ...previousClasses,
-        {...payload, id: tempId},
-      ]);
-
-      // 4. Retorna contexto
+      queryClient.setQueryData<SchoolClass[]>(
+        queryKeys.classes,
+        persistClasses([
+          ...previousClasses,
+          {...payload, id: tempId},
+        ]),
+      );
       return {previousClasses, tempId};
     },
     onSuccess: (created, variables, context) => {
-      // Substitui o item temporário pelo real
       queryClient.setQueryData<SchoolClass[]>(queryKeys.classes, cached =>
-        (cached ?? []).map(cls => (cls.id === context.tempId ? created : cls)),
+        persistClasses(
+          (cached ?? []).map(cls => (cls.id === context.tempId ? created : cls)),
+        ),
       );
       void touchLastSync();
       onSuccess?.(created, variables, context, undefined as never);
     },
     onError: (error, payload, context) => {
       if (isNetworkError(error) && context) {
-        // Erro de rede → mantém optimistic update e enfileira para sync
-        syncQueue.push({type: 'create', tempId: context.tempId, payload: payload as never});
-        onError?.(error, payload, context, undefined as never);
+        syncQueue.push({
+          entity: 'class',
+          type: 'create',
+          tempId: context.tempId,
+          payload,
+        });
+        onQueued?.({...payload, id: context.tempId}, payload, context);
         return;
       }
-      // Outro erro → rollback
       if (context?.previousClasses) {
-        queryClient.setQueryData(queryKeys.classes, context.previousClasses);
+        queryClient.setQueryData(
+          queryKeys.classes,
+          persistClasses(context.previousClasses),
+        );
       }
       onError?.(error, payload, context, undefined as never);
     },
   });
 };
 
-/**
- * Remove uma turma com optimistic update.
- * Em caso de erro de rede, enfileira no syncQueue.
- */
 export const useDeleteClassMutation = (
   options?: Omit<
     UseMutationOptions<void, Error, string, DeleteClassContext>,
@@ -94,33 +116,25 @@ export const useDeleteClassMutation = (
     ...restOptions,
     mutationFn: deleteClass,
     onMutate: async classId => {
-      // 1. Cancela refetches em andamento
       await queryClient.cancelQueries({queryKey: queryKeys.classes});
-
-      // 2. Salva snapshot para rollback
       const previousClasses = queryClient.getQueryData<SchoolClass[]>(queryKeys.classes) ?? [];
-
-      // 3. Salva a turma removida para expor no onSuccess
       const deletedClass = previousClasses.find(cls => cls.id === classId) ?? null;
-
-      // 4. Remove do cache imediatamente
       queryClient.setQueryData<SchoolClass[]>(
         queryKeys.classes,
-        previousClasses.filter(cls => cls.id !== classId),
+        persistClasses(previousClasses.filter(cls => cls.id !== classId)),
       );
-
-      // 5. Retorna contexto
       return {previousClasses, deletedClass};
     },
     onError: (error, classId, context) => {
       if (isNetworkError(error)) {
-        // Erro de rede → enfileira para sync offline
-        syncQueue.push({type: 'delete', id: classId});
+        syncQueue.push({entity: 'class', type: 'delete', id: classId});
         return;
       }
-      // Outro erro → rollback
       if (context?.previousClasses) {
-        queryClient.setQueryData(queryKeys.classes, context.previousClasses);
+        queryClient.setQueryData(
+          queryKeys.classes,
+          persistClasses(context.previousClasses),
+        );
       }
       onError?.(error, classId, context, undefined as never);
     },
