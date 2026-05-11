@@ -92,6 +92,8 @@ jobs:
           restore-keys: gradle-
 
       - name: Build Android Release Artifacts
+        env:
+          ENVFILE: .env.production
         run: |
           cd android
           ./gradlew assembleRelease bundleRelease --no-daemon
@@ -143,6 +145,8 @@ jobs:
         run: pod install --project-directory=ios
 
       - name: Build iOS (simulator, no signing)
+        env:
+          ENVFILE: .env.production
         run: |
           xcodebuild \
             -workspace ios/TeacherObservations.xcworkspace \

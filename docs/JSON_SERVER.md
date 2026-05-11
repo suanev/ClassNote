@@ -1,108 +1,52 @@
-# JSON Server — API Simulada
+# API
 
-## O que é
+O projeto usa [json-server](https://github.com/typicode/json-server) localmente e um backend cloud para builds.
 
-[json-server](https://github.com/typicode/json-server) é uma biblioteca que transforma um arquivo `db.json` em uma REST API completa (GET, POST, PATCH, DELETE) sem nenhuma configuração de backend.
+## Local
 
----
-
-## Como rodar
+Suba a API com:
 
 ```bash
 yarn api
 ```
 
-Isso executa:
-```
+Comando real:
+
+```bash
 json-server --watch db.json --host 0.0.0.0 --port 3001
 ```
 
-A flag `--host 0.0.0.0` é necessária para que dispositivos físicos e emuladores Android consigam acessar a API pelo IP da máquina.
+## URL usada pelo app
 
----
+### Desenvolvimento local
 
-## Endpoints disponíveis
-
-| Método | Endpoint | Descrição |
-|---|---|---|
-| `GET` | `/observations` | Lista todas as observações |
-| `GET` | `/observations/:id` | Busca observação por ID |
-| `POST` | `/observations` | Cria nova observação |
-| `PATCH` | `/observations/:id` | Atualiza observação parcialmente |
-| `DELETE` | `/observations/:id` | Remove observação |
-| `GET` | `/classes` | Lista todas as turmas |
-| `GET` | `/classes/:id` | Busca turma por ID |
-
----
-
-## Configuração do endereço no app
-
-O endereço da API é configurado via `react-native-config` em `.env`:
+Deixe `API_BASE_URL` vazio no `.env`:
 
 ```env
-# .env
-API_BASE_URL=http://10.0.2.2:3001   # Android Emulator
-# API_BASE_URL=http://localhost:3001 # iOS Simulator
-# API_BASE_URL=http://SEU_IP:3001    # Dispositivo físico
+API_BASE_URL=
 ```
 
-> **Android Emulator**: use `10.0.2.2` — é o alias do `localhost` da máquina host.
-> **iOS Simulator**: use `localhost` normalmente.
-> **Dispositivo físico**: descubra o IP da máquina com `ifconfig` (macOS/Linux) e use-o.
+Fallback automático:
 
----
+- Android Emulator: `http://10.0.2.2:3001`
+- iOS Simulator: `http://localhost:3001`
 
-## Estrutura do `db.json`
+### Build e CI/CD
 
-```json
-{
-  "observations": [
-    {
-      "id": "uuid",
-      "student": "Nome do Aluno",
-      "className": "5º Ano A",
-      "text": "Texto da observação...",
-      "favorite": false,
-      "createdAt": "2025-01-15T10:30:00.000Z",
-      "updatedAt": "2025-01-15T10:30:00.000Z"
-    }
-  ],
-  "classes": [
-    {
-      "id": "uuid",
-      "name": "5º Ano A",
-      "shift": "Manhã",
-      "students": 28
-    }
-  ]
-}
+`.env.production`:
+
+```env
+API_BASE_URL=https://classnotes-json-api-production.up.railway.app
 ```
 
----
+## Endpoints principais
 
-## Rodando em paralelo com o app
-
-Em terminais separados:
-
-```bash
-# Terminal 1 — API
-yarn api
-
-# Terminal 2 — Metro bundler
-yarn start
-
-# Terminal 3 — App
-yarn android
-# ou
-yarn ios
-```
-
----
-
-## Reset dos dados
-
-Para resetar os dados ao estado inicial, restaure o `db.json` do git:
-
-```bash
-git checkout db.json
-```
+| Método | Endpoint |
+|---|---|
+| `GET` | `/observations` |
+| `POST` | `/observations` |
+| `PATCH` | `/observations/:id` |
+| `DELETE` | `/observations/:id` |
+| `GET` | `/classes` |
+| `POST` | `/classes` |
+| `DELETE` | `/classes/:id` |
