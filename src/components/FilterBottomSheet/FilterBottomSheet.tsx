@@ -1,4 +1,5 @@
 import React from 'react';
+import {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from 'styled-components/native';
 
@@ -6,6 +7,7 @@ import {ClassShift, SchoolClass} from '../../types/classes';
 import {ObservationSortOrder} from '@store/observations/slice';
 import {BottomSheet} from '@components/BottomSheet';
 import {Chip} from '@components/Chip';
+import {toTestIdSegment} from '@utils/testIds';
 
 import {
   ChipsRow,
@@ -18,6 +20,7 @@ import {
   SortOption,
   SortOptionLabel,
   SortOptionRow,
+  sheetContentContainerStyle,
 } from './styles';
 
 const SHIFTS: Array<{label: string; value: ClassShift | null}> = [
@@ -64,36 +67,6 @@ export const FilterBottomSheet = ({
   onSelectSortOrder,
 }: FilterBottomSheetProps) => {
   const theme = useTheme();
-  const normalizeForTestId = (value: string) => {
-    const normalized = value.normalize('NFD').toLowerCase();
-    let result = '';
-    let lastWasHyphen = false;
-
-    for (const char of normalized) {
-      const code = char.charCodeAt(0);
-      const isDigit = code >= 48 && code <= 57;
-      const isLowercaseLetter = code >= 97 && code <= 122;
-
-      // Skip combining diacritical marks created by NFD normalization.
-      if (code >= 0x0300 && code <= 0x036f) {
-        continue;
-      }
-
-      if (isDigit || isLowercaseLetter) {
-        result += char;
-        lastWasHyphen = false;
-        continue;
-      }
-
-      if (!lastWasHyphen && result.length > 0) {
-        result += '-';
-        lastWasHyphen = true;
-      }
-    }
-
-    /* istanbul ignore next -- trailing separators do not affect app behavior */
-    return lastWasHyphen ? result.slice(0, -1) : result;
-  };
 
   return (
     <BottomSheet
@@ -110,90 +83,93 @@ export const FilterBottomSheet = ({
       isOpen={isOpen}
       onClose={onClose}
       title="Filtros">
-
-      <Section>
-        <SectionTitle>TURNO</SectionTitle>
-        <ChipsRow>
-          {SHIFTS.map(({label, value}) => (
-            <Chip
-              key={label}
-              label={label}
-              active={filterByShift === value}
-              onPress={() => onSelectShift(value)}
-              testID={`shift-filter-${value === null ? 'all' : normalizeForTestId(value)}`}
-              accessibilityRole="radio"
-              accessibilityState={{selected: filterByShift === value}}
-            />
-          ))}
-        </ChipsRow>
-      </Section>
-
-      <Section>
-        <SectionTitle>TURMA</SectionTitle>
-        <ChipsRow>
-          <Chip
-            label="Todas"
-            active={filterByClass === null}
-            onPress={() => onSelectClass(null)}
-            testID="class-filter-all"
-            accessibilityRole="radio"
-            accessibilityState={{selected: filterByClass === null}}
-            accessibilityLabel="Todas as turmas"
-          />
-          {availableClasses.map(cls => {
-            const isActive = cls.id === filterByClass;
-            return (
+      <BottomSheetScrollView
+        contentContainerStyle={sheetContentContainerStyle}
+        showsVerticalScrollIndicator={false}
+        testID="filter-bottom-sheet-scroll">
+        <Section>
+          <SectionTitle>TURNO</SectionTitle>
+          <ChipsRow>
+            {SHIFTS.map(({label, value}) => (
               <Chip
-                key={cls.id}
-                label={cls.name}
-                active={isActive}
-                onPress={() => onSelectClass(isActive ? null : cls.id)}
-                testID={`class-filter-${normalizeForTestId(cls.name)}`}
+                key={label}
+                label={label}
+                active={filterByShift === value}
+                onPress={() => onSelectShift(value)}
+                testID={`shift-filter-${value === null ? 'all' : toTestIdSegment(value)}`}
+                accessibilityRole="radio"
+                accessibilityState={{selected: filterByShift === value}}
+              />
+            ))}
+          </ChipsRow>
+        </Section>
+
+        <Section>
+          <SectionTitle>TURMA</SectionTitle>
+          <ChipsRow>
+            <Chip
+              label="Todas"
+              active={filterByClass === null}
+              onPress={() => onSelectClass(null)}
+              testID="class-filter-all"
+              accessibilityRole="radio"
+              accessibilityState={{selected: filterByClass === null}}
+              accessibilityLabel="Todas as turmas"
+            />
+            {availableClasses.map(cls => {
+              const isActive = cls.id === filterByClass;
+              return (
+                <Chip
+                  key={cls.id}
+                  label={cls.name}
+                  active={isActive}
+                  onPress={() => onSelectClass(isActive ? null : cls.id)}
+                  testID={`class-filter-${toTestIdSegment(cls.name)}`}
+                  accessibilityRole="radio"
+                  accessibilityState={{selected: isActive}}
+                />
+              );
+            })}
+          </ChipsRow>
+        </Section>
+
+        <Section>
+          <SectionTitle>TIPO</SectionTitle>
+          <ChipsRow>
+            <Chip
+              label="Somente favoritas"
+              active={filterByFavorites}
+              onPress={onToggleFavorites}
+              testID="favorites-filter-chip"
+              accessibilityRole="checkbox"
+              accessibilityState={{checked: filterByFavorites}}
+            />
+          </ChipsRow>
+        </Section>
+
+        <Section>
+          <SectionTitle>ORDENAÇÃO</SectionTitle>
+          {SORT_OPTIONS.map(option => {
+            const isActive = option.value === sortOrder;
+            return (
+              <SortOption
+                key={option.value}
+                onPress={() => onSelectSortOrder(option.value)}
+                testID={isActive ? `sort-order-selected-${option.value}` : `sort-order-${option.value}`}
                 accessibilityRole="radio"
                 accessibilityState={{selected: isActive}}
-              />
+                accessibilityLabel={option.label}>
+                <SortOptionRow>
+                  <RadioOuter active={isActive}>
+                    {isActive ? <RadioDot /> : null}
+                  </RadioOuter>
+                  <SortOptionLabel active={isActive}>{option.label}</SortOptionLabel>
+                </SortOptionRow>
+              </SortOption>
             );
           })}
-        </ChipsRow>
-      </Section>
-
-      <Section>
-        <SectionTitle>TIPO</SectionTitle>
-        <ChipsRow>
-          <Chip
-            label="Somente favoritas"
-            active={filterByFavorites}
-            onPress={onToggleFavorites}
-            testID="favorites-filter-chip"
-            accessibilityRole="checkbox"
-            accessibilityState={{checked: filterByFavorites}}
-          />
-        </ChipsRow>
-      </Section>
-
-      <Section>
-        <SectionTitle>ORDENAÇÃO</SectionTitle>
-        {SORT_OPTIONS.map(option => {
-          const isActive = option.value === sortOrder;
-          return (
-            <SortOption
-              key={option.value}
-              onPress={() => onSelectSortOrder(option.value)}
-              testID={isActive ? `sort-order-selected-${option.value}` : `sort-order-${option.value}`}
-              accessibilityRole="radio"
-              accessibilityState={{selected: isActive}}
-              accessibilityLabel={option.label}>
-              <SortOptionRow>
-                <RadioOuter active={isActive}>
-                  {isActive ? <RadioDot /> : null}
-                </RadioOuter>
-                <SortOptionLabel active={isActive}>{option.label}</SortOptionLabel>
-              </SortOptionRow>
-            </SortOption>
-          );
-        })}
-      </Section>
-
+        </Section>
+      </BottomSheetScrollView>
     </BottomSheet>
   );
 };

@@ -10,6 +10,7 @@ import {Chip} from '@components/Chip';
 import {Input} from '@components/Input';
 import {NewClassBottomSheet} from '@components/NewClassBottomSheet';
 import {ScreenContainer} from '@components/ScreenContainer';
+import {toTestIdSegment} from '@utils/testIds';
 import {SchoolClass} from '../../types/classes';
 
 import {
@@ -74,35 +75,6 @@ const ObservationFormScreen = ({
   const theme = useTheme();
   const [deleteSheetOpen, setDeleteSheetOpen] = useState(false);
   const [newClassSheetOpen, setNewClassSheetOpen] = useState(false);
-  const normalizeForTestId = (value: string) => {
-    const normalized = value.normalize('NFD').toLowerCase();
-    let result = '';
-    let lastWasHyphen = false;
-
-    for (const char of normalized) {
-      const code = char.charCodeAt(0);
-      const isDigit = code >= 48 && code <= 57;
-      const isLowercaseLetter = code >= 97 && code <= 122;
-
-      if (code >= 0x0300 && code <= 0x036f) {
-        continue;
-      }
-
-      if (isDigit || isLowercaseLetter) {
-        result += char;
-        lastWasHyphen = false;
-        continue;
-      }
-
-      if (!lastWasHyphen && result.length > 0) {
-        result += '-';
-        lastWasHyphen = true;
-      }
-    }
-
-    /* istanbul ignore next -- trailing separators do not affect app behavior */
-    return lastWasHyphen ? result.slice(0, -1) : result;
-  };
   const title = mode === 'create' ? 'Nova observação' : 'Editar observação';
 
   return (
@@ -152,7 +124,7 @@ const ObservationFormScreen = ({
                   label={cls.name}
                   active={cls.id === classId}
                   onPress={() => onSelectClass(cls.id)}
-                  testID={`select-class-${normalizeForTestId(cls.name)}`}
+                  testID={`select-class-${toTestIdSegment(cls.name)}`}
                   accessibilityRole="radio"
                   accessibilityState={{selected: cls.id === classId}}
                 />

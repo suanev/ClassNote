@@ -31,7 +31,6 @@ export const ObservationSkeleton = () => {
       <SafeAreaContainer>
         <SkeletonScreen>
           <SkeletonScrollView>
-            {/* Header area */}
             <SkeletonRow>
               <Skeleton height={30} width={160} radius={6} />
               <SkeletonRow>
@@ -40,7 +39,6 @@ export const ObservationSkeleton = () => {
               </SkeletonRow>
             </SkeletonRow>
 
-            {/* Filter chips row */}
             <SkeletonHorizontalScrollView>
               <SkeletonChipRow>
                 {CHIP_SKELETONS.map(({id, width}) => (
@@ -49,27 +47,21 @@ export const ObservationSkeleton = () => {
               </SkeletonChipRow>
             </SkeletonHorizontalScrollView>
 
-            {/* Cards */}
             <SkeletonStack style={{marginTop: 24}}>
               {[0, 1, 2].map(index => (
                 <SkeletonCard key={`card-${index}`}>
-                  {/* Student name + star */}
                   <SkeletonRow>
                     <Skeleton height={22} width="56%" radius={6} />
                     <Skeleton height={18} width={18} radius={4} />
                   </SkeletonRow>
-                  {/* Class · Shift meta */}
                   <SkeletonMetaRow>
                     <Skeleton height={13} width={110} radius={4} />
                   </SkeletonMetaRow>
-                  {/* Observation text preview */}
                   <SkeletonStack>
                     <Skeleton height={15} width="100%" radius={4} />
                     <Skeleton height={15} width="78%" radius={4} />
                   </SkeletonStack>
-                  {/* Dashed separator */}
                   <SkeletonDashedLine />
-                  {/* Relative time mono */}
                   <Skeleton height={11} width={72} radius={4} />
                 </SkeletonCard>
               ))}

@@ -1,0 +1,84 @@
+appId: com.teacherobservations
+# Android only — valida persistência local após process death usando killApp + launchApp
+---
+- clearState
+- setAirplaneMode: enabled
+- launchApp:
+    clearState: true
+- tapOn:
+    text: 'Wait'
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: 'create-observation-button'
+    timeout: 15000
+- assertVisible:
+    id: 'network-toast'
+- tapOn:
+    id: 'create-observation-button'
+- extendedWaitUntil:
+    visible:
+      id: 'student-name-input'
+    timeout: 10000
+- tapOn:
+    id: 'add-class-chip'
+- extendedWaitUntil:
+    visible:
+      id: 'bottom-sheet-content'
+    timeout: 10000
+- tapOn:
+    id: 'new-class-name-input'
+- setClipboard: 'turma-persistencia'
+- pasteText
+- hideKeyboard
+- tapOn:
+    id: 'new-class-shift-tarde'
+- tapOn:
+    id: 'create-class-confirm-button'
+- extendedWaitUntil:
+    notVisible:
+      id: 'bottom-sheet-content'
+    timeout: 10000
+- extendedWaitUntil:
+    visible:
+      id: 'select-class-turma-persistencia'
+    timeout: 10000
+- assertVisible:
+    id: 'select-class-turma-persistencia'
+- tapOn:
+    id: 'student-name-input'
+- setClipboard: 'aluno-persistencia'
+- pasteText
+- hideKeyboard
+- tapOn:
+    id: 'observation-text-input'
+- setClipboard: 'Observação persistida offline'
+- pasteText
+- hideKeyboard
+- tapOn:
+    id: 'save-observation-button'
+- extendedWaitUntil:
+    visible:
+      text: 'Observações'
+    timeout: 10000
+- extendedWaitUntil:
+    visible:
+      text: 'aluno-persistencia'
+    timeout: 10000
+- assertVisible: 'aluno-persistencia'
+- killApp
+- launchApp:
+    stopApp: false
+- tapOn:
+    text: 'Wait'
+    optional: true
+- extendedWaitUntil:
+    visible:
+      text: 'Observações'
+    timeout: 15000
+- extendedWaitUntil:
+    visible:
+      text: 'aluno-persistencia'
+    timeout: 15000
+- assertVisible: 'aluno-persistencia'
+- setAirplaneMode: disabled

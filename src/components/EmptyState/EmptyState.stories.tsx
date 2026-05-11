@@ -5,6 +5,9 @@ import type {Meta, StoryObj} from '@storybook/react';
 import {DocNote} from '../../../.storybook/DocNote';
 import {EmptyState} from './EmptyState';
 
+const baseEmptyTitle = 'Nenhuma observação por aqui';
+const baseAction = 'Criar observação';
+
 const meta = {
   title: 'Components/EmptyState',
   component: EmptyState,
@@ -24,10 +27,10 @@ const meta = {
     onAction: {action: 'action pressed'},
   },
   args: {
-    title: 'Nenhuma observação por aqui',
+    title: baseEmptyTitle,
     description:
       'Quando você registrar novas observações, elas vão aparecer aqui com destaque e contexto da turma.',
-    actionLabel: 'Criar observação',
+    actionLabel: baseAction,
   },
   decorators: [
     Story => (
@@ -98,7 +101,7 @@ export const ClassFilter: Story = {
     title: 'Nenhuma observação por aqui',
     description:
       'Ainda não há observações para 5º Ano A. Você pode criar a primeira e começar o histórico dessa turma.',
-    actionLabel: 'Criar observação',
+    actionLabel: baseAction,
   },
 };
 

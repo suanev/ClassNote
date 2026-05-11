@@ -6,6 +6,7 @@ import {DocNote} from '../../../.storybook/DocNote';
 import {SwipeableObservationItem} from './SwipeableObservationItem';
 
 const noop = () => {};
+const favoriteAction = {action: 'favorite toggled'};
 
 const MultipleSwipeableItemsStory = () => {
   const [items, setItems] = useState([
@@ -54,7 +55,7 @@ const meta = {
     },
     onPress: {action: 'pressed'},
     onDelete: {action: 'deleted'},
-    onToggleFavorite: {action: 'favorite toggled'},
+    onToggleFavorite: favoriteAction,
   },
   args: {
     id: 'obs-1',

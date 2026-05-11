@@ -8,6 +8,7 @@ import {Button} from '@components/Button';
 import {BottomSheet} from './BottomSheet';
 
 const noop = () => {};
+const sheetButtonWrapper = {padding: 24};
 
 const meta = {
   title: 'Components/BottomSheet',
@@ -44,82 +45,32 @@ const SheetText = ({children}: {children: React.ReactNode}) => {
   );
 };
 
-const DefaultBottomSheetStory = () => {
+const TriggeredBottomSheetStory = ({
+  buttonLabel,
+  buttonVariant,
+  title,
+  children,
+  disableClose = false,
+}: {
+  buttonLabel: string;
+  buttonVariant: React.ComponentProps<typeof Button>['variant'];
+  title?: string;
+  children: React.ReactNode;
+  disableClose?: boolean;
+}) => {
   const [open, setOpen] = useState(false);
-  return (
-    <View style={{padding: 24}}>
-      <Button variant="primary" onPress={() => setOpen(true)}>
-        Abrir sheet
-      </Button>
-      <BottomSheet isOpen={open} onClose={() => setOpen(false)} title="Título do sheet">
-        <SheetText>Conteúdo do bottom sheet.</SheetText>
-      </BottomSheet>
-    </View>
-  );
-};
 
-const WithoutTitleBottomSheetStory = () => {
-  const [open, setOpen] = useState(false);
   return (
-    <View style={{padding: 24}}>
-      <Button variant="secondary" onPress={() => setOpen(true)}>
-        Sheet sem título
-      </Button>
-      <BottomSheet isOpen={open} onClose={() => setOpen(false)}>
-        <SheetText>Sheet sem cabeçalho.</SheetText>
-      </BottomSheet>
-    </View>
-  );
-};
-
-const TallContentBottomSheetStory = () => {
-  const [open, setOpen] = useState(false);
-  return (
-    <View style={{padding: 24}}>
-      <Button variant="primary" onPress={() => setOpen(true)}>
-        Sheet com conteúdo longo
-      </Button>
-      <BottomSheet isOpen={open} onClose={() => setOpen(false)} title="Conteúdo longo">
-        <View style={{padding: 16, gap: 12}}>
-          {Array.from({length: 10}, (_, i) => (
-            <SheetText key={i}>Linha de conteúdo {i + 1}</SheetText>
-          ))}
-        </View>
-      </BottomSheet>
-    </View>
-  );
-};
-
-const DisableCloseBottomSheetStory = () => {
-  const [open, setOpen] = useState(false);
-  return (
-    <View style={{padding: 24}}>
-      <Button variant="dangerSolid" onPress={() => setOpen(true)}>
-        Abrir confirmação crítica
+    <View style={sheetButtonWrapper}>
+      <Button variant={buttonVariant} onPress={() => setOpen(true)}>
+        {buttonLabel}
       </Button>
       <BottomSheet
         isOpen={open}
-        disableClose
         onClose={() => setOpen(false)}
-        title="Excluir observações?"
-      >
-        <View style={{paddingTop: 8, gap: 20}}>
-          <SheetText>
-            Durante uma ação destrutiva em andamento, o usuário não deve conseguir fechar o sheet por gesto ou backdrop.
-          </SheetText>
-          <View style={{flexDirection: 'row', gap: 12, paddingHorizontal: 16, paddingBottom: 16}}>
-            <View style={{flex: 1}}>
-              <Button variant="secondary" onPress={noop} disabled>
-                Cancelar
-              </Button>
-            </View>
-            <View style={{flex: 1}}>
-              <Button variant="dangerStrong" onPress={noop} loading>
-                Excluindo
-              </Button>
-            </View>
-          </View>
-        </View>
+        title={title}
+        disableClose={disableClose}>
+        {children}
       </BottomSheet>
     </View>
   );
@@ -151,17 +102,63 @@ export const Docs: Story = {
 };
 
 export const Default: Story = {
-  render: () => <DefaultBottomSheetStory />,
+  render: () => (
+    <TriggeredBottomSheetStory
+      buttonLabel="Abrir sheet"
+      buttonVariant="primary"
+      title="Título do sheet">
+      <SheetText>Conteúdo do bottom sheet.</SheetText>
+    </TriggeredBottomSheetStory>
+  ),
 };
 
 export const WithoutTitle: Story = {
-  render: () => <WithoutTitleBottomSheetStory />,
+  render: () => (
+    <TriggeredBottomSheetStory buttonLabel="Sheet sem título" buttonVariant="secondary">
+      <SheetText>Sheet sem cabeçalho.</SheetText>
+    </TriggeredBottomSheetStory>
+  ),
 };
 
 export const TallContent: Story = {
-  render: () => <TallContentBottomSheetStory />,
+  render: () => (
+    <TriggeredBottomSheetStory
+      buttonLabel="Sheet com conteúdo longo"
+      buttonVariant="primary"
+      title="Conteúdo longo">
+      <View style={{padding: 16, gap: 12}}>
+        {Array.from({length: 10}, (_, i) => (
+          <SheetText key={i}>Linha de conteúdo {i + 1}</SheetText>
+        ))}
+      </View>
+    </TriggeredBottomSheetStory>
+  ),
 };
 
 export const DisableCloseDuringAction: Story = {
-  render: () => <DisableCloseBottomSheetStory />,
+  render: () => (
+    <TriggeredBottomSheetStory
+      buttonLabel="Abrir confirmação crítica"
+      buttonVariant="dangerSolid"
+      title="Excluir observações?"
+      disableClose>
+      <View style={{paddingTop: 8, gap: 20}}>
+        <SheetText>
+          Durante uma ação destrutiva em andamento, o usuário não deve conseguir fechar o sheet por gesto ou backdrop.
+        </SheetText>
+        <View style={{flexDirection: 'row', gap: 12, paddingHorizontal: 16, paddingBottom: 16}}>
+          <View style={{flex: 1}}>
+            <Button variant="secondary" onPress={noop} disabled>
+              Cancelar
+            </Button>
+          </View>
+          <View style={{flex: 1}}>
+            <Button variant="dangerStrong" onPress={noop} loading>
+              Excluindo
+            </Button>
+          </View>
+        </View>
+      </View>
+    </TriggeredBottomSheetStory>
+  ),
 };

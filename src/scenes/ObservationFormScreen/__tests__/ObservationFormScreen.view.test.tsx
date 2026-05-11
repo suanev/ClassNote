@@ -224,6 +224,23 @@ describe('ObservationFormScreen (view)', () => {
       expect(screen.getByTestId('confirm-delete-observation-button')).toBeDisabled();
     });
 
+    it('should keep the delete sheet open when dismiss is pressed during deletion', () => {
+      const {rerender} = renderWithProviders(<ObservationFormScreen {...editProps} />);
+
+      fireEvent.press(screen.getByTestId('delete-observation-button'));
+
+      rerender(
+        <ObservationFormScreen
+          {...editProps}
+          isDeleting
+        />,
+      );
+
+      fireEvent.press(screen.getAllByTestId('bottom-sheet-dismiss')[0]);
+
+      expect(screen.getByText('Apagar observação?')).toBeOnTheScreen();
+    });
+
     it('should not render delete button when onDelete is not provided', () => {
       renderWithProviders(
         <ObservationFormScreen

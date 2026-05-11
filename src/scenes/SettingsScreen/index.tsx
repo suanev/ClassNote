@@ -6,6 +6,8 @@ import { ThemePreference, useThemeContext } from '@theme/ThemeContext';
 import {
   getItem,
   getLastSync,
+  setStoredClasses,
+  setStoredObservations,
   setItem,
   storageKeys,
   touchLastSync,
@@ -33,6 +35,14 @@ const SettingsScreenContainer = () => {
   const [isDeletingClass, setIsDeletingClass] = useState(false);
   const [deleteClassErrorVisible, setDeleteClassErrorVisible] = useState(false);
   const [appIcon, setAppIcon] = useState<AppIconVariant>('default');
+  const persistObservations = useCallback((items: Observation[]): Observation[] => {
+    setStoredObservations(items);
+    return items;
+  }, []);
+  const persistClasses = useCallback((items: SchoolClass[]): SchoolClass[] => {
+    setStoredClasses(items);
+    return items;
+  }, []);
 
   const classesQuery = useClassesQuery();
   const observationsQuery = useObservationsQuery();
@@ -123,15 +133,20 @@ const SettingsScreenContainer = () => {
       queryClient.setQueryData<Observation[]>(
         queryKeys.observations,
         current =>
-          (current ?? []).filter(
-            observation =>
-              observation.classId !== classPendingDeletion.id &&
-              !(!observation.classId && observation.className === classPendingDeletion.name),
+          persistObservations(
+            (current ?? []).filter(
+              observation =>
+                observation.classId !== classPendingDeletion.id &&
+                !(!observation.classId && observation.className === classPendingDeletion.name),
+            ),
           ),
       );
       queryClient.setQueryData<SchoolClass[]>(
         queryKeys.classes,
-        current => (current ?? []).filter(item => item.id !== classPendingDeletion.id),
+        current =>
+          persistClasses(
+            (current ?? []).filter(item => item.id !== classPendingDeletion.id),
+          ),
       );
 
       await Promise.all([
@@ -147,7 +162,7 @@ const SettingsScreenContainer = () => {
     } finally {
       setIsDeletingClass(false);
     }
-  }, [classPendingDeletion, getObservationsForClass]);
+  }, [classPendingDeletion, getObservationsForClass, persistClasses, persistObservations]);
 
   const handleOpenDesignSystem = () => navigation.navigate('DesignSystem');
 
@@ -157,7 +172,6 @@ const SettingsScreenContainer = () => {
       await setItem(storageKeys.appIcon, value);
       setAppIcon(value);
     } catch {
-      // native module unavailable (simulator or missing build)
     }
   };
 

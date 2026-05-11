@@ -4,6 +4,10 @@ interface ActiveProps {
   active: boolean;
 }
 
+export const sheetContentContainerStyle = {
+  paddingBottom: 8,
+};
+
 export const Section = styled.View`
   margin-bottom: 20px;
 `;

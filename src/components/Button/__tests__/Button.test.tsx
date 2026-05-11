@@ -29,6 +29,16 @@ describe('Button', () => {
     expect(screen.getByText('Salvando')).toBeOnTheScreen();
   });
 
+  it('should keep the label visible while loading with an icon', () => {
+    renderWithProviders(
+      <Button onPress={jest.fn()} loading icon="save" variant="dangerSolid">
+        Excluindo
+      </Button>,
+    );
+
+    expect(screen.getByText('Excluindo')).toBeOnTheScreen();
+  });
+
   it('should render danger variant with label', () => {
     const onPress = jest.fn();
 
@@ -57,5 +67,19 @@ describe('Button', () => {
 
     fireEvent.press(screen.getByTestId('delete-btn'));
     expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it('should render icon-only loading button without a text label', () => {
+    renderWithProviders(
+      <Button
+        onPress={jest.fn()}
+        variant="dangerStrong"
+        icon="trash-2"
+        loading
+        testID="loading-icon-btn"
+      />,
+    );
+
+    expect(screen.getByTestId('loading-icon-btn')).toBeDisabled();
   });
 });

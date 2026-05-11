@@ -11,6 +11,7 @@ import { ThemePreference } from '@theme/ThemeContext';
 import { APP_VERSION } from '@constants/appMetadata';
 import { DEV_DEVICE_SYNC_NOTICE, ENV_LABEL, isDev } from '@constants/environment';
 import { formatLastSync } from '@utils/date';
+import { toTestIdSegment } from '@utils/testIds';
 
 import {
   Card,
@@ -89,35 +90,6 @@ const SettingsScreen = ({
   onOpenDesignSystem,
 }: SettingsScreenProps) => {
   const theme = useTheme();
-  const normalizeForTestId = (value: string) => {
-    const normalized = value.normalize('NFD').toLowerCase();
-    let result = '';
-    let lastWasHyphen = false;
-
-    for (const char of normalized) {
-      const code = char.charCodeAt(0);
-      const isDigit = code >= 48 && code <= 57;
-      const isLowercaseLetter = code >= 97 && code <= 122;
-
-      if (code >= 0x0300 && code <= 0x036f) {
-        continue;
-      }
-
-      if (isDigit || isLowercaseLetter) {
-        result += char;
-        lastWasHyphen = false;
-        continue;
-      }
-
-      if (!lastWasHyphen && result.length > 0) {
-        result += '-';
-        lastWasHyphen = true;
-      }
-    }
-
-    /* istanbul ignore next -- trailing separators do not affect app behavior */
-    return lastWasHyphen ? result.slice(0, -1) : result;
-  };
   const deleteObservationsLabel = classPendingDeletion?.observationsCount === 1
     ? '1 observação'
     : `${classPendingDeletion?.observationsCount ?? 0} observações`;
@@ -204,7 +176,7 @@ const SettingsScreen = ({
                 classes.map((cls, index) => (
                   <ClassRowWrapper key={cls.id}>
                     {index > 0 ? <Divider /> : null}
-                    <ClassRow testID={`class-row-${normalizeForTestId(cls.name)}`}>
+                    <ClassRow testID={`class-row-${toTestIdSegment(cls.name)}`}>
                       <ClassInfoContent>
                         <ClassRowName>{cls.name}</ClassRowName>
                         <ClassRowShift>{cls.shift}</ClassRowShift>
@@ -215,7 +187,7 @@ const SettingsScreen = ({
                         hitSlop={8}
                         accessibilityRole="button"
                         accessibilityLabel={`Apagar turma ${cls.name}`}
-                        testID={`delete-class-${normalizeForTestId(cls.name)}`}
+                        testID={`delete-class-${toTestIdSegment(cls.name)}`}
                       >
                         <Feather name="trash-2" size={18} color={theme.colors.danger} />
                       </Pressable>

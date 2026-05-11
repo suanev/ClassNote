@@ -70,7 +70,6 @@ export const SyncStatusIcon = () => {
     setTooltipVisible(true);
     clearTimer();
     timerRef.current = setTimeout(hideTooltip, 3000);
-    // measure asynchronously to position the Portal tooltip on screen
     /* istanbul ignore next */
     iconRef.current?.measure((_x, _y, width, height, pageX, pageY) => {
       setIconLayout({x: pageX, y: pageY, width, height});

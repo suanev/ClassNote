@@ -1,5 +1,5 @@
 import React, {PropsWithChildren, useCallback, useEffect, useRef, useState} from 'react';
-import {useWindowDimensions} from 'react-native';
+import {Platform, useWindowDimensions} from 'react-native';
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -89,7 +89,7 @@ export const BottomSheet = ({
       enableDismissOnClose={!disableClose}
       enableHandlePanningGesture={false}
       enableOverDrag={false}
-      keyboardBehavior="interactive"
+      keyboardBehavior={Platform.OS === 'ios' ? 'interactive' : 'fillParent'}
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
       stackBehavior="push"

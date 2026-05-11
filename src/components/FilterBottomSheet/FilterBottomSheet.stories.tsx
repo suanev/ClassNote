@@ -16,53 +16,43 @@ const MOCK_CLASSES = [
 ];
 
 const noop = () => {};
-
-const DefaultFilterBottomSheetStory = () => {
-  const [open, setOpen] = useState(false);
-  const [shift, setShift] = useState<ClassShift | null>(null);
-  const [cls, setCls] = useState<string | null>(null);
-  const [favs, setFavs] = useState(false);
-  const [sort, setSort] = useState<ObservationSortOrder>('recent-first');
-
-  return (
-    <View style={{padding: 24}}>
-      <Button variant="secondary" icon="sliders" onPress={() => setOpen(true)}>
-        Filtros
-      </Button>
-      <FilterBottomSheet
-        isOpen={open}
-        filterByShift={shift}
-        filterByClass={cls}
-        filterByFavorites={favs}
-        availableClasses={MOCK_CLASSES}
-        sortOrder={sort}
-        onClose={() => setOpen(false)}
-        onReset={() => {
-          setShift(null);
-          setCls(null);
-          setFavs(false);
-          setSort('recent-first');
-        }}
-        onSelectShift={setShift}
-        onSelectClass={setCls}
-        onToggleFavorites={() => setFavs(f => !f)}
-        onSelectSortOrder={setSort}
-      />
-    </View>
-  );
+const resetFilterState = {
+  shift: null,
+  cls: null,
+  favs: false,
+  sort: 'recent-first' as ObservationSortOrder,
 };
 
-const ActiveFiltersBottomSheetStory = () => {
+const InteractiveFilterBottomSheetStory = ({
+  buttonLabel,
+  initialShift = resetFilterState.shift,
+  initialClass = resetFilterState.cls,
+  initialFavorites = resetFilterState.favs,
+  initialSort = resetFilterState.sort,
+}: {
+  buttonLabel: string;
+  initialShift?: ClassShift | null;
+  initialClass?: string | null;
+  initialFavorites?: boolean;
+  initialSort?: ObservationSortOrder;
+}) => {
   const [open, setOpen] = useState(false);
-  const [shift, setShift] = useState<ClassShift | null>('Manhã');
-  const [cls, setCls] = useState<string | null>('c1');
-  const [favs, setFavs] = useState(true);
-  const [sort, setSort] = useState<ObservationSortOrder>('favorites-first');
+  const [shift, setShift] = useState<ClassShift | null>(initialShift);
+  const [cls, setCls] = useState<string | null>(initialClass);
+  const [favs, setFavs] = useState(initialFavorites);
+  const [sort, setSort] = useState<ObservationSortOrder>(initialSort);
+
+  const resetFilters = () => {
+    setShift(resetFilterState.shift);
+    setCls(resetFilterState.cls);
+    setFavs(resetFilterState.favs);
+    setSort(resetFilterState.sort);
+  };
 
   return (
     <View style={{padding: 24}}>
       <Button variant="secondary" icon="sliders" onPress={() => setOpen(true)}>
-        Filtros ativos (3)
+        {buttonLabel}
       </Button>
       <FilterBottomSheet
         isOpen={open}
@@ -72,12 +62,7 @@ const ActiveFiltersBottomSheetStory = () => {
         availableClasses={MOCK_CLASSES}
         sortOrder={sort}
         onClose={() => setOpen(false)}
-        onReset={() => {
-          setShift(null);
-          setCls(null);
-          setFavs(false);
-          setSort('recent-first');
-        }}
+        onReset={resetFilters}
         onSelectShift={setShift}
         onSelectClass={setCls}
         onToggleFavorites={() => setFavs(f => !f)}
@@ -180,11 +165,19 @@ export const Docs: Story = {
 };
 
 export const Default: Story = {
-  render: () => <DefaultFilterBottomSheetStory />,
+  render: () => <InteractiveFilterBottomSheetStory buttonLabel="Filtros" />,
 };
 
 export const WithActiveFilters: Story = {
-  render: () => <ActiveFiltersBottomSheetStory />,
+  render: () => (
+    <InteractiveFilterBottomSheetStory
+      buttonLabel="Filtros ativos (3)"
+      initialShift="Manhã"
+      initialClass="c1"
+      initialFavorites
+      initialSort="favorites-first"
+    />
+  ),
 };
 
 export const LongClassList: Story = {

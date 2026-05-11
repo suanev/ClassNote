@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {BottomSheetTextInput} from '@gorhom/bottom-sheet';
 import Feather from 'react-native-vector-icons/Feather';
 import {useTheme} from 'styled-components/native';
 
@@ -15,6 +16,7 @@ interface InputProps {
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   testID?: string;
   accessibilityLabel?: string;
+  withinBottomSheet?: boolean;
 }
 
 export const Input = ({
@@ -28,6 +30,7 @@ export const Input = ({
   autoCapitalize = 'sentences',
   testID,
   accessibilityLabel,
+  withinBottomSheet = false,
 }: InputProps) => {
   const theme = useTheme();
   const [focused, setFocused] = useState(false);
@@ -36,6 +39,7 @@ export const Input = ({
     <InputWrapper marginTop={marginTop} multiline={multiline} focused={focused}>
       {icon ? <Feather name={icon} size={18} color={theme.colors.textMuted} /> : null}
       <InputField
+        as={withinBottomSheet ? BottomSheetTextInput : undefined}
         multiline={multiline}
         numberOfLines={numberOfLines}
         textAlignVertical={multiline ? 'top' : 'center'}

@@ -122,4 +122,20 @@ describe('FilterBottomSheet', () => {
 
     expect(screen.queryByText('Filtros')).not.toBeOnTheScreen();
   });
+
+  it('should render the filter content inside a scroll container for long class lists', () => {
+    renderWithProviders(
+      <FilterBottomSheet
+        {...baseProps}
+        availableClasses={Array.from({length: 20}, (_, index) => ({
+          id: `class-${index + 1}`,
+          name: `Turma ${index + 1}`,
+          shift: 'Tarde' as const,
+        }))}
+      />,
+    );
+
+    expect(screen.getByTestId('filter-bottom-sheet-scroll')).toBeOnTheScreen();
+    expect(screen.getByText('Turma 20')).toBeOnTheScreen();
+  });
 });

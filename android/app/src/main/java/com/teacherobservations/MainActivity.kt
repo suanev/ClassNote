@@ -1,8 +1,6 @@
 package com.teacherobservations
 
-import android.content.ComponentName
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -22,7 +20,6 @@ class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     supportFragmentManager.fragmentFactory = RNScreensFragmentFactory()
     RNBootSplash.init(this, resolveBootTheme())
-    applyPendingIconChange()
     super.onCreate(savedInstanceState)
   }
 
@@ -36,22 +33,6 @@ class MainActivity : ReactActivity() {
       "light" -> R.style.BootThemeLight
       "dark" -> R.style.BootThemeDark
       else -> R.style.BootThemeSystem
-    }
-  }
-
-  private fun applyPendingIconChange() {
-    val prefs = getSharedPreferences("app_icon_prefs", android.content.Context.MODE_PRIVATE)
-    val pendingDisable = prefs.getString("pending_disable", null) ?: return
-    try {
-      packageManager.setComponentEnabledSetting(
-        ComponentName(packageName, pendingDisable),
-        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-        PackageManager.DONT_KILL_APP
-      )
-    } catch (_: Exception) {
-      // alias already disabled or missing — ignore
-    } finally {
-      prefs.edit().remove("pending_disable").apply()
     }
   }
 

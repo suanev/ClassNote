@@ -1,6 +1,7 @@
 package com.teacherobservations
 
 import android.content.ComponentName
+import android.os.Build
 import android.content.pm.PackageManager
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -10,6 +11,8 @@ import com.facebook.react.bridge.ReactMethod
 class ChangeAppIconModule(
   reactContext: ReactApplicationContext
 ) : ReactContextBaseJavaModule(reactContext) {
+  private val defaultAliasEnabledByManifest = true
+  private val secondOptionAliasEnabledByManifest = false
 
   override fun getName(): String = "ChangeAppIcon"
 
@@ -29,26 +32,40 @@ class ChangeAppIconModule(
         "$packageName.MainActivitySecondOption"
       )
 
-      val (toEnable, pendingDisableName) = when (iconName) {
-        "default" -> Pair(defaultAlias, "$packageName.MainActivitySecondOption")
-        "second_option" -> Pair(secondOptionAlias, "$packageName.MainActivityDefault")
+      val (toEnable, toDisable) = when (iconName) {
+        "default" -> Pair(defaultAlias, secondOptionAlias)
+        "second_option" -> Pair(secondOptionAlias, defaultAlias)
         else -> {
           promise.reject("INVALID_ICON", "Ícone inválido: $iconName")
           return
         }
       }
 
+      if (isComponentEnabled(toEnable, isDefaultAlias(toEnable))) {
+        if (!isComponentEnabled(toDisable, isDefaultAlias(toDisable))) {
+          promise.resolve(iconName)
+          return
+        }
+      }
+
+      val flags = PackageManager.DONT_KILL_APP or
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+          PackageManager.SYNCHRONOUS
+        } else {
+          0
+        }
+
       packageManager.setComponentEnabledSetting(
         toEnable,
         PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-        PackageManager.DONT_KILL_APP
+        flags
       )
 
-      reactApplicationContext
-        .getSharedPreferences("app_icon_prefs", android.content.Context.MODE_PRIVATE)
-        .edit()
-        .putString("pending_disable", pendingDisableName)
-        .apply()
+      packageManager.setComponentEnabledSetting(
+        toDisable,
+        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+        flags
+      )
 
       promise.resolve(iconName)
     } catch (error: Exception) {
@@ -77,8 +94,8 @@ class ChangeAppIconModule(
 
       val currentIcon =
         when {
-          secondOptionState == PackageManager.COMPONENT_ENABLED_STATE_ENABLED -> "second_option"
-          defaultState == PackageManager.COMPONENT_ENABLED_STATE_ENABLED -> "default"
+          isEnabledState(secondOptionState, secondOptionAliasEnabledByManifest) -> "second_option"
+          isEnabledState(defaultState, defaultAliasEnabledByManifest) -> "default"
           else -> "default"
         }
 
@@ -87,4 +104,23 @@ class ChangeAppIconModule(
       promise.reject("GET_ICON_ERROR", error)
     }
   }
+
+  private fun isDefaultAlias(componentName: ComponentName): Boolean =
+    componentName.className.endsWith(".MainActivityDefault")
+
+  private fun isEnabledState(state: Int, manifestDefaultEnabled: Boolean): Boolean =
+    when (state) {
+      PackageManager.COMPONENT_ENABLED_STATE_ENABLED -> true
+      PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+      PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER,
+      PackageManager.COMPONENT_ENABLED_STATE_DISABLED_UNTIL_USED -> false
+      PackageManager.COMPONENT_ENABLED_STATE_DEFAULT -> manifestDefaultEnabled
+      else -> manifestDefaultEnabled
+    }
+
+  private fun isComponentEnabled(componentName: ComponentName, manifestDefaultEnabled: Boolean): Boolean =
+    isEnabledState(
+      reactApplicationContext.packageManager.getComponentEnabledSetting(componentName),
+      manifestDefaultEnabled
+    )
 }

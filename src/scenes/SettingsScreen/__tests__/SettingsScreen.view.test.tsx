@@ -1,4 +1,5 @@
 import React from 'react';
+import {Platform} from 'react-native';
 import {fireEvent, screen} from '@testing-library/react-native';
 
 import {renderWithProviders} from '@test-utils';
@@ -11,6 +12,8 @@ jest.mock('@constants/environment', () => ({
 }));
 
 describe('SettingsScreen (view)', () => {
+  const originalPlatformOS = Platform.OS;
+
   const baseProps = {
     preference: 'system' as const,
     lastSync: '2026-05-07T10:30:00.000Z',
@@ -30,6 +33,10 @@ describe('SettingsScreen (view)', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    Object.defineProperty(Platform, 'OS', {
+      configurable: true,
+      value: originalPlatformOS,
+    });
   });
 
   it('should render the settings sections and version info', () => {
@@ -84,6 +91,36 @@ describe('SettingsScreen (view)', () => {
     expect(screen.getByTestId('app-icon-hint')).toBeOnTheScreen();
   });
 
+  it('should render the iOS app icon hint copy', () => {
+    Object.defineProperty(Platform, 'OS', {
+      configurable: true,
+      value: 'ios',
+    });
+
+    renderWithProviders(<SettingsScreen {...baseProps} />);
+
+    expect(
+      screen.getByText(
+        'O sistema vai exibir um alerta e reiniciar o app para aplicar o ícone — isso é normal.',
+      ),
+    ).toBeOnTheScreen();
+  });
+
+  it('should render the Android app icon hint copy', () => {
+    Object.defineProperty(Platform, 'OS', {
+      configurable: true,
+      value: 'android',
+    });
+
+    renderWithProviders(<SettingsScreen {...baseProps} />);
+
+    expect(
+      screen.getByText(
+        'O novo ícone aparece no launcher em instantes. Feche e abra o app para confirmar a mudança.',
+      ),
+    ).toBeOnTheScreen();
+  });
+
   it('should render the development sync hint in development mode', () => {
     renderWithProviders(<SettingsScreen {...baseProps} />);
 
@@ -97,6 +134,8 @@ describe('SettingsScreen (view)', () => {
     renderWithProviders(<SettingsScreen {...baseProps} />);
 
     expect(screen.getByText('Produção')).toBeOnTheScreen();
+    expect(screen.queryByTestId('dev-sync-hint')).not.toBeOnTheScreen();
+    expect(screen.queryByTestId('open-design-system-button')).not.toBeOnTheScreen();
 
     mockEnv.ENV_LABEL = 'Desenvolvimento';
     mockEnv.isDev = true;

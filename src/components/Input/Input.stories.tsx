@@ -10,6 +10,10 @@ const ControlledInputStory = (args: React.ComponentProps<typeof Input>) => {
   return <Input {...args} value={value} onChangeText={setValue} />;
 };
 
+const renderControlledInput = (args: React.ComponentProps<typeof Input>) => (
+  <ControlledInputStory {...args} />
+);
+
 const meta = {
   title: 'Components/Input',
   component: Input,
@@ -68,12 +72,12 @@ export const Docs: Story = {
 
 export const Default: Story = {
   args: {placeholder: 'Nome do aluno'},
-  render: args => <ControlledInputStory {...args} />,
+  render: renderControlledInput,
 };
 
 export const WithIcon: Story = {
   args: {icon: 'user', placeholder: 'Nome do aluno'},
-  render: args => <ControlledInputStory {...args} />,
+  render: renderControlledInput,
 };
 
 export const Multiline: Story = {
@@ -83,7 +87,7 @@ export const Multiline: Story = {
     multiline: true,
     numberOfLines: 5,
   },
-  render: args => <ControlledInputStory {...args} />,
+  render: renderControlledInput,
 };
 
 export const WithValue: Story = {

@@ -25,8 +25,8 @@ const normalizedStories = [
 ];
 
 declare global {
-  var view: ReturnType<typeof start>;
-  var STORIES: typeof normalizedStories;
+  var view: ReturnType<typeof start> | undefined;
+  var STORIES: typeof normalizedStories | undefined;
 }
 
 const annotations = [
@@ -35,18 +35,18 @@ const annotations = [
   require('@storybook/addon-actions/preview'),
 ];
 
-global.STORIES = normalizedStories;
+globalThis.STORIES = normalizedStories;
 
 // @ts-expect-error hot is injected by Metro in development
 module?.hot?.accept?.();
 
-if (!global.view) {
-  global.view = start({
+if (!globalThis.view) {
+  globalThis.view = start({
     annotations,
     storyEntries: normalizedStories,
   });
 } else {
-  updateView(global.view, annotations, normalizedStories);
+  updateView(globalThis.view, annotations, normalizedStories);
 }
 
-export const view = global.view;
+export const view = globalThis.view;

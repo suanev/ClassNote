@@ -1,5 +1,6 @@
 import React from 'react';
 import Feather from 'react-native-vector-icons/Feather';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useTheme} from 'styled-components/native';
 
 import {FabButton, FabContainer} from './styles';
@@ -24,9 +25,11 @@ export const FAB = ({
   testID = 'floating-action-button',
 }: FABProps) => {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  const safeBottom = bottom + insets.bottom;
 
   return (
-    <FabContainer $right={right} $bottom={bottom}>
+    <FabContainer testID="floating-action-container" $right={right} $bottom={safeBottom}>
       <FabButton
         onPress={onPress}
         disabled={disabled}
